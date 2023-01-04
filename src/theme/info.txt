@@ -1,0 +1,1 @@
+this file used for global styling and global compnents need to be used in docusarus eco 
