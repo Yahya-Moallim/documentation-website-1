@@ -1,14 +1,15 @@
 // @ts-check
 // Note: type annotations allow type checking and IDEs autocompletion
-
+// const SVG = require('@site/static/img/dineropayS.svg')
 const lightCodeTheme = require('prism-react-renderer/themes/github');
 const darkCodeTheme = require('prism-react-renderer/themes/dracula');
+// const dineroSVG = require(`@site/static/img/dineropayS.svg`);
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
-  title: 'My Site',
-  tagline: 'Dinosaurs are cool',
-  url: 'https://your-docusaurus-test-site.com',
+  title: 'Dineropay',
+  tagline: 'help you to empower your online business',
+  url: 'https://dineropay.com',
   baseUrl: '/',
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
@@ -16,16 +17,16 @@ const config = {
 
   // GitHub pages deployment config.
   // If you aren't using GitHub pages, you don't need these.
-  organizationName: 'facebook', // Usually your GitHub org/user name.
-  projectName: 'docusaurus', // Usually your repo name.
+  organizationName: 'dineropay', // Usually your GitHub org/user name.
+  projectName: 'dineropay-dev', // Usually your repo name.
 
   // Even if you don't use internalization, you can use this field to set useful
   // metadata like html lang. For example, if your site is Chinese, you may want
   // to replace "en" with "zh-Hans".
-  i18n: {
-    defaultLocale: 'en',
-    locales: ['en'],
-  },
+  // i18n: {
+  //   defaultLocale: 'en',
+  //   locales: ['en'],
+  // },
   themes: ["docusaurus-theme-openapi-docs"],
   plugins:[
     require.resolve("@cmfcmf/docusaurus-search-local"),
@@ -91,27 +92,11 @@ const config = {
           sidebarCollapsible:true,
           // docLayoutComponent: "@theme/DocPage",
           // docItemComponent: "@theme/ApiItem",
-          versions: {
-            current: {
-              label: '1.0.0',
-              path: '/',
-              badge:true,
-              banner: 'none',
-              className:'badgeVersion'
-            },
-           // onlyIncludeVersions: ['current'],
-          },
+          
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
           editUrl:
-            'https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/',
-        },
-        blog: {
-          showReadingTime: true,
-          // Please change this to your repo.
-          // Remove this to remove the "edit this page" links.
-          editUrl:
-            'https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/',
+            'https://test.com',
         },
         theme: {
           customCss: require.resolve('./src/css/custom.css'),
@@ -129,17 +114,16 @@ const config = {
         },
       },
       navbar: {
-        title: 'Dineropay',
         logo: {
-          alt: 'My Site Logo',
-          src: 'img/logo.svg',
+          alt: 'Dinerpay logo',
+          src: 'img/dineropayS.svg',
         },
         items: [
           {
             type: 'doc',
             docId: 'intro',
             position: 'left',
-            label: 'Home',
+            label: 'Docs',
           },
           {
             type: 'search',
@@ -152,7 +136,7 @@ const config = {
           },
           {
             href: 'https://github.com/facebook/docusaurus',
-            label: 'GitHub',
+            label: 'Dashboard',
             position: 'right',
           },
         ],
@@ -162,17 +146,15 @@ const config = {
         links: [
               {
                 label:'Dineropay',
-                to:'/blog'
+                to:'/'
               },
               {
-                html: `
-            <a href="https://www.netlify.com" target="_blank" rel="noreferrer noopener" aria-label="Deploys by Netlify">
-              <img src="https://www.netlify.com/img/global/badges/netlify-color-accent.svg" alt="Deploys by Netlify" width="114" height="51" />
-            </a>
-          `,
+                html:` <a href="dineropay.com" target="_blank" rel="noreferrer noopener">
+                <img src="${`img/dineropayS.svg`}" alt="Find more about dineropay" width="114" height="51" />
+              </a>`
               }
         ],
-        copyright: `Copyright © ${new Date().getFullYear()} My Project, Inc. Built with Docusaurus.`,
+        copyright: `Copyright © ${new Date().getFullYear()} Dineropay, Inc. Built for the developer.`,
       },
       prism: {
         theme: lightCodeTheme,

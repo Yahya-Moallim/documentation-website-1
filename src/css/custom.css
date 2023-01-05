@@ -5,34 +5,61 @@
  */
 
 /* You can override the default Infima variables here. */
+*,::after,::before{
+  box-sizing:border-box;
+
+}
 :root {
-  --ifm-color-primary: #2e8555;
-  --ifm-color-primary-dark: #29784c;
-  --ifm-color-primary-darker: #277148;
-  --ifm-color-primary-darkest: #205d3b;
-  --ifm-color-primary-light: #33925d;
-  --ifm-color-primary-lighter: #359962;
-  --ifm-color-primary-lightest: #3cad6e;
+  --ifm-color-primary: #0664a3;
+  --ifm-color-primary-dark: #055a93;
+  --ifm-color-primary-darker: #05558b;
+  --ifm-color-primary-darkest: #044672;
+  --ifm-color-primary-light: #076eb3;
+  --ifm-color-primary-lighter: #0773bb;
+  --ifm-color-primary-lightest: #0882d4;
+  --shadowHighlight:rgba(255,255,255,0.05);
   --ifm-code-font-size: 95%;
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
+  --aa-primary-color-rgb: white !important;
+  --aa-muted-color-rgb: white !important;
+  --post:rgba(41, 240, 48, 0.49);
+  --patch:rgba(77, 56, 0, 0.49);
+  --get:rgba(25, 60, 71, 0.49);
+  --del:rgba(184, 30, 38, 0.49);
+  
 }
-
 /* For readability concerns, you should choose a lighter palette in dark mode. */
 [data-theme='dark'] {
-  --ifm-color-primary: #25c2a0;
-  --ifm-color-primary-dark: #21af90;
-  --ifm-color-primary-darker: #1fa588;
-  --ifm-color-primary-darkest: #1a8870;
-  --ifm-color-primary-light: #29d5b0;
-  --ifm-color-primary-lighter: #32d8b4;
-  --ifm-color-primary-lightest: #4fddbf;
-  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
+  --ifm-color-primary: #9ec3dc;
+  --ifm-color-primary-dark: #82b2d2;
+  --ifm-color-primary-darker: #74a9cd;
+  --ifm-color-primary-darkest: #4b8fbe;
+  --ifm-color-primary-light: #bad4e6;
+  --ifm-color-primary-lighter: #c8ddeb;
+  --ifm-color-primary-lightest: #f1f7fa;
+  --aa-primary-color-rgb: black !important;
+  --aa-muted-color-rgb: black !important;
+  --post:rgba(41, 240, 48, 0.172);
+  --patch:rgb(77, 56, 0);
+  --get:rgb(25, 60, 71);
+  --del:rgba(184, 30, 38, 0.346);
 }
-
+/*
+begin styling the badge 
+*/
 .badge{
-  padding:10px !important;
-  background-color:cadetblue !important;
-  border-radius:10px
+  padding:.6rem .5rem !important;
+  background-color: var(--shadowHighlight)!important;
+  box-shadow: -8px 8px 33px -8px rgba(0,0,0,0.45);
+  -webkit-box-shadow: -8px 8px 33px -8px rgba(0,0,0,0.45);
+  -moz-box-shadow: -8px 8px 33px -8px rgba(0,0,0,0.45);
+  border-radius:.6rem;
+  border: none;
+  margin-bottom:.3rem;
+  color:black;
+}
+[data-theme='dark'] .badge{
+  color:white;
 }
 .table-of-contents__link{
   background: 
@@ -50,35 +77,10 @@ transition: background-size 400ms;
 /*
 APIs styling begin
 */
-/* .api-method > .menu__link {
-  align-items: center;
-  justify-content: center;
-} */
-
-.api-method > .menu__link::before {
-  /* width: 50px;
-  height: 20px;
-  font-size: 12px;
-  line-height: 20px;
-  text-transform: uppercase;
-  font-weight: 600;
-  border-radius: 0.25rem;
-  border: 1px solid;
-  margin-right: var(--ifm-spacing-horizontal);
-  text-align: center;
-  flex-shrink: 0;
-  border-color: transparent;
-  color: white; */
-  /* text-transform: uppercase;
-  font-weight:bold;
-  border-radius:.2rem;
-  padding:.2rem; */
-
-}
 
 .get > .menu__link::before {
   content: "get";
-  background-color: var(--ifm-color-primary);
+  background-color: var(--ifm-color-primary); 
 }
 
 .post > .menu__link::before {
@@ -144,53 +146,40 @@ a.menu__link::before{
   margin-right: var(--ifm-spacing-horizontal);
   text-align: center;
   flex-shrink: 0;
-  /* text-transform: uppercase;
-  font-weight:bold;
-  border-radius:.2rem;
-  width:2.7rem;
-  height:1.2rem;
-  line-height:.5rem;
-  padding:.2rem;
-  align-items: center;
-  justify-content: center;
-
-  font-size: .4em;
-  margin-right:.8rem; */
-
 }
 
 
 .get > .menu__link::before {
   content: "get";
-  background-color: var(--ifm-color-info-contrast-background);
+  background-color: var(--get);
   color: var(--ifm-color-info-contrast-foreground);
   border-color: var(--ifm-color-info-dark);
 }
 
 .post > .menu__link::before {
   content: "post";
-  background-color: var(--ifm-color-success-contrast-background);
+  background-color: var(--post);
   color: var(--ifm-color-success-contrast-foreground);
   border-color: var(--ifm-color-success-dark);
 }
 
 .delete > .menu__link::before {
   content: "del";
-  background-color: var(--ifm-color-danger-contrast-background);
+  background-color: var(--del);
   color: var(--ifm-color-danger-contrast-foreground);
   border-color: var(--ifm-color-danger-dark);
 }
 
 .put > .menu__link::before {
   content: "put";
-  background-color: var(--ifm-color-warning-contrast-background);
+  background-color: var(--patch);
   color: var(--ifm-color-warning-contrast-foreground);
   border-color: var(--ifm-color-warning-dark);
 }
 
 .patch > .menu__link::before {
   content: "patch";
-  background-color: var(--ifm-color-success-contrast-background);
+  background-color: var(--patch);
   color: var(--ifm-color-success-contrast-foreground);
   border-color: var(--ifm-color-success-dark);
 }
@@ -204,3 +193,12 @@ a.menu__link::before{
 /*
 end of APIs styling 
 */
+.aa-DetachedSearchButton{
+  border-radius:.4rem !important;
+  padding-right:.8rem !important;
+  border-color:  black !important;
+}
+/*
+search bar styling 
+*/
+
