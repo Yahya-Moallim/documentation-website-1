@@ -16,7 +16,7 @@ export default function Highlight ({children, color}) {
             marginBottom:'2px',
             display:'inline-block'
         }}>
-            {children} 🤯🤯
+            {children}
         </span>
     )
 }

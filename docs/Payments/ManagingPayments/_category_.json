@@ -1,0 +1,7 @@
+{
+    "label": "Manging Payments",
+    "position": 5,
+    "link":{
+        "slug": "/manage_payments"
+    }
+}

@@ -90,11 +90,6 @@ const config = {
           includeCurrentVersion: true,
           sidebarCollapsed:true,
           sidebarCollapsible:true,
-          // docLayoutComponent: "@theme/DocPage",
-          // docItemComponent: "@theme/ApiItem",
-          
-          // Please change this to your repo.
-          // Remove this to remove the "edit this page" links.
           editUrl:
             'https://test.com',
         },
@@ -119,12 +114,12 @@ const config = {
           src: 'img/dineropayS.svg',
         },
         items: [
-          {
-            type: 'doc',
-            docId: 'intro',
-            position: 'left',
-            label: 'Docs',
-          },
+            {
+              to:'docs/intro/',
+              // docId: 'intro',
+              position: 'left',
+              label: 'Docs',
+            },
           {
             type: 'search',
             position: 'right',
@@ -145,12 +140,8 @@ const config = {
         style: 'dark',
         links: [
               {
-                label:'Dineropay',
-                to:'/'
-              },
-              {
-                html:` <a href="dineropay.com" target="_blank" rel="noreferrer noopener">
-                <img src="${`img/dineropayS.svg`}" alt="Find more about dineropay" width="114" height="51" />
+                html:` <a href="https://dineropay.com" target="_blank" rel="noreferrer noopener">
+                <img src="https://cdn.jsdelivr.net/gh/Dinero-Pay-PG/documenation-website@main/static/img/dineropayS.svg" alt="Find more about dineropay" width="114" height="51" />
               </a>`
               }
         ],

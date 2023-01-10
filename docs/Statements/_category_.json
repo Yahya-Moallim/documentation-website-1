@@ -1,0 +1,7 @@
+{
+    "link":{
+        "type": "generated-index",
+        "description": "Instead of generating statements form the dashabord we give you the option to generate them using our API with the capability to fully filter the result"
+
+    }
+}
