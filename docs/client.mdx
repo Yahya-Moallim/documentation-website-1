@@ -1,0 +1,79 @@
+---
+sidebar_label: Clients
+keyword: 
+ - doc
+ - clients
+sidebar_position: 5
+---
+
+# Overview
+
+Client is a record of a single customer of your business.<br></br>
+Create one for each of your clients; you will be able to issue invoices/subscriptions for them later easily using `/billing_templates/` API.
+
+## Usage 
+If you are willing to use `Billing` then making a client is a mandatory to issue invoices later <br></br>
+
+## Create a client
+
+> - To make a client you will have to make a <u>[`POST /clients`](../../../api/gateway/clients-create)</u>
+> - In the body you will send `client` object 
+
+### Sample request 
+```json
+{
+  "email": "user@example.com",
+  "phone": "+966 XXXXXXXXX",
+  "full_name": "string",
+  "personal_code": "string",
+  "street_address": "string",
+  "country": "string",
+  "city": "string",
+  "zip_code": "string",
+  "state": "string",
+  "shipping_street_address": "string",
+  "shipping_country": "string",
+  "shipping_city": "string",
+  "shipping_zip_code": "string",
+  "shipping_state": "string",
+  "cc": [
+    "user@example.com"
+  ],
+  "bcc": [
+    "user@example.com"
+  ],
+  "legal_name": "string",
+  "brand_name": "string",
+  "registration_number": "string",
+  "tax_number": "string",
+  "bank_account": "string",
+  "bank_code": "string"
+}
+```
+
+---
+
+## List all client
+
+
+> - To list all clients you will have to make a <u>[`GET /clients`](../../../api/gateway/clients-list)</u>
+
+---
+
+## Retrieve a specific client
+
+> - To retreive a specific client you will have to make <u>[`GET /clients/{id}`](../../../api/gateway/clients-read)</u>
+> - You will pass the `client_id` as a path parameter
+
+---
+## Update a client 
+
+> - To update a client you will have to make <u>[`PUT /clients/{id}`](../../../api/gateway/clients-update)</u>
+> - You will pass the `client_id` as a path parameter
+> - In the body you will send `client` object , same as creating a client 
+
+---
+## Delete a client
+
+> - To delete a client you will have to make <u>[`DELETE /clients/{id}`](../../../api/gateway/clients-delete)</u>
+> - You will pass the `client_id` as a path parameter

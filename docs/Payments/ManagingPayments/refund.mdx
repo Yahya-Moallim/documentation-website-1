@@ -9,3 +9,37 @@ keyword:
 ---
 
 # Refund
+
+## Making a refund 
+
+> - To make a refund you will have to make a <u>[`POST /refund`](../../../api/gateway/purchases-refund)</u> <br></br>
+
+## Check eligibility
+> - To make sure that this transaction support refund 
+> - When you made a purchase you should received a `refund_availability` parameter in the responses
+
+
+---
+## sample request 
+
+```json
+{
+  "amount": 120
+}
+```
+
+> - Optional `amount` argument can be included in the request body to request a partial refund.
+> - If it's not passed by default it will refund the full amount
+> - If the transaction was success in the response the status should be `refunded`
+
+## Transaction takes too long
+
+if this operation takes too long to be processed <br></br>
+you will get a response with status code `200` and a Purchase object having `status = pending_refund` <br></br>
+also you will be notified in webhook , you will get `purchase.pending_refund` event if you suscripe to <u>payment.refund</u> event
+
+
+## In case of failed
+If refund fails due to payment processing error, you will receive HTTP response code `400` with error code `purchase_refund_error`<br></br>
+In this case, to get more details about the error, you should perform a [`GET /purchase/`](../.../../api/gateway/purchases-read) request for the Purchase you tried to refund<br></br>
+`transaction_data.attempts[]` array (newest element first) you'll find the corresponding attempt with error code and description in `.error` parameter

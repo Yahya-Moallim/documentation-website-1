@@ -210,3 +210,9 @@ end of APIs styling
 search bar styling 
 */
 
+@media only screen and (max-width: 600px) {
+  .WrapperIntro {
+    align-items: center;
+    flex-direction: column;
+  }
+}

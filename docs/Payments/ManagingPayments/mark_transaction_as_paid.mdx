@@ -8,3 +8,22 @@ keyword:
 ---
 
 # Mark transaction as paid
+
+Will set the purchase's status to `paid`. `purchase.marked_as_paid` field will also be set to true to distinguish this purchase.
+
+## mark it as paid
+
+> - To mark a transaction as paid you will make a <u>[`POST/ mark_as_paid`](../../../api/gateway/purchases-mark-as-paid)</u><br></br>
+> - You will pass the `id` of the transaction as a path parameter 
+
+---
+
+## sample request 
+
+```json
+{
+  "paid_on": 0
+}
+```
+
+> One optional parameter you can pass in the request body `paid_on` to indicate when this transaction was paid by default the date will the time when you send a `mark_as_paid` request

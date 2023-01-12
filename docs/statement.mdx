@@ -1,0 +1,94 @@
+---
+sidebar_label: Statement
+keyword: 
+ - docs
+ - statement 
+ - report 
+sidebar_position: 6
+---
+
+# Statement
+
+Instead of generating statements form the dashabord we give you the option to generate them using our API with the capability to fully filter the result
+
+## Generate a statement
+
+> - To generate a statement you will have to make a <u>[`POST /company_statements`](../../../api/gateway/company-statements-create)</u>
+> - In the body you will send a `company_statement` object
+> available formats are `csv`, `xlsx`
+> - To filter the payment you have a list of query parameters you can pass in the request 
+
+### Qeury parameters
+
+| Name of the query      | Type | Description       |
+| ----------- | ----------- | ------------
+| from        |       Integer   | Filter result set to only include values older or equal to the provided `Unix` timestamp |
+| to   | Integer        |  Filter result set to only include values younger than the provided `Unix` timestamp | 
+| paid_from   | Integer        |  Filter paid result set to only include values older or equal to the provided `Unix` timestamp | 
+| paid_to   | Integer        |  Filter result set to only include values younger than the provided `Unix` timestamp | 
+| updated_from   | Integer        |  Filter result set to only include values younger than the provided `Unix` timestamp | 
+| updated_to   | Integer        |  Filter result set to only include values younger than the provided last modification time `Unix` timestamp | 
+| brand_id   | string($uuid)        |  Filter result set to only include the specified brand UUID(s) | 
+| shop_id   | string($uuid)        |  Filter result set to only include the specified shop UUID(s) | 
+| q   | string($string)        |  Filter result set to only include results including a specified text (search over a ton of text fields) | 
+| products   | string($string)        |  Filter result set to only include results including a specified text in products | 
+| total   | string($float)        |  Filter result set to only include results with a total between min and max value. Must include 2 values, if any - (min, max). | 
+| currency   | string       |  Filter result set to only include specified currency(ies) | 
+| payment_method   | string       |  Filter result set to only include specified payment methods(s) Available values : `mastercard`, `unknown`, `visa` , `mada` | 
+| country   | string($ISO 3166-1 alpha-2)       |  Filter result set to only include specified client country(ies) in ISO 3166-1 alpha-2 format | 
+| status   | string ($string)      |  Filter result set to only include results with a specific status. See Purchase | 
+| product   | string ($string)      |  Filter result set to only include specified products(s), Available values : `bank_payment`, `custom_payment`, `invoice`, `purchase`, `refund`, `subscription` | 
+| status   | string ($string)      |  Filter result set to only include results with a specific status. See Purchase | 
+
+### Sample request 
+
+```json
+{
+  "format": "csv",
+  "timezone": "UTC"
+}
+```
+
+> - In the response you will receive an object , Main fields to look out for here are `id`, `status` and `download_url`
+
+### Sample response 
+
+```json
+{
+  "format": "string",
+  "timezone": "Europe/Oslo",
+  "is_test": true,
+  "company_uid": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "query_string": "string",
+  "status": "string",
+  "download_url": "string",
+  "began_on": 1619740800,
+  "finished_on": 1619740800,
+  "created_on": 1619740800,
+  "updated_on": 1619740800,
+  "type": "string",
+  "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+}
+```
+
+<br></br>  
+
+:::note
+In the first request `status` will be `pending` as the statement is being generated , so you will have to make another request by using the [`id`](#retrieve-a-specific-statement)<br></br>
+
+:::
+
+---
+
+## List all generated statements 
+
+> - To list all generated statements you will have to make a <u>[`GET /company_statements`](../../../api/gateway/company-statements-list)</u>
+> - You will receive an array of all generated statements
+
+---
+
+## Retrieve a specific statement
+
+> - To retreive a statements you will have to make a <u>[`GET /company_statements/{id}`](../../../api/gateway/company-statements-read)</u>
+> - You will pass the `statement_id` as a path parameter
+> - _You will use this action in order to get the `download_url` as mentioned above when you create the statement the `download_url` will be `null`_

@@ -8,3 +8,48 @@ sidebar_label: Authorize payment
 ---
 
 # Authorize a payment
+
+In order to authorize a payment , you will use the same <u>[`POST /purchases/`](../../../api/gateway/purchases-create)</u> however this time you will set the `skip_capture` parameter to `true` <br></br>
+
+## Preauthorization
+This flag can also enable preauthorization capability , allowing you to [save the card](../saving-card/save_card) without a financial transaction.
+
+:::caution
+
+Preauthorization depand on the provider so it might not work <br></br> and require you to use it with a financial transaction
+
+:::
+
+If the customer agrees to store his card for future purchases,<br></br>
+You can recharge him later using the saved card <br></br>
+
+:::note
+Due to the regulation here in Saudi Arabia customer need to be present to enter his <u>CVV</u>
+:::
+---
+## Sample request 
+
+```json
+{
+  "client": {
+    "email": "test@test.com"
+  },
+  "skip_capture":true,
+  "purchase": {
+    "currency":"SAR",
+    "products": [
+      {
+        "name": "test",
+        "price": 100
+      }
+    ]
+  },
+  "brand_id": "65e50e72-6cb5-4b79-a020-697484b5e646"
+}
+```
+In the response you will see the status as `hold` <br></br>
+Make sure to save the <u>_id_</u> as it will be used later to either `captuer` or `release` the transaction.
+
+---
+## Further Request
+> This option requires a [`POST /capture/`](../../../api/gateway/purchases-capture) or [`POST /release/`](../../../api/gateway/purchases-release) later on.

@@ -9,16 +9,17 @@ const darkCodeTheme = require('prism-react-renderer/themes/dracula');
 const config = {
   title: 'Dineropay',
   tagline: 'help you to empower your online business',
-  url: 'https://dineropay.com',
-  baseUrl: '/',
-  onBrokenLinks: 'throw',
+  url: 'https://amerDineropay.github.io',
+  baseUrl: '/documenation-website/',
+  onBrokenLinks: 'ignore',
   onBrokenMarkdownLinks: 'warn',
   favicon: 'img/favicon.ico',
 
   // GitHub pages deployment config.
   // If you aren't using GitHub pages, you don't need these.
-  organizationName: 'dineropay', // Usually your GitHub org/user name.
-  projectName: 'dineropay-dev', // Usually your repo name.
+  organizationName: 'Dinero-Pay-PG', // Usually your GitHub org/user name.
+  projectName: 'documenation-website', // Usually your repo name.
+  deploymentBranch:'staging',
 
   // Even if you don't use internalization, you can use this field to set useful
   // metadata like html lang. For example, if your site is Chinese, you may want
@@ -66,6 +67,8 @@ const config = {
           dinerpayDocs: { // Note: petstore key is treated as the <id> and can be used to specify an API doc instance when using CLI commands
             specPath: "./dineropayOAS3.yaml", // Path to designated spec file
             outputDir: "api/gateway", // Output directory for generated .mdx docs
+            // downloadUrl:
+            //   // "https://raw.githubusercontent.com/PaloAltoNetworks/docusaurus-template-openapi-docs/main/examples/petstore.yaml",
             sidebarOptions: {
               groupPathsBy: "tag",
               categoryLinkSource: "tag",

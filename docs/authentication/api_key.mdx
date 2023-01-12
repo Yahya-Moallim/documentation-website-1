@@ -6,4 +6,27 @@ keyword:
  - api keys
 ---
 
-# API Key
+# API Key 🗝
+
+Authenticate your account when using the API by including your secret API key in the request <br></br>
+You can manage your API keys in the _Dashboard >> Developer section_. Your API keys carry many privileges, so be sure to keep them secret!<br></br>
+
+:::danger
+Do not share your secret API keys in publicly accessible areas such as 
+- GitHub
+- client-side Code
+:::
+
+## Usage
+Your API key will be use as `Bearer` token in the header <br></br>
+`Authorization: Bearer <secret key>`
+
+> API requests without authentication will fail.
+
+## Get the API key
+
+You can optain your API key from the [Dashboard](https://dineropay) <br></br>
+After accessing the _Dashboard_ >> go to _Developer_ >> Keys
+
+
+

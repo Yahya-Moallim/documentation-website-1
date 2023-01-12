@@ -6,3 +6,50 @@ keywords:
  - redirect 
  - prebuilt 
 ---
+
+## Overview
+Usin our Prebuilt Integration is the fastest way to go live <br></br>
+As we are going to handle the payment process instead of you 
+
+## Before start 
+> - Make sure to check [here](../introduction/intro#making-your-first-payment-as-easy-as-following-the-below-steps)<br></br>
+> - It will show you how to get your `API_key` and set up your `brand_id`
+
+---
+
+## Make a purchase request 
+Once you are ready to create a transaction 
+
+> 1. Create a purchase object as json
+> 2. send a `POST` reqeust to `https://gate.dineropay.com/api/v1/purchases/`
+> 3. In the response get the checkout_url
+> 4. Redirect the customer to the checkout_url
+> 5. Receive the response either via webhook or `success_callback`
+
+### sample purchase reqeust 
+```json
+{
+  "client": {
+    "email": "test@test.com"
+  },
+  "purchase": {
+    "products": [
+      {
+        "name": "test",
+        "price": 100
+      }
+    ]
+  },
+  "brand_id": "409eb80e-3782-4b1d-afa8-b779759266a5"
+}
+```
+The above request only contain the mandatory parameters for more info go <u>[here](../../../api/gateway/purchases-create)</u> <br></br>
+
+:::caution
+Always make the API request from your server side to follow best practices
+:::
+
+---
+## Redirect 
+once you receive the `checkout_url` from your `client_side` <br></br>
+You can make `window.location.href = ‘https://gate.dineropay.com/p/20a44469-ee31-403c-9dd0-3ce416ca923b/ ;`

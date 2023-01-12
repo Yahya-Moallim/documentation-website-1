@@ -6,4 +6,27 @@ keywords:
 sidebar_label: Capture payment
 ---
 
-# Capture a payment
+# Capture transaction
+
+
+If you need to capture an authorized payment you will need to <br></br>
+make a [`POST /capture/`](../../../api/gateway/purchases-capture) if this operation takes too long to be processed <br></br>
+you will get a response with status code `200` and a Purchase object having `status = pending_capture` <br></br>
+also you will be notified in webhook , you will get `purchase.pending_capture` event if you suscripe to <u>purchase.capture</u> event
+
+---
+
+## Sample request 
+```json
+{
+    "amount":0
+}
+```
+> You will pass the id from the `authorization` part as a path parameter
+
+You can pass the parameter `amount` in the body if you want to capture a partial amount or leave it as it's optional
+
+If capture fails due to payment processing error, you will receive HTTP response code `400` with error code `purchase_capture_error`<br></br>
+In this case, to get more details about the error, you should perform a [`GET /purchase/`](../.../../api/gateway/purchases-read) request for the Purchase you tried to capture <br></br>
+`transaction_data.attempts[]` array (newest element first) you'll find the corresponding attempt with error code and description in `.error` parameter
+

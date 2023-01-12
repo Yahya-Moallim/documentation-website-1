@@ -1,18 +1,64 @@
 ---
-sidebar_label: Get details of specific payment 
-keyword: 
+sidebar_label: Create payment
+keyword:
  - docs
- - transaction  
-
+ - making payment
+ - e-commerce transaction
+ - online transaction 
 ---
 
-# Get details of specific payment 
+# Create a Payment
 
-To get details of specific transaction you can make a <u>[`GET /purchases`](../../../api/gateway/purchases-read)</u> <br></br>
-You will retrieve all the data related to that transaction.
+## Purchase 
 
+To create a payment that will let the customer pay using credit card , debit card _(mada,etc...)_ <br></br>
+or any saved card or authorized transaction , you will be making a purchase request to `/purchases/` <br></br>
+
+## Requirement to create a purchase reqeust
+
+> You must sign up for a test account [here](https://dineropay.com)
+> Get your API key from the dashboard 
+> Create a [brand_id](/docs/reference)
+
+Getting your API key and your brand_id makes you ready to create an online transaction <br></br>
+Both can be found in your <circle width ='210' text='Developer section'/>in your account
+
+## 
+
+## Make payments
+
+To run payments in your application use <u>[`POST /purchases/`](../../../api/gateway/purchases-create)</u> , request to register payments and receive the checkout link (`checkout_url`). After the payment is processed, gateway will redirect the client back to your website (take note of `success_redirect`, `failure_redirect`).
+
+## Check payment status
+
+You have three options to check payment status
+> 1. Use `success_callback` pramater of [`Purchase`](../../../api/gateway/purchases-create) request object
+> 2. Use `GET` `/purchases/{purchase_id}/` request 
+> 3. Set up a <circle width='110' text ='Webhook'/> using the UI or Webhook API to listen to `purchase.paid` or `purchase.payment_failure` event on your server
 ---
-## Sample response
+## Sample Request 
+
+Below is a sample request body with only the mandatory fileds 
+
+```json
+{
+  "client": {
+    "email": "test@test.com"
+  },
+  "purchase": {
+    "products": [
+      {
+        "name": "test",
+        "price": 100
+      }
+    ]
+  },
+  "brand_id": "409eb80e-3782-4b1d-afa8-b779759266a5"
+}
+```
+---
+## Sample response 
+
 
 ```json
 {
@@ -175,6 +221,7 @@ You will retrieve all the data related to that transaction.
   "order_id": "string"
 }
 ```
+As shown we will send a comprehensive response containing all data that you need. <br></br>
+But what you need to consider the most while creating a purchase request is the `checkout_url`. <br></br>
 
-> - You will pass the id of the transaction part as a path parameter
-
+// need to add schmea table 
