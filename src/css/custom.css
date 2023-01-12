@@ -115,10 +115,10 @@ In this issue community member @ThomasHeartman shared some alternative CSS with 
 Sidebar Method labels 
 */
 
-.api-method{
+.gateway-method{
   display: flex;
 }
-.api-method > .menu__link {
+.gateway-method > .menu__link {
   align-items: center;
   justify-content: start;
   /* padding:.4rem 0; */
@@ -140,7 +140,7 @@ a.menu__link::before{
   align-items: center;
   justify-content:center;
 }
-.api-method > .menu__link::before {
+.gateway-method > .menu__link::before {
   width: 50px;
   height: 20px;
   font-size: 12px;
@@ -198,6 +198,7 @@ a.menu__link::before{
   color: var(--ifm-color-secondary-contrast-foreground);
   border-color: var(--ifm-color-secondary-dark);
 }
+
 /*
 end of APIs styling 
 */

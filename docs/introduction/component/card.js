@@ -1,6 +1,7 @@
 import React from 'react';
 import styles from './styles.module.css';
 import Api from './assets/api.svg'
+import Integration from './assets/integration.svg'
 import Plugin from './assets/plugin.svg'
 
 function Card({text,link,type}) {
@@ -15,7 +16,7 @@ function Card({text,link,type}) {
             type === 'plugin' && <Plugin className={styles.sv}/>
           }
           {
-            type === 'integration' && <Plugin className={styles.sv}/>
+            type === 'integration' && <Integration className={styles.sv}/>
           }
         </a>
       </div>

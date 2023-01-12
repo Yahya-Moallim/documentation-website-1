@@ -9,16 +9,16 @@ const darkCodeTheme = require('prism-react-renderer/themes/dracula');
 const config = {
   title: 'Dineropay',
   tagline: 'help you to empower your online business',
-  url: 'https://amerDineropay.github.io',
-  baseUrl: '/documenation-website/',
-  onBrokenLinks: 'ignore',
+  url: 'https://dineropay.com',
+  baseUrl: '/',
+  onBrokenLinks: 'warn',
   onBrokenMarkdownLinks: 'warn',
   favicon: 'img/favicon.ico',
 
   // GitHub pages deployment config.
   // If you aren't using GitHub pages, you don't need these.
   organizationName: 'Dinero-Pay-PG', // Usually your GitHub org/user name.
-  projectName: 'documenation-website', // Usually your repo name.
+  projectName: 'Documentation-website', // Usually your repo name.
   deploymentBranch:'staging',
 
   // Even if you don't use internalization, you can use this field to set useful
@@ -30,7 +30,13 @@ const config = {
   // },
   themes: ["docusaurus-theme-openapi-docs"],
   plugins:[
-    require.resolve("@cmfcmf/docusaurus-search-local"),
+    [
+      require.resolve("@cmfcmf/docusaurus-search-local"),
+      {
+        indexBlog: false,
+        indexPages: false,
+      }
+    ],
     [
       '@docusaurus/plugin-content-docs',
       {
@@ -67,8 +73,8 @@ const config = {
           dinerpayDocs: { // Note: petstore key is treated as the <id> and can be used to specify an API doc instance when using CLI commands
             specPath: "./dineropayOAS3.yaml", // Path to designated spec file
             outputDir: "api/gateway", // Output directory for generated .mdx docs
-            // downloadUrl:
-            //   // "https://raw.githubusercontent.com/PaloAltoNetworks/docusaurus-template-openapi-docs/main/examples/petstore.yaml",
+            downloadUrl:
+              "https://gate.dineropay.com/api/schema/v1/",
             sidebarOptions: {
               groupPathsBy: "tag",
               categoryLinkSource: "tag",
@@ -83,9 +89,10 @@ const config = {
       'classic',
       /** @type {import('@docusaurus/preset-classic').Options} */
       ({
+        blog:false,
         docs: {
           path: 'docs',
-          routeBasePath: 'docs',
+          routeBasePath: '/',
           sidebarPath: require.resolve('./sidebars.js'),
           breadcrumbs:true,
           showLastUpdateTime: true,
@@ -93,8 +100,6 @@ const config = {
           includeCurrentVersion: true,
           sidebarCollapsed:true,
           sidebarCollapsible:true,
-          editUrl:
-            'https://test.com',
         },
         theme: {
           customCss: require.resolve('./src/css/custom.css'),
@@ -118,8 +123,7 @@ const config = {
         },
         items: [
             {
-              to:'docs/intro/',
-              // docId: 'intro',
+              to:'/',
               position: 'left',
               label: 'Docs',
             },
@@ -133,7 +137,7 @@ const config = {
             label:'API'
           },
           {
-            href: 'https://github.com/facebook/docusaurus',
+            href: 'https://gate.dineropay.com/login?continue=%2F',
             label: 'Dashboard',
             position: 'right',
           },

@@ -8,6 +8,8 @@
   text-align: center;
   position: relative;
   overflow: hidden;
+  border-bottom-left-radius: 20%;
+  border-bottom-right-radius:20%;
 }
 
 @media screen and (max-width: 996px) {
@@ -21,3 +23,11 @@
   align-items: center;
   justify-content: center;
 }
+.buttons:hover .arrow{
+  transform:translateX(10px);
+}
+.arrow{
+  transition: all .5s;
+  display: inline-block;
+}
+

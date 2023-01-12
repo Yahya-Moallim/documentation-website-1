@@ -11,6 +11,7 @@
     -moz-box-shadow: 26px 5px 81px -23px rgba(0,0,0,0.82);
     box-shadow: 26px 5px 81px -23px rgba(0,0,0,0.82);
     cursor: pointer;
+    transition:all .5s;
 }
 .a{
     display: flex;
@@ -32,4 +33,8 @@
     border:1px solid white;
     background-color: white;
     margin-bottom: .9rem;
+}
+
+.ca:hover{
+    transform:scale(1.1);
 }

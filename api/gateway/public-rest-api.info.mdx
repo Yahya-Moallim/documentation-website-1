@@ -1,5 +1,5 @@
 ---
-id: public-rest-api
+id: public-rest-gateway
 title: "Public REST API"
 description: "All the endpoints below have a prefix of `https://gate.dineropay.com/api/v1/` (e.g. `POST https://gate.dineropay.com/api/v1/purchases/`)."
 sidebar_label: Introduction
@@ -13,16 +13,15 @@ import Tabs from "@theme/Tabs";
 import TabItem from "@theme/TabItem";
 import Export from "@theme/ApiDemoPanel/Export";
 
-
+<span className={"theme-doc-version-badge badge badge--secondary"}>Version: v1</span>
 
 # Public REST API
 
 
 
-All the endpoints below have a prefix of `https://gate.dineropay.com/api/v1/` <br></br>
-(e.g. `POST https://gate.dineropay.com/api/v1/purchases/`).
+All the endpoints below have a prefix of `https://gate.dineropay.com/api/v1/` (e.g. `POST https://gate.dineropay.com/api/v1/purchases/`).
 
-You will need your API key that you can obtain in the Developers section in your account. Please use this key as a bearer token in the Authorization header included in every request: `Authorization: Bearer {{secret key}}`.
+You will need your API key that you can obtain in the Developers section in your account. Please use this key as a bearer token in the Authorization header included in every request: `Authorization: Bearer &lt;secret key>`.
 
 Before starting the development, we recommend checking out the list of ready-to-go connectors to the popular platforms we’ve already built for you. It might save you some precious time if you use one of these to develop your project.
 
