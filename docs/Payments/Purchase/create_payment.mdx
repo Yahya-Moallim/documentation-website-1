@@ -1,226 +1,232 @@
 ---
 sidebar_label: Create payment
 keyword:
- - docs
- - making payment
- - e-commerce transaction
- - online transaction 
+  - docs
+  - making payment
+  - e-commerce transaction
+  - online transaction
 ---
 
 # Create a Payment
 
-## Purchase 
+## Purchase
 
-To create a payment that will let the customer pay using credit card , debit card _(mada,etc...)_ <br></br>
-or any saved card or authorized transaction , you will be making a purchase request to `/purchases/` <br></br>
+To create a payment that will let the customer pay using credit card , debit card _(mada,etc...)_ , applepay, stcpay, <br></br>
+or any saved card or authorized transaction , you will be making a purchase request to [`/purchases/`](../../api/gateway/purchases-create) <br></br>
 
 ## Requirement to create a purchase reqeust
 
 > You must sign up for a test account [here](https://gate.dineropay.com/login?continue=%2F)
-> Get your API key from the dashboard 
+> Get your API key from the <u>dashboard >> devloper >> API key</u> <br></br>
 > Create a `brand_id`
 
 Getting your API key and your brand_id makes you ready to create an online transaction <br></br>
-Both can be found in your <circle width ='210' text='Developer section'/>in your account
-
-## 
+Both can be found in the <circle width ='210' text='Developer section'/>in your account
 
 ## Make payments
 
 To run payments in your application use <u>[`POST /purchases/`](../../../api/gateway/purchases-create)</u> , request to register payments and receive the checkout link (`checkout_url`). After the payment is processed, gateway will redirect the client back to your website (take note of `success_redirect`, `failure_redirect`).
 
+## Handle tokenization
+
+In the checkout page there is an option for the customer if he want to save his card ,
+so in case if you want to handle this case if the customer agree to save his card <br></br>
+
+> In the the response body you will look for a parameter called `is_recurring_token` if it is set to `true` that's mean the customer choose to save his card,
+> so you can treat the <u>**_id_**</u> of that transaction as a recurring token and save that as card for your customer <br></br>
+
+to learn more about **tokenization** check [_saving the card_](../../saving-cards)
+
 ## Check payment status
 
 You have three options to check payment status
+
 > 1. Use `success_callback` pramater of [`Purchase`](../../../api/gateway/purchases-create) request object
-> 2. Use `GET` `/purchases/{purchase_id}/` request 
+> 2. Use `GET` `/purchases/{purchase_id}/` request
 > 3. Set up a <circle width='110' text ='Webhook'/> using the UI or Webhook API to listen to `purchase.paid` or `purchase.payment_failure` event on your server
----
-## Sample Request 
 
-Below is a sample request body with only the mandatory fileds 
+---
+
+## Sample Request
+
+Below is a sample request body with only the mandatory fileds
 
 ```json
 {
-  "client": {
-    "email": "test@test.com"
-  },
-  "purchase": {
-    "products": [
-      {
-        "name": "test",
-        "price": 100
-      }
-    ]
-  },
-  "brand_id": "409eb80e-3782-4b1d-afa8-b779759266a5"
+	"client": {
+		"email": "test@test.com"
+	},
+	"purchase": {
+		"products": [
+			{
+				"name": "test",
+				"price": 100
+			}
+		]
+	},
+	"brand_id": "409eb80e-3782-4b1d-afa8-b779759266a5"
 }
 ```
----
-## Sample response 
 
+---
+
+## Sample response
 
 ```json
 {
-  "type": "string",
-  "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-  "created_on": 1619740800,
-  "updated_on": 1619740800,
-  "client": {
-    "bank_account": "string",
-    "bank_code": "string",
-    "email": "user@example.com",
-    "phone": "+966 xxxxxxxxx",
-    "full_name": "string",
-    "personal_code": "string",
-    "street_address": "string",
-    "country": "SA",
-    "city": "string",
-    "zip_code": "string",
-    "state": "st",
-    "shipping_street_address": "string",
-    "shipping_country": "SA",
-    "shipping_city": "string",
-    "shipping_zip_code": "string",
-    "shipping_state": "st",
-    "cc": [
-      "user@example.com"
-    ],
-    "bcc": [
-      "user@example.com"
-    ],
-    "legal_name": "string",
-    "brand_name": "string",
-    "registration_number": "string",
-    "tax_number": "string"
-  },
-  "purchase": {
-    "currency": "str",
-    "products": [
-      {
-        "name": "string",
-        "quantity": "1",
-        "price": 0,
-        "discount": 0,
-        "tax_percent": "0",
-        "category": "string"
-      }
-    ],
-    "total": 0,
-    "language": "Default value is controlled in Company -> Brand section of merchant portal separately per each Brand used (default value, if no changes are made, is `en`). Brand to be used with corresponding Purchase/BillingTemplate specified using brand_id.",
-    "notes": "string",
-    "debt": 0,
-    "subtotal_override": null,
-    "total_tax_override": null,
-    "total_discount_override": null,
-    "total_override": null,
-    "request_client_details": [],
-    "timezone": "Europe/Oslo",
-    "due_strict": false,
-    "email_message": "string"
-  },
-  "payment": {
-    "is_outgoing": false,
-    "payment_type": "purchase",
-    "amount": 0,
-    "currency": "str",
-    "net_amount": 0,
-    "fee_amount": 0,
-    "pending_amount": 0,
-    "pending_unfreeze_on": 1619740800,
-    "description": "string",
-    "paid_on": 1619740800,
-    "remote_paid_on": 1619740800
-  },
-  "issuer_details": {
-    "website": "string",
-    "legal_street_address": "string",
-    "legal_country": "st",
-    "legal_city": "string",
-    "legal_zip_code": "string",
-    "bank_accounts": [
-      {
-        "bank_account": "string",
-        "bank_code": "string"
-      }
-    ],
-    "legal_name": "string",
-    "brand_name": "string",
-    "registration_number": "string",
-    "tax_number": "string"
-  },
-  "transaction_data": {
-    "payment_method": "string",
-    "extra": {},
-    "country": "string",
-    "attempts": [
-      {
-        "type": "execute",
-        "successful": true,
-        "payment_method": "string",
-        "extra": {},
-        "country": "string",
-        "client_ip": "string",
-        "processing_time": 1619740800,
-        "error": {
-          "code": "string",
-          "message": "string"
-        }
-      }
-    ]
-  },
-  "status": "created",
-  "status_history": [
-    {
-      "status": "created",
-      "timestamp": 1619740800,
-      "related_object": {
-        "type": "string",
-        "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
-      }
-    }
-  ],
-  "viewed_on": 1619740800,
-  "company_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-  "is_test": true,
-  "user_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-  "brand_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-  "billing_template_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-  "client_id": null,
-  "send_receipt": false,
-  "is_recurring_token": true,
-  "recurring_token": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-  "skip_capture": false,
-  "force_recurring": false,
-  "reference_generated": "string",
-  "reference": "string",
-  "issued": "2020-04-30",
-  "due": 1619740800,
-  "refund_availability": "all",
-  "refundable_amount": 0,
-  "currency_conversion": {
-    "original_currency": "string",
-    "original_amount": 0,
-    "exchange_rate": 0
-  },
-  "payment_method_whitelist": [
-    "string"
-  ],
-  "success_redirect": "string",
-  "failure_redirect": "string",
-  "cancel_redirect": "string",
-  "success_callback": "string",
-  "creator_agent": "string",
-  "platform": "web",
-  "product": "purchases",
-  "created_from_ip": "string",
-  "invoice_url": "string",
-  "checkout_url": "string",
-  "direct_post_url": "string",
-  "marked_as_paid": true,
-  "order_id": "string"
+	"type": "string",
+	"id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+	"created_on": 1619740800,
+	"updated_on": 1619740800,
+	"client": {
+		"bank_account": "string",
+		"bank_code": "string",
+		"email": "user@example.com",
+		"phone": "+966 xxxxxxxxx",
+		"full_name": "string",
+		"personal_code": "string",
+		"street_address": "string",
+		"country": "SA",
+		"city": "string",
+		"zip_code": "string",
+		"state": "st",
+		"shipping_street_address": "string",
+		"shipping_country": "SA",
+		"shipping_city": "string",
+		"shipping_zip_code": "string",
+		"shipping_state": "st",
+		"cc": ["user@example.com"],
+		"bcc": ["user@example.com"],
+		"legal_name": "string",
+		"brand_name": "string",
+		"registration_number": "string",
+		"tax_number": "string"
+	},
+	"purchase": {
+		"currency": "str",
+		"products": [
+			{
+				"name": "string",
+				"quantity": "1",
+				"price": 0,
+				"discount": 0,
+				"tax_percent": "0",
+				"category": "string"
+			}
+		],
+		"total": 0,
+		"language": "Default value is controlled in Company -> Brand section of merchant portal separately per each Brand used (default value, if no changes are made, is `en`). Brand to be used with corresponding Purchase/BillingTemplate specified using brand_id.",
+		"notes": "string",
+		"debt": 0,
+		"subtotal_override": null,
+		"total_tax_override": null,
+		"total_discount_override": null,
+		"total_override": null,
+		"request_client_details": [],
+		"timezone": "Europe/Oslo",
+		"due_strict": false,
+		"email_message": "string"
+	},
+	"payment": {
+		"is_outgoing": false,
+		"payment_type": "purchase",
+		"amount": 0,
+		"currency": "str",
+		"net_amount": 0,
+		"fee_amount": 0,
+		"pending_amount": 0,
+		"pending_unfreeze_on": 1619740800,
+		"description": "string",
+		"paid_on": 1619740800,
+		"remote_paid_on": 1619740800
+	},
+	"issuer_details": {
+		"website": "string",
+		"legal_street_address": "string",
+		"legal_country": "st",
+		"legal_city": "string",
+		"legal_zip_code": "string",
+		"bank_accounts": [
+			{
+				"bank_account": "string",
+				"bank_code": "string"
+			}
+		],
+		"legal_name": "string",
+		"brand_name": "string",
+		"registration_number": "string",
+		"tax_number": "string"
+	},
+	"transaction_data": {
+		"payment_method": "string",
+		"extra": {},
+		"country": "string",
+		"attempts": [
+			{
+				"type": "execute",
+				"successful": true,
+				"payment_method": "string",
+				"extra": {},
+				"country": "string",
+				"client_ip": "string",
+				"processing_time": 1619740800,
+				"error": {
+					"code": "string",
+					"message": "string"
+				}
+			}
+		]
+	},
+	"status": "created",
+	"status_history": [
+		{
+			"status": "created",
+			"timestamp": 1619740800,
+			"related_object": {
+				"type": "string",
+				"id": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+			}
+		}
+	],
+	"viewed_on": 1619740800,
+	"company_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+	"is_test": true,
+	"user_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+	"brand_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+	"billing_template_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+	"client_id": null,
+	"send_receipt": false,
+	"is_recurring_token": true,
+	"recurring_token": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+	"skip_capture": false,
+	"force_recurring": false,
+	"reference_generated": "string",
+	"reference": "string",
+	"issued": "2020-04-30",
+	"due": 1619740800,
+	"refund_availability": "all",
+	"refundable_amount": 0,
+	"currency_conversion": {
+		"original_currency": "string",
+		"original_amount": 0,
+		"exchange_rate": 0
+	},
+	"payment_method_whitelist": ["string"],
+	"success_redirect": "string",
+	"failure_redirect": "string",
+	"cancel_redirect": "string",
+	"success_callback": "string",
+	"creator_agent": "string",
+	"platform": "web",
+	"product": "purchases",
+	"created_from_ip": "string",
+	"invoice_url": "string",
+	"checkout_url": "string",
+	"direct_post_url": "string",
+	"marked_as_paid": true,
+	"order_id": "string"
 }
 ```
+
 As shown we will send a comprehensive response containing all data that you need. <br></br>
-But what you need to consider the most while creating a purchase request is the `checkout_url`. <br></br>
-
+But what you need to consider the most is while creating a purchase request is the `checkout_url`. <br></br>

@@ -31,7 +31,7 @@ export default function Home() {
   return (
     <Layout
       title={`Documentation site of ${siteConfig.title}`}
-      description="Accept payment easily with dineropay">
+      description="Accept payment easily with Dinero Pay">
       <HomepageHeader />
       <main>
         <HomepageFeatures />

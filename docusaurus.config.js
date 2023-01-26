@@ -7,7 +7,7 @@ const darkCodeTheme = require('prism-react-renderer/themes/dracula');
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
-  title: 'Dineropay',
+  title: 'Dinero Pay',
   tagline: 'help you to empower your online business',
   url: 'https://dineropay.com',
   baseUrl: '/',
@@ -148,11 +148,11 @@ const config = {
         links: [
               {
                 html:` <a href="https://dineropay.com" target="_blank" rel="noreferrer noopener">
-                <img src="https://cdn.jsdelivr.net/gh/Dinero-Pay-PG/documenation-website@main/static/img/dineropayS.svg" alt="Find more about dineropay" width="114" height="51" />
+                <img src="https://cdn.jsdelivr.net/gh/Dinero-Pay-PG/documenation-website@main/static/img/dineropayS.svg" alt="Find more about Dinero Pay" width="114" height="51" />
               </a>`
               }
         ],
-        copyright: `Copyright © ${new Date().getFullYear()} Dineropay, Inc. Built for the developer.`,
+        copyright: `Copyright © ${new Date().getFullYear()} Dinero Pay, Inc. Built with ❤️ for the developers.`,
       },
       prism: {
         theme: lightCodeTheme,
