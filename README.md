@@ -10,5 +10,5 @@
 
 ## TODO LIST
 
-- [] adding some reference screenshots to help delevering the information.
-- []
+- [ ] adding some reference screenshots to help delevering the information.
+- [ ]
