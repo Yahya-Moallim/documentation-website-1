@@ -23,6 +23,72 @@
 						"application/json": {
 							"schema": {
 								"$ref": "#/components/schemas/Authentication_ob"
+							},
+							"examples": {
+								"create a payment with a token": {
+									"summary": "initiate a payment with a saved card",
+									"value": {
+										"merchant_key": "1c568e26-c997-11e9-8be4-0242ac12000f",
+										"operation": "purchase",
+										"methods": ["card", "stcpay"],
+										"order": {
+											"number": "{{order_number}}",
+											"amount": "{{order_amount}}",
+											"currency": "{{order_currency}}",
+											"description": "{{order_description}}"
+										},
+										"cancel_url": "https://example.com/cancel",
+										"success_url": "https://example.com/success",
+										"customer": {
+											"name": "John Doe",
+											"email": "success@gmail.com"
+										},
+										"billing_address": {
+											"country": "SA",
+											"state": "Central",
+											"city": "Riyadh",
+											"address": "Ghernatah",
+											"zip": "94538",
+											"phone": "966xxxxxxxx"
+										},
+										"card_token": [
+											"f5d6a0ab6fcfb6487a39e2256e50fff3c95aaa97075ee5e539bb662fceff4dc1"
+										],
+										"req_token": true,
+										"hash": "{{session_hash}}"
+									}
+								},
+								"create a scheduled payment ": {
+									"summary": "create a payment for later",
+									"value": {
+										"merchant_key": "xxxxx-xxxxx-xxxxx",
+										"operation": "purchase",
+										"methods": ["card"],
+										"order": {
+											"number": "order-1234",
+											"amount": "1.00",
+											"currency": "SAR",
+											"description": "Important gift"
+										},
+										"cancel_url": "https://example.com/cancel",
+										"success_url": "https://example.com/success",
+										"customer": {
+											"name": "John Doe",
+											"email": "test@gmail.com"
+										},
+										"billing_address": {
+											"country": "SA",
+											"state": "Central",
+											"city": "Riyadh",
+											"address": "Ghernatah",
+											"zip": "123456",
+											"phone": "966xxxxxxxx"
+										},
+										"recurring_init": true,
+										"schedule_id": "57fddecf-17b9-4d38-9320-a670f0c29ec0",
+										"hash": "{{session_hash}}"
+									}
+								}
 							}
 						}
 					}
@@ -52,7 +118,7 @@
 									"merchant_key": "xxxxx-xxxxx-xxxxx",
 									"order": {
 										"number": "order-1234",
-										"amount": "0.19",
+										"amount": "1.00",
 										"description": "gift"
 									},
 									"recurring_init_trans_id": "dc66cdd8-d702-11ea-9a2f-0242c0a87002",
@@ -65,7 +131,7 @@
 				},
 				"responses": {
 					"200": {
-						"$ref": "#/components/responses/Token_charged:200"
+						"$ref": "#/components/responses/token_res--ob"
 					},
 					"400": {
 						"$ref": "#/components/responses/400"
@@ -75,155 +141,53 @@
 		},
 		"/api/v1/payment/status": {
 			"post": {
-				"tags": ["default"],
-				"summary": "GET_TRANS_STATUS request",
+				"tags": ["Status"],
+				"summary": "Get Transaction Status",
+				"operationId": "Check Transaction Status",
 				"requestBody": {
 					"content": {
-						"*/*": {
+						"application/json": {
 							"schema": {
-								"type": "string",
-								"example": "\"{  \\n   \\\"merchant_key\\\":\\\"xxxxx-xxxxx-xxxxx\\\",\\n   \\\"payment_id\\\":\\\"63c781cc-de3d-11eb-a1f1-0242ac130006\\\",\\n   \\\"hash\\\":\\\"{{operation_hash}}\\\"\\n}\\n\""
+								"type": "object",
+								"required": ["merchant_key", "payment_id", "hash"],
+								"properties": {
+									"merchant_key": {
+										"description": "Key for Merchant identification",
+										"type": "string",
+										"format": "uuid",
+										"example": " xxxxx-xxxxx-xxxxx"
+									},
+									"payment_id": {
+										"type": "string",
+										"maxLength": 255,
+										"format": "uuid",
+										"example": "dc66cdd8-d702-11ea-9a2f-0242c0a87002",
+										"description": "Payment ID (public)"
+									},
+									"hash": {
+										"type": "string",
+										"description": "Special signature to validate your request to Payment Platform Addition in Signature section \n Must be SHA1 of MD5 encoded string"
+									}
+								}
 							}
 						}
 					}
 				},
 				"responses": {
 					"200": {
-						"description": "OK",
-						"headers": {
-							"Server": {
-								"schema": {
-									"type": "string",
-									"example": "nginx"
-								}
-							},
-							"Date": {
-								"schema": {
-									"type": "string",
-									"example": "Tue, 06 Jul 2021 10:05:53 GMT"
-								}
-							},
-							"Content-Type": {
-								"schema": {
-									"type": "string",
-									"example": "application/json"
-								}
-							},
-							"Transfer-Encoding": {
-								"schema": {
-									"type": "string",
-									"example": "chunked"
-								}
-							},
-							"Connection": {
-								"schema": {
-									"type": "string",
-									"example": "keep-alive"
-								}
-							},
-							"X-Powered-By": {
-								"schema": {
-									"type": "string",
-									"example": "PHP/7.4.10"
-								}
-							},
-							"Cache-Control": {
-								"schema": {
-									"type": "string",
-									"example": "private, must-revalidate"
-								}
-							},
-							"pragma": {
-								"schema": {
-									"type": "string",
-									"example": "no-cache"
-								}
-							},
-							"expires": {
-								"schema": {
-									"type": "number",
-									"example": "-1"
-								}
-							},
-							"X-Content-Type-Options": {
-								"schema": {
-									"type": "string",
-									"example": "nosniff"
-								}
-							},
-							"X-XSS-Protection": {
-								"schema": {
-									"type": "string",
-									"example": "1; mode=block"
-								}
-							},
-							"Strict-Transport-Security": {
-								"schema": {
-									"type": "string",
-									"example": "max-age=31536000"
-								}
-							},
-							"Content-Security-Policy": {
-								"schema": {
-									"type": "string",
-									"example": "default-src 'self' 'unsafe-inline' 'unsafe-eval' data: https://*.google-analytics.com https://*.googleapis.com https://*.gstatic.com http://www.w3.org https://*.rafinita.com"
-								}
-							}
-						},
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "object"
-								},
-								"examples": {
-									"example-0": {
-										"summary": "GET_TRANS_STATUS request (settled)",
-										"value": {
-											"payment_id": "63c781cc-de3d-11eb-a1f1-0242ac130006",
-											"date": "2021-07-06 09:34:41",
-											"status": "settled",
-											"order": {
-												"number": "order-1234",
-												"amount": "0.19",
-												"currency": "USD",
-												"description": "Important gift"
-											},
-											"customer": {
-												"name": "John Doe",
-												"email": "test@mail.com"
-											}
-										}
-									},
-									"example-1": {
-										"summary": "GET_TRANS_STATUS request (declined)",
-										"value": {
-											"payment_id": "03e46e96-de42-11eb-aea7-0242ac140002",
-											"date": "2021-07-06 10:07:47",
-											"status": "decline",
-											"reason": "Declined by processing",
-											"order": {
-												"number": "order-1234",
-												"amount": "0.19",
-												"currency": "USD",
-												"description": "Important gift"
-											},
-											"customer": {
-												"name": "John Doe",
-												"email": "test@mail.com"
-											}
-										}
-									}
-								}
-							}
-						}
+						"$ref": "#/components/responses/status_res--ob"
+					},
+					"400": {
+						"$ref": "#/components/responses/400"
 					}
 				}
 			}
 		},
 		"/api/v1/payment/refund": {
 			"post": {
-				"tags": ["default"],
+				"tags": ["Refund"],
 				"summary": "Refund request",
+				"operationId": "Refund",
 				"requestBody": {
 					"content": {
 						"application/json": {
@@ -393,7 +357,8 @@
 					"merchant_key": {
 						"description": "Key for Merchant identification",
 						"type": "string",
-						"format": "uuid"
+						"format": "uuid",
+						"example": " xxxxx-xxxxx-xxxxx"
 					},
 					"operation": {
 						"type": "string",
@@ -655,7 +620,111 @@
 					}
 				}
 			},
-			"Token_charged:200": {
+			"status_res--ob": {
+				"description": "OK",
+				"content": {
+					"application/json": {
+						"schema": {
+							"type": "object",
+							"required": ["status", "date", "payment_id", "order", "customer"],
+							"description": "the response will show if the saved card has been successfully charged or not ",
+							"properties": {
+								"status": {
+									"type": "string",
+									"enum": [
+										"prepare",
+										"settled",
+										"pending",
+										"3ds",
+										"redirect",
+										"decline",
+										"refund",
+										"reversal",
+										"chargeback"
+									],
+									"description": "Payment status",
+									"readOnly": true,
+									"example": "settled"
+								},
+								"payment_id": {
+									"type": "string",
+									"readOnly": true,
+									"maxLenght": 255,
+									"format": "uuid",
+									"description": "Transaction ID (public)",
+									"example": "dc66cdd8-d702-11ea-9a2f-0242c0a87002"
+								},
+								"reason": {
+									"type": "string",
+									"description": "Decline reason translation for unsuccessful payment. \n It displays only if the transaction is unsuccessful",
+									"readOnly": true,
+									"example": "The operation was rejected. Please contact the site support"
+								},
+								"date": {
+									"type": "strig",
+									"format": "ISO 8601",
+									"description": "Transaction date",
+									"example": "2020-08-05"
+								},
+								"order": {
+									"allOf": [
+										{
+											"$ref": "#/components/schemas/Order_ob"
+										}
+									]
+								},
+								"customer": {
+									"allOf": [
+										{
+											"$ref": "#/components/schemas/Customer_ob"
+										}
+									]
+								}
+							}
+						},
+						"examples": {
+							"success": {
+								"summary": "settled",
+								"value": {
+									"payment_id": "24f7401c-fc47-11ec-8d07-0242ac120015",
+									"date": "2022-07-05 09:45:03",
+									"status": "settled",
+									"order": {
+										"number": "f0a51dfa-fc43-11ec-8128-0242ac120004-1",
+										"amount": "3.01",
+										"currency": "SAR",
+										"description": "bloodline"
+									},
+									"customer": {
+										"name": "John Doe",
+										"email": "success@gmail.com"
+									}
+								}
+							},
+							"rejected": {
+								"summary": "declined",
+								"value": {
+									"payment_id": "03e46e96-de42-11eb-aea7-0242ac140002",
+									"date": "2021-07-06 10:07:47",
+									"status": "decline",
+									"reason": "Declined by processing",
+									"order": {
+										"number": "order-1234",
+										"amount": "1.00",
+										"currency": "SAR",
+										"description": "Important gift"
+									},
+									"customer": {
+										"name": "John Doe",
+										"email": "test@mail.com"
+									}
+								}
+							}
+						}
+					}
+				}
+			},
+			"token_res--ob": {
 				"description": "OK",
 				"content": {
 					"application/json": {
@@ -666,10 +735,10 @@
 							"properties": {
 								"status": {
 									"type": "string",
-									"enum": ["SETTLED", "PENDING", "DECLINE"],
+									"enum": ["settled", "pending", "declined"],
 									"description": "Payment status",
 									"readOnly": true,
-									"example": "SETTLED"
+									"example": "settled"
 								},
 								"payment_id": {
 									"type": "string",
@@ -715,9 +784,9 @@
 									"date": "2020-08-05 07:41:10",
 									"order": {
 										"number": "order-1234",
-										"amount": "0.19",
-										"currency": "USD",
-										"description": "very important gift"
+										"amount": "1.00",
+										"currency": "SAR",
+										"description": "gift"
 									}
 								}
 							},
@@ -730,9 +799,9 @@
 									"date": "2020-08-05 07:41:10",
 									"order": {
 										"number": "order-1234",
-										"amount": "0.19",
-										"currency": "USD",
-										"description": "very important gift"
+										"amount": "1.00",
+										"currency": "SAR",
+										"description": "gift"
 									}
 								}
 							}
