@@ -72,7 +72,7 @@ const config = {
 				config: {
 					dinerpayDocs: {
 						// Note: petstore key is treated as the <id> and can be used to specify an API doc instance when using CLI commands
-						specPath: "/Users/amer/postman-to-openapi/result.json", // Path to designated spec file
+						specPath: "./dineropay.openAPI.json", // Path to designated spec file
 						outputDir: "api/gateway", // Output directory for generated .mdx docs
 						sidebarOptions: {
 							groupPathsBy: "tag",

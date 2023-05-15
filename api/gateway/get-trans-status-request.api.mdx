@@ -5,170 +5,7 @@ description: "GET_TRANS_STATUS request"
 sidebar_label: "GET_TRANS_STATUS request"
 hide_title: true
 hide_table_of_contents: true
-api:
-  {
-    "tags": ["default"],
-    "requestBody":
-      {
-        "content":
-          {
-            "*/*":
-              {
-                "schema":
-                  {
-                    "type": "string",
-                    "example": "\"{  \\n   \\\"merchant_key\\\":\\\"xxxxx-xxxxx-xxxxx\\\",\\n   \\\"payment_id\\\":\\\"63c781cc-de3d-11eb-a1f1-0242ac130006\\\",\\n   \\\"hash\\\":\\\"{{operation_hash}}\\\"\\n}\\n\"",
-                  },
-              },
-          },
-      },
-    "responses":
-      {
-        "200":
-          {
-            "description": "OK",
-            "headers":
-              {
-                "Server":
-                  { "schema": { "type": "string", "example": "nginx" } },
-                "Date":
-                  {
-                    "schema":
-                      {
-                        "type": "string",
-                        "example": "Tue, 06 Jul 2021 10:05:53 GMT",
-                      },
-                  },
-                "Content-Type":
-                  {
-                    "schema":
-                      { "type": "string", "example": "application/json" },
-                  },
-                "Transfer-Encoding":
-                  { "schema": { "type": "string", "example": "chunked" } },
-                "Connection":
-                  { "schema": { "type": "string", "example": "keep-alive" } },
-                "X-Powered-By":
-                  { "schema": { "type": "string", "example": "PHP/7.4.10" } },
-                "Cache-Control":
-                  {
-                    "schema":
-                      {
-                        "type": "string",
-                        "example": "private, must-revalidate",
-                      },
-                  },
-                "pragma":
-                  { "schema": { "type": "string", "example": "no-cache" } },
-                "expires": { "schema": { "type": "number", "example": "-1" } },
-                "X-Content-Type-Options":
-                  { "schema": { "type": "string", "example": "nosniff" } },
-                "X-XSS-Protection":
-                  {
-                    "schema": { "type": "string", "example": "1; mode=block" },
-                  },
-                "Strict-Transport-Security":
-                  {
-                    "schema":
-                      { "type": "string", "example": "max-age=31536000" },
-                  },
-                "Content-Security-Policy":
-                  {
-                    "schema":
-                      {
-                        "type": "string",
-                        "example": "default-src 'self' 'unsafe-inline' 'unsafe-eval' data: https://*.google-analytics.com https://*.googleapis.com https://*.gstatic.com http://www.w3.org https://*.rafinita.com",
-                      },
-                  },
-              },
-            "content":
-              {
-                "application/json":
-                  {
-                    "schema": { "type": "object" },
-                    "examples":
-                      {
-                        "example-0":
-                          {
-                            "summary": "GET_TRANS_STATUS request (settled)",
-                            "value":
-                              {
-                                "payment_id": "63c781cc-de3d-11eb-a1f1-0242ac130006",
-                                "date": "2021-07-06 09:34:41",
-                                "status": "settled",
-                                "order":
-                                  {
-                                    "number": "order-1234",
-                                    "amount": "0.19",
-                                    "currency": "USD",
-                                    "description": "Important gift",
-                                  },
-                                "customer":
-                                  {
-                                    "name": "John Doe",
-                                    "email": "test@mail.com",
-                                  },
-                              },
-                          },
-                        "example-1":
-                          {
-                            "summary": "GET_TRANS_STATUS request (declined)",
-                            "value":
-                              {
-                                "payment_id": "03e46e96-de42-11eb-aea7-0242ac140002",
-                                "date": "2021-07-06 10:07:47",
-                                "status": "decline",
-                                "reason": "Declined by processing",
-                                "order":
-                                  {
-                                    "number": "order-1234",
-                                    "amount": "0.19",
-                                    "currency": "USD",
-                                    "description": "Important gift",
-                                  },
-                                "customer":
-                                  {
-                                    "name": "John Doe",
-                                    "email": "test@mail.com",
-                                  },
-                              },
-                          },
-                      },
-                  },
-              },
-          },
-      },
-    "description": "GET_TRANS_STATUS request",
-    "method": "post",
-    "path": "/api/v1/payment/status",
-    "servers":
-      [{ "url": "https://checkout.dineropay.com", "description": "End point" }],
-    "info":
-      {
-        "title": "Public REST API",
-        "description": "this is a test description will be replaced later with an actual meanning",
-        "version": "v5",
-      },
-    "postman":
-      {
-        "name": "GET_TRANS_STATUS request",
-        "description": { "type": "text/plain" },
-        "url":
-          {
-            "path": ["api", "v1", "payment", "status"],
-            "host": ["{{baseUrl}}"],
-            "query": [],
-            "variable": [],
-          },
-        "header":
-          [
-            { "key": "Content-Type", "value": "*/*" },
-            { "key": "Accept", "value": "application/json" },
-          ],
-        "method": "POST",
-        "body": { "mode": "raw", "raw": '""' },
-      },
-  }
+api: {"tags":["default"],"requestBody":{"content":{"*/*":{"schema":{"type":"string","example":"\"{  \\n   \\\"merchant_key\\\":\\\"xxxxx-xxxxx-xxxxx\\\",\\n   \\\"payment_id\\\":\\\"63c781cc-de3d-11eb-a1f1-0242ac130006\\\",\\n   \\\"hash\\\":\\\"{{operation_hash}}\\\"\\n}\\n\""}}}},"responses":{"200":{"description":"OK","headers":{"Server":{"schema":{"type":"string","example":"nginx"}},"Date":{"schema":{"type":"string","example":"Tue, 06 Jul 2021 10:05:53 GMT"}},"Content-Type":{"schema":{"type":"string","example":"application/json"}},"Transfer-Encoding":{"schema":{"type":"string","example":"chunked"}},"Connection":{"schema":{"type":"string","example":"keep-alive"}},"X-Powered-By":{"schema":{"type":"string","example":"PHP/7.4.10"}},"Cache-Control":{"schema":{"type":"string","example":"private, must-revalidate"}},"pragma":{"schema":{"type":"string","example":"no-cache"}},"expires":{"schema":{"type":"number","example":"-1"}},"X-Content-Type-Options":{"schema":{"type":"string","example":"nosniff"}},"X-XSS-Protection":{"schema":{"type":"string","example":"1; mode=block"}},"Strict-Transport-Security":{"schema":{"type":"string","example":"max-age=31536000"}},"Content-Security-Policy":{"schema":{"type":"string","example":"default-src 'self' 'unsafe-inline' 'unsafe-eval' data: https://*.google-analytics.com https://*.googleapis.com https://*.gstatic.com http://www.w3.org https://*.rafinita.com"}}},"content":{"application/json":{"schema":{"type":"object"},"examples":{"example-0":{"summary":"GET_TRANS_STATUS request (settled)","value":{"payment_id":"63c781cc-de3d-11eb-a1f1-0242ac130006","date":"2021-07-06 09:34:41","status":"settled","order":{"number":"order-1234","amount":"0.19","currency":"USD","description":"Important gift"},"customer":{"name":"John Doe","email":"test@mail.com"}}},"example-1":{"summary":"GET_TRANS_STATUS request (declined)","value":{"payment_id":"03e46e96-de42-11eb-aea7-0242ac140002","date":"2021-07-06 10:07:47","status":"decline","reason":"Declined by processing","order":{"number":"order-1234","amount":"0.19","currency":"USD","description":"Important gift"},"customer":{"name":"John Doe","email":"test@mail.com"}}}}}}}},"description":"GET_TRANS_STATUS request","method":"post","path":"/api/v1/payment/status","servers":[{"url":"https://checkout.dineropay.com","description":"End point"}],"info":{"title":"Public REST API","description":"this is a test description will be replaced later with an actual meanning","version":"v5"},"postman":{"name":"GET_TRANS_STATUS request","description":{"type":"text/plain"},"url":{"path":["api","v1","payment","status"],"host":["{{baseUrl}}"],"query":[],"variable":[]},"header":[{"key":"Content-Type","value":"*/*"},{"key":"Accept","value":"application/json"}],"method":"POST","body":{"mode":"raw","raw":"\"\""}}}
 sidebar_class_name: "post api-method"
 info_path: api/gateway/public-rest-api
 custom_edit_url: null
@@ -185,6 +22,8 @@ import TabItem from "@theme/TabItem";
 
 ## GET_TRANS_STATUS request
 
+
+
 GET_TRANS_STATUS request
 
 <MimeTabs><TabItem label={"*/*"} value={"*/*-schema"}><details style={{}} data-collapsed={false} open={true}><summary style={{"textAlign":"left"}}><strong>Request Body</strong></summary><div style={{"textAlign":"left","marginLeft":"1rem"}}></div><ul style={{"marginLeft":"1rem"}}><li><div><strong>string</strong></div></li></ul></details></TabItem></MimeTabs><div><ApiTabs><TabItem label={"200"} value={"200"}><div>
@@ -192,4 +31,4 @@ GET_TRANS_STATUS request
 OK
 
 </div><details style={{"textAlign":"left","marginBottom":"1rem"}} data-collaposed={true} open={false}><summary style={{}}><strong>Response Headers</strong></summary><ul style={{"marginLeft":"1rem"}}><li className={"schemaItem"}><summary style={{}}><strong>Server</strong><span style={{"opacity":"0.6"}}> string</span></summary><div></div></li><li className={"schemaItem"}><summary style={{}}><strong>Date</strong><span style={{"opacity":"0.6"}}> string</span></summary><div></div></li><li className={"schemaItem"}><summary style={{}}><strong>Content-Type</strong><span style={{"opacity":"0.6"}}> string</span></summary><div></div></li><li className={"schemaItem"}><summary style={{}}><strong>Transfer-Encoding</strong><span style={{"opacity":"0.6"}}> string</span></summary><div></div></li><li className={"schemaItem"}><summary style={{}}><strong>Connection</strong><span style={{"opacity":"0.6"}}> string</span></summary><div></div></li><li className={"schemaItem"}><summary style={{}}><strong>X-Powered-By</strong><span style={{"opacity":"0.6"}}> string</span></summary><div></div></li><li className={"schemaItem"}><summary style={{}}><strong>Cache-Control</strong><span style={{"opacity":"0.6"}}> string</span></summary><div></div></li><li className={"schemaItem"}><summary style={{}}><strong>pragma</strong><span style={{"opacity":"0.6"}}> string</span></summary><div></div></li><li className={"schemaItem"}><summary style={{}}><strong>expires</strong><span style={{"opacity":"0.6"}}> number</span></summary><div></div></li><li className={"schemaItem"}><summary style={{}}><strong>X-Content-Type-Options</strong><span style={{"opacity":"0.6"}}> string</span></summary><div></div></li><li className={"schemaItem"}><summary style={{}}><strong>X-XSS-Protection</strong><span style={{"opacity":"0.6"}}> string</span></summary><div></div></li><li className={"schemaItem"}><summary style={{}}><strong>Strict-Transport-Security</strong><span style={{"opacity":"0.6"}}> string</span></summary><div></div></li><li className={"schemaItem"}><summary style={{}}><strong>Content-Security-Policy</strong><span style={{"opacity":"0.6"}}> string</span></summary><div></div></li></ul></details><div><MimeTabs schemaType={"response"}><TabItem label={"application/json"} value={"application/json"}><SchemaTabs><TabItem label={"Schema"} value={"Schema"}><details style={{}} data-collapsed={false} open={true}><summary style={{"textAlign":"left"}}><strong>Schema</strong></summary><div style={{"textAlign":"left","marginLeft":"1rem"}}></div><ul style={{"marginLeft":"1rem"}}><li><div><strong>object</strong></div></li></ul></details></TabItem><TabItem label={"Example (from schema)"} value={"Example (from schema)"}><ResponseSamples responseExample={"{}"} language={"json"}></ResponseSamples></TabItem><TabItem label={"Example-0"} value={"Example-0"}><p> GET_TRANS_STATUS request (settled)</p><ResponseSamples responseExample={"{\n  \"payment_id\": \"63c781cc-de3d-11eb-a1f1-0242ac130006\",\n  \"date\": \"2021-07-06 09:34:41\",\n  \"status\": \"settled\",\n  \"order\": {\n    \"number\": \"order-1234\",\n    \"amount\": \"0.19\",\n    \"currency\": \"USD\",\n    \"description\": \"Important gift\"\n  },\n  \"customer\": {\n    \"name\": \"John Doe\",\n    \"email\": \"test@mail.com\"\n  }\n}"} language={"json"}></ResponseSamples></TabItem><TabItem label={"Example-1"} value={"Example-1"}><p> GET_TRANS_STATUS request (declined)</p><ResponseSamples responseExample={"{\n  \"payment_id\": \"03e46e96-de42-11eb-aea7-0242ac140002\",\n  \"date\": \"2021-07-06 10:07:47\",\n  \"status\": \"decline\",\n  \"reason\": \"Declined by processing\",\n  \"order\": {\n    \"number\": \"order-1234\",\n    \"amount\": \"0.19\",\n    \"currency\": \"USD\",\n    \"description\": \"Important gift\"\n  },\n  \"customer\": {\n    \"name\": \"John Doe\",\n    \"email\": \"test@mail.com\"\n  }\n}"} language={"json"}></ResponseSamples></TabItem></SchemaTabs></TabItem></MimeTabs></div></TabItem></ApiTabs></div>
-
+      
