@@ -1,55 +1,24 @@
 ---
 sidebar_position: 1
-keywords: 
- - docs 
- - authroization and capture
- - holding amount
+keywords:
+  - docs
+  - authroization and capture
+  - holding amount
 sidebar_label: Authorize payment
 ---
 
 # Authorize a payment
 
-In order to authorize a payment , you will use the same <u>[`POST /purchases/`](../../../api/gateway/purchases-create)</u> however this time you will set the `skip_capture` parameter to `true` <br></br>
+By defalult all transaction is authorized and captured immediately and the amount will be dedcuted from the custom account, <br></br>
+however sometimes you need to hold the amount for a periode of time before deciding to captuer it .
 
-## Preauthorization
-This flag can also enable preauthorization capability , allowing you to [save the card](../saving-card/save_card) without a financial transaction.
+## Enabling Authorization
 
-:::caution
+to enable authorization you will have to contact us to enable that for you ,
 
-Preauthorization depand on the provider so it might not work <br></br> and require you to use it with a financial transaction
+you will sepecify the duration that the amount should hold before it's being capture , so let's say that you want the amount to be hold for 5 days before it's being captured once we configured that ,
+the subsequent requests will hold the amount for the duration that you specify and after that it will caputre it .
 
-:::
+## Release the amount
 
-If the customer agrees to store his card for future purchases,<br></br>
-You can recharge him later using the saved card <br></br>
-
-:::note
-Due to the regulation here in Saudi Arabia customer need to be present to enter his <u>CVV</u>
-:::
----
-## Sample request 
-
-```json
-{
-  "client": {
-    "email": "test@test.com"
-  },
-  "skip_capture":true,
-  "purchase": {
-    "currency":"SAR",
-    "products": [
-      {
-        "name": "test",
-        "price": 100
-      }
-    ]
-  },
-  "brand_id": "65e50e72-6cb5-4b79-a020-697484b5e646"
-}
-```
-In the response you will see the status as `hold` <br></br>
-Make sure to save the <u>_id_</u> as it will be used later to either `captuer` or `release` the transaction.
-
----
-## Further Request
-> This option requires a [`POST /capture/`](../../../api/gateway/purchases-capture) or [`POST /release/`](../../../api/gateway/purchases-release) later on.
+in case if you don't want to capture the amount anymore , you can go to the dashabord and release that amount before it's being captured.

@@ -1,11 +1,40 @@
 ---
 sidebar_label: Make payment with a saved card
 keyword:
- - doc
- - tokenization
- - saving card 
- - make payment with a saved card
+  - doc
+  - tokenization
+  - saving card
+  - make payment with a saved card
 sidebar_position: 2
 ---
 
 # Make a payment with a saved card
+
+## Payment request with a token
+
+If you saved the token from a prevoius request you can use it to make an [Authentication](../../api/gateway/authenication-request) request (payment request) and your client will see anonymized card details on the payment form, which will greatly simplify the payment process.
+
+### Sample request
+
+```json
+{
+	"merchant_key": "1c568e26-c997-11e9-8be4-0242ac12000f",
+	"operation": "purchase",
+	"order": {
+		"number": "{{order_number}}",
+		"amount": "{{order_amount}}",
+		"currency": "{{order_currency}}",
+		"description": "{{order_description}}"
+	},
+	"cancel_url": "https://example.com/cancel",
+	"success_url": "https://example.com/success",
+	"card_token": [
+		"f5d6a0ab6fcfb6487a39e2256e50fff3c95aaa97075ee5e539bb662fceff4dc1"
+	],
+	"hash": "{{session_hash}}"
+}
+```
+
+:::note
+If the `card_token` is specified, `req_token` will be ignored, as the card already being saved.
+:::

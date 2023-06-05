@@ -42,4 +42,16 @@ module.exports = [
 			},
 		],
 	},
+	{
+		type: "category",
+		label: "Scheduling",
+		items: [
+			{
+				type: "doc",
+				id: "gateway/schedule-id",
+				label: "create a schedule id to be used with recurring payments",
+				className: "gateway-method post",
+			},
+		],
+	},
 ];

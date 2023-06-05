@@ -1,10 +1,11 @@
 ---
-sidebar_label: Create payment
+sidebar_label: Create a payment
 keyword:
   - docs
   - making payment
   - e-commerce transaction
   - online transaction
+  - authorization request
 ---
 
 # Create a Payment
@@ -12,38 +13,33 @@ keyword:
 ## Purchase
 
 To create a payment that will let the customer pay using credit card , debit card _(mada,etc...)_ , applepay, stcpay, <br></br>
-or any saved card or authorized transaction , you will be making a purchase request to [`/purchases/`](../../api/gateway/purchases-create) <br></br>
+or any saved card or authorized transaction, you will be making a purchase ( Authentication request ) to [`/api/v1/session/`](../../api/gateway/authentication-request) <br></br>
 
-## Requirement to create a purchase reqeust
+## Requirement to create a purchase reqeust ( Authentication request )
 
-> You must sign up for a test account [here](https://gate.dineropay.com/login?continue=%2F)
-> Get your API key from the <u>dashboard >> devloper >> API key</u> <br></br>
-> Create a `brand_id`
+> You must sign up for a test account [here](https://dashboard.dineropay.com/login?continue=%2F) <br></br>
+> Follow the steps [here](../../get-started#making-your-first-payment-as-easy-as-following-the-below-steps)
 
-Getting your API key and your brand_id makes you ready to create an online transaction <br></br>
-Both can be found in the <circle width ='210' text='Developer section'/>in your account
+Getting your merchant key and your password makes you ready to create an online transaction <br></br>
+Both can be found in the <circle width ='260' text='merchant dashboard'/>
 
 ## Make payments
 
-To run payments in your application use <u>[`POST /purchases/`](../../../api/gateway/purchases-create)</u> , request to register payments and receive the checkout link (`checkout_url`). After the payment is processed, gateway will redirect the client back to your website (take note of `success_redirect`, `failure_redirect`).
+To run payments in your application use <u>[`POST /api/v1/sessions/`](../../../api/gateway/authentication-request)</u> , request to register payments and receive the redirect_url (`redirec_url`). After the payment is processed, gateway will redirect the client back to your website (take note of `success_url`, `cancel_curl`).
 
-## Handle tokenization
+## Tokenization
 
-In the checkout page there is an option for the customer if he want to save his card ,
-so in case if you want to handle this case if the customer agree to save his card <br></br>
-
-> In the the response body you will look for a parameter called `is_recurring_token` if it is set to `true` that's mean the customer choose to save his card,
-> so you can treat the <u>**_id_**</u> of that transaction as a recurring token and save that as card for your customer <br></br>
-
+You can save the customer's card data so that they can reuse it for future payments.<br></br>
+in the `callback_notification` you receive the card token to be used for future payment.
 to learn more about **tokenization** check [_saving the card_](../../saving-cards)
 
-## Check payment status
+## Check the payment status
 
 You have three options to check payment status
 
-> 1. Use `success_callback` pramater of [`Purchase`](../../../api/gateway/purchases-create) request object
-> 2. Use `GET` `/purchases/{purchase_id}/` request
-> 3. Set up a <circle width='110' text ='Webhook'/> using the UI or Webhook API to listen to `purchase.paid` or `purchase.payment_failure` event on your server
+> 1. Use `success_url` pramater of [`Authentication`](../../../api/gateway/authentication-request) request object
+> 2. Use `GET` `/api/v1/payment/status` request
+> 3. Set up a `callback_url` in the dashboard to listen for events.
 
 ---
 
@@ -53,18 +49,18 @@ Below is a sample request body with only the mandatory fileds
 
 ```json
 {
-	"client": {
-		"email": "test@test.com"
+	"merchant_key": "1d903ea0-e8dc-11ed-bbba-d60e6b1bd8d8",
+	"operation": "purchase",
+	"methods": ["card"],
+	"order": {
+		"number": "order-1234",
+		"amount": "1.00",
+		"currency": "SAR",
+		"description": "gift"
 	},
-	"purchase": {
-		"products": [
-			{
-				"name": "test",
-				"price": 100
-			}
-		]
-	},
-	"brand_id": "409eb80e-3782-4b1d-afa8-b779759266a5"
+	"cancel_url": "https://example.com/cancel",
+	"success_url": "https://example.com/success",
+	"hash": "416830ec3be6ac7c6ca539a4e9dbdd5c8971097d"
 }
 ```
 
@@ -74,159 +70,11 @@ Below is a sample request body with only the mandatory fileds
 
 ```json
 {
-	"type": "string",
-	"id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-	"created_on": 1619740800,
-	"updated_on": 1619740800,
-	"client": {
-		"bank_account": "string",
-		"bank_code": "string",
-		"email": "user@example.com",
-		"phone": "+966 xxxxxxxxx",
-		"full_name": "string",
-		"personal_code": "string",
-		"street_address": "string",
-		"country": "SA",
-		"city": "string",
-		"zip_code": "string",
-		"state": "st",
-		"shipping_street_address": "string",
-		"shipping_country": "SA",
-		"shipping_city": "string",
-		"shipping_zip_code": "string",
-		"shipping_state": "st",
-		"cc": ["user@example.com"],
-		"bcc": ["user@example.com"],
-		"legal_name": "string",
-		"brand_name": "string",
-		"registration_number": "string",
-		"tax_number": "string"
-	},
-	"purchase": {
-		"currency": "str",
-		"products": [
-			{
-				"name": "string",
-				"quantity": "1",
-				"price": 0,
-				"discount": 0,
-				"tax_percent": "0",
-				"category": "string"
-			}
-		],
-		"total": 0,
-		"language": "Default value is controlled in Company -> Brand section of merchant portal separately per each Brand used (default value, if no changes are made, is `en`). Brand to be used with corresponding Purchase/BillingTemplate specified using brand_id.",
-		"notes": "string",
-		"debt": 0,
-		"subtotal_override": null,
-		"total_tax_override": null,
-		"total_discount_override": null,
-		"total_override": null,
-		"request_client_details": [],
-		"timezone": "Europe/Oslo",
-		"due_strict": false,
-		"email_message": "string"
-	},
-	"payment": {
-		"is_outgoing": false,
-		"payment_type": "purchase",
-		"amount": 0,
-		"currency": "str",
-		"net_amount": 0,
-		"fee_amount": 0,
-		"pending_amount": 0,
-		"pending_unfreeze_on": 1619740800,
-		"description": "string",
-		"paid_on": 1619740800,
-		"remote_paid_on": 1619740800
-	},
-	"issuer_details": {
-		"website": "string",
-		"legal_street_address": "string",
-		"legal_country": "st",
-		"legal_city": "string",
-		"legal_zip_code": "string",
-		"bank_accounts": [
-			{
-				"bank_account": "string",
-				"bank_code": "string"
-			}
-		],
-		"legal_name": "string",
-		"brand_name": "string",
-		"registration_number": "string",
-		"tax_number": "string"
-	},
-	"transaction_data": {
-		"payment_method": "string",
-		"extra": {},
-		"country": "string",
-		"attempts": [
-			{
-				"type": "execute",
-				"successful": true,
-				"payment_method": "string",
-				"extra": {},
-				"country": "string",
-				"client_ip": "string",
-				"processing_time": 1619740800,
-				"error": {
-					"code": "string",
-					"message": "string"
-				}
-			}
-		]
-	},
-	"status": "created",
-	"status_history": [
-		{
-			"status": "created",
-			"timestamp": 1619740800,
-			"related_object": {
-				"type": "string",
-				"id": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
-			}
-		}
-	],
-	"viewed_on": 1619740800,
-	"company_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-	"is_test": true,
-	"user_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-	"brand_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-	"billing_template_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-	"client_id": null,
-	"send_receipt": false,
-	"is_recurring_token": true,
-	"recurring_token": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-	"skip_capture": false,
-	"force_recurring": false,
-	"reference_generated": "string",
-	"reference": "string",
-	"issued": "2020-04-30",
-	"due": 1619740800,
-	"refund_availability": "all",
-	"refundable_amount": 0,
-	"currency_conversion": {
-		"original_currency": "string",
-		"original_amount": 0,
-		"exchange_rate": 0
-	},
-	"payment_method_whitelist": ["string"],
-	"success_redirect": "string",
-	"failure_redirect": "string",
-	"cancel_redirect": "string",
-	"success_callback": "string",
-	"creator_agent": "string",
-	"platform": "web",
-	"product": "purchases",
-	"created_from_ip": "string",
-	"invoice_url": "string",
-	"checkout_url": "string",
-	"direct_post_url": "string",
-	"marked_as_paid": true,
-	"order_id": "string"
+	"redirect_url": "{{redirect_url}}"
 }
 ```
 
-As shown we will send a comprehensive response containing all data that you need. <br></br>
-But what you need to consider the most is while creating a purchase request is the `checkout_url`. <br></br>
+:::note
+The `redirect_url` will have one houre session and it will expires after that <br></br>
+The link becomes invalid after a successful payment.
+:::

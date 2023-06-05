@@ -61,6 +61,9 @@ begin styling the badge
 [data-theme="dark"] .badge {
 	color: white;
 }
+.text {
+	font-size: 110px;
+}
 .table-of-contents__link {
 	background: linear-gradient(
 			to right,

@@ -3,7 +3,7 @@
 	"info": {
 		"title": "Public REST API",
 		"description": "this is a test description will be replaced later with an actual meanning",
-		"version": "v5"
+		"version": ""
 	},
 	"servers": [
 		{
@@ -187,12 +187,38 @@
 			"post": {
 				"tags": ["Refund"],
 				"summary": "Refund request",
-				"operationId": "Refund",
+				"operationId": "refund",
 				"requestBody": {
 					"content": {
 						"application/json": {
 							"schema": {
 								"type": "object",
+								"required": ["merchant_key", "payment_id", "hash"],
+								"properties": {
+									"merchant_key": {
+										"description": "Key for Merchant identification",
+										"type": "string",
+										"format": "uuid",
+										"example": " xxxxx-xxxxx-xxxxx"
+									},
+									"payment_id": {
+										"type": "string",
+										"maxLength": 255,
+										"format": "uuid",
+										"example": "dc66cdd8-d702-11ea-9a2f-0242c0a87002",
+										"description": "Payment ID (public)"
+									},
+									"hash": {
+										"type": "string",
+										"description": "Special signature to validate your request to Payment Platform Addition in Signature section \n Must be SHA1 of MD5 encoded string"
+									},
+									"amount": {
+										"type": "string",
+										"format": "float",
+										"example": "20.00",
+										"description": "Amount to refund. It is required for particular refund. If amount is not specified the full order amount is settled by default."
+									}
+								},
 								"example": {
 									"merchant_key": "xxxxx-xxxxx-xxxxx",
 									"payment_id": "63c781cc-de3d-11eb-a1f1-0242ac130006",
@@ -206,94 +232,146 @@
 				"responses": {
 					"200": {
 						"description": "OK",
-						"headers": {
-							"Server": {
-								"schema": {
-									"type": "string",
-									"example": "nginx"
-								}
-							},
-							"Date": {
-								"schema": {
-									"type": "string",
-									"example": "Tue, 06 Jul 2021 10:26:35 GMT"
-								}
-							},
-							"Content-Type": {
-								"schema": {
-									"type": "string",
-									"example": "application/json"
-								}
-							},
-							"Transfer-Encoding": {
-								"schema": {
-									"type": "string",
-									"example": "chunked"
-								}
-							},
-							"Connection": {
-								"schema": {
-									"type": "string",
-									"example": "keep-alive"
-								}
-							},
-							"X-Powered-By": {
-								"schema": {
-									"type": "string",
-									"example": "PHP/7.4.10"
-								}
-							},
-							"Cache-Control": {
-								"schema": {
-									"type": "string",
-									"example": "private, must-revalidate"
-								}
-							},
-							"pragma": {
-								"schema": {
-									"type": "string",
-									"example": "no-cache"
-								}
-							},
-							"expires": {
-								"schema": {
-									"type": "number",
-									"example": "-1"
-								}
-							},
-							"X-Content-Type-Options": {
-								"schema": {
-									"type": "string",
-									"example": "nosniff"
-								}
-							},
-							"X-XSS-Protection": {
-								"schema": {
-									"type": "string",
-									"example": "1; mode=block"
-								}
-							},
-							"Strict-Transport-Security": {
-								"schema": {
-									"type": "string",
-									"example": "max-age=31536000"
-								}
-							},
-							"Content-Security-Policy": {
-								"schema": {
-									"type": "string",
-									"example": "default-src 'self' 'unsafe-inline' 'unsafe-eval' data: https://*.google-analytics.com https://*.googleapis.com https://*.gstatic.com http://www.w3.org https://*.rafinita.com"
-								}
-							}
-						},
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "object"
+									"type": "object",
+									"properties": {
+										"payment_id": {
+											"type": "string",
+											"maxLength": 255,
+											"format": "uuid",
+											"example": "dc66cdd8-d702-11ea-9a2f-0242c0a87002",
+											"description": "Payment ID (public)"
+										},
+										"result": {
+											"type": "string",
+											"exmaple": "accepted"
+										}
+									}
 								},
 								"example": {
 									"payment_id": "63c781cc-de3d-11eb-a1f1-0242ac130006",
 									"result": "accepted"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/post": {
+			"servers": [{ "url": "https://api.dineropay.com" }],
+			"post": {
+				"tags": ["Scheduling"],
+				"summary": "create a schedule id to be used with recurring payments",
+				"operationId": "schedule-id",
+				"requestBody": {
+					"content": {
+						"multipart/form-data": {
+							"schema": {
+								"type": "object",
+								"required": [
+									"action",
+									"client_key",
+									"name",
+									"interval_length",
+									"interval_unit",
+									"payment_count",
+									"hash"
+								],
+								"properties": {
+									"action": {
+										"description": "Action to create a new schedule - fixed value",
+										"type": "string",
+										"example": "CREATE_SCHEDULE"
+									},
+									"client_key": {
+										"type": "string",
+										"maxLength": 255,
+										"format": "uuid",
+										"example": "dc66cdd8-d702-11ea-9a2f-0242c0a87002",
+										"description": "Unique key (Merchant key)"
+									},
+									"hash": {
+										"type": "string",
+										"description": "Special signature to validate your request to Payment Platform"
+									},
+									"name": {
+										"type": "string",
+										"description": "name of the schedule id",
+										"example": "gym membership"
+									},
+									"interval_length": {
+										"type": "integer",
+										"example": "15",
+										"description": "Interval length - how often the payments occurs. Cannot be set `0`. For example, to set a schedule for payments every 15 days, you need to set:`interval_length = 15`, `interval_unit = day`"
+									},
+									"interval_unit": {
+										"type": "string",
+										"example": "day",
+										"description": "Possible values are `day` and `month`"
+									},
+									"day_of_month": {
+										"type": "integer",
+										"maximum": 31,
+										"minimum": 1,
+										"example": "10",
+										"description": "Day of month when payment has to occur. Available only if interval_unit = month. Possible values: from 1 to 31. If day_of_month = 29, 30, or 31 and there are no days 29, 30, or 31 in the month, then the last day of the month is used. If day_of_month is not defined, then payment occurs on the day the initiating payment is created"
+									},
+									"payments_count": {
+										"type": "integer",
+										"example": "4",
+										"description": "Payments count in schedule"
+									},
+									"delays": {
+										"type": "integer",
+										"example": "2",
+										"description": "Number of skipped intervals of the scheduled before payment cycle starts"
+									}
+								},
+								"example": {
+									"action": "CREATE_SCHEDULE",
+									"client_key": "63c781cc-de3d-11eb-a1f1-0242ac130006",
+									"name": "gym membership",
+									"interval_length": 20,
+									"interval_unit": "day",
+									"payments_count": 10,
+									"hash": "{{operation_hash}}"
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"action": {
+											"description": "Action to create a new schedule - fixed value",
+											"type": "string",
+											"example": "CREATE_SCHEDULE"
+										},
+										"result": {
+											"type": "string",
+											"example": "SUCCESS"
+										},
+										"id": {
+											"type": "string",
+											"format": "uuid",
+											"maxLength": 255,
+											"example": "84f2c56e-fa1a-11ed-bfb3-5acabb05365f"
+										}
+									}
+								},
+								"example": {
+									"action": "CREATE_SCHEDULE",
+									"result": "SUCCESS",
+									"id": "84f2c56e-fa1a-11ed-bfb3-5acabb05365f"
 								}
 							}
 						}

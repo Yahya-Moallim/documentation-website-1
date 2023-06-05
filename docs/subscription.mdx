@@ -1,0 +1,42 @@
+---
+sidebar_label: Subscription
+---
+
+# Subscription
+
+We provide you with the option to schedule your payments , so that the amount will be dedcuted automatically without the customer intervention , by creating a schedule id and with other transaction.<br></br>
+
+## Enabling Subscription
+
+you have two way to enable via the API or the dashbaord ,
+
+### dashbaord
+
+once you login to the dashbaord , on the left sidebar you will see **Schedules** click on that and you will navigate it to the Recurring Schedules page , on the top left corner you will see a plus button click on it to create a `schedule` object.
+
+### API
+
+you can create a `schedule` object using the API by sending a request to [https://api.dineropay.com/post/](../../api/gateway/schedule-id)<br></br>
+
+:::note
+this request should have the content type as `Content-Type: multipart/form-data`
+:::
+
+### example request
+
+```
+https://api.rafinita.com/post?action="CREATE_SCHEDULE",&"client_key"="1dfeda0-e8dc-11ed-hhba-d60e6b1bd8d8",&"name"="for testing schduled payment through api",&"inverval_length"="1",&"interval_unit"="day",&"payment_count"="3",&"hash"="0D6F1971358364EEFE3E3A31928A37F8"&}=
+```
+
+## Create a recurring payment
+
+now that you have the scheudle id you can use in your future requests to indicate that this transaction should be schduled <br></br>
+
+in the request body add the parameters `recurring_init = true` and `schedule_id = xxxxx-xxx`<br></br>
+
+refer to the [Payment](../../Payments/Purchase/create_payment) section for more details .
+
+:::note
+
+the schdule object can be used in more tham one transaction.
+:::
