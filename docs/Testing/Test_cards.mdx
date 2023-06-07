@@ -1,9 +1,9 @@
 ---
 sidebar_label: Test Card
-keyword: 
- - testing
- - sandbox
- - test card
+keyword:
+  - testing
+  - sandbox
+  - test card
 sidebar_position: 1
 ---
 
@@ -11,19 +11,21 @@ sidebar_position: 1
 
 It’s possible to test-drive all checkouts using a test Purchase.
 
-## Successful payments
-For a successful payment, you can use the following card numbers:
+| Card number         | Type           | Expiry | CVV          | Result  |
+| ------------------- | -------------- | ------ | ------------ | ------- |
+| 4111 1111 1111 1111 | 3D Secure card | 02/25  | any 3 digits | Failed  |
+| 4111 1111 1111 1111 | 3D Secure card | 05/25  | any 3 digits | Success |
 
-| Card number      | type       | 
-| ----------- | ----------- |
-| 4444 3333 2222 1111       | non-3D Secure card       |
-| 5555 5555 5555 4444   | 3D Secure card        |
+## Success payments
 
-> For both cards, use 
- > - any cardholder name
- > - any expiry larger or equal to the current month/year
- > - CVC = 123
+> - any cardholder name
+> - expiry date will be 05/25
 
 ## Failed payments
 
-For a failed payment, change the CVC or expiration date
+> - any cardholder name
+> - expiry date will be 02/25
+
+:::note
+For both success and failed secnario card number will be the same however the expiry date will be different .
+:::

@@ -1,180 +1,68 @@
 ---
-sidebar_label: Get details of specific payment 
-keyword: 
- - docs
- - transaction  
+sidebar_label: Get payment status
+keyword:
+  - docs
+  - transaction
+  - payment status
+---
+
+# Get the payment details
+
+To get the payment status you will make a <u>[`GET /api/v1/payment/status`](../../../api/gateway/check-transaction-status)</u> <br></br>
+You will retrieve the payment status and if it's declinced you will receive the reason .
 
 ---
 
-# Get details of specific payment 
+## Types of payment status
 
-To get details of specific transaction you can make a <u>[`GET /purchases`](../../../api/gateway/purchases-read)</u> <br></br>
-You will retrieve all the data related to that transaction.
+the payment status is a way for the gateway to tell you in what state your transaction in , and based on that you will make the appropriate action.
 
----
+By default you will recieve a `callback_notification` but in case if you want to make a follow up request to check for the payment status, you can make a <u>[`GET /api/v1/payment/status`](../../../api/gateway/check-transaction-status)</u>.
+
+# Status
+
+payment status will be one of these
+
+- prepare
+- settled
+- pending
+- 3ds
+- redirect
+- decline
+- refund
+- reversal
+- chargeback
+
+> in case the transaction is not successful you receive a `reason` pramater in the response
+
+## Sample request
+
+to check the payment status you will have to pass the `payment_id` so make sure to save it , once you recieve it from the `callback_notification`.
+
+```json
+{
+	"merchant_key": " xxxxx-xxxxx-xxxxx",
+	"payment_id": "dc66cdd8-d702-11ea-9a2f-0242c0a87002",
+	"hash": "xxxxxxxxxxx"
+}
+```
+
 ## Sample response
 
 ```json
 {
-  "type": "string",
-  "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-  "created_on": 1619740800,
-  "updated_on": 1619740800,
-  "client": {
-    "bank_account": "string",
-    "bank_code": "string",
-    "email": "user@example.com",
-    "phone": "+966 xxxxxxxxx",
-    "full_name": "string",
-    "personal_code": "string",
-    "street_address": "string",
-    "country": "SA",
-    "city": "string",
-    "zip_code": "string",
-    "state": "st",
-    "shipping_street_address": "string",
-    "shipping_country": "SA",
-    "shipping_city": "string",
-    "shipping_zip_code": "string",
-    "shipping_state": "st",
-    "cc": [
-      "user@example.com"
-    ],
-    "bcc": [
-      "user@example.com"
-    ],
-    "legal_name": "string",
-    "brand_name": "string",
-    "registration_number": "string",
-    "tax_number": "string"
-  },
-  "purchase": {
-    "currency": "str",
-    "products": [
-      {
-        "name": "string",
-        "quantity": "1",
-        "price": 0,
-        "discount": 0,
-        "tax_percent": "0",
-        "category": "string"
-      }
-    ],
-    "total": 0,
-    "language": "Default value is controlled in Company -> Brand section of merchant portal separately per each Brand used (default value, if no changes are made, is `en`). Brand to be used with corresponding Purchase/BillingTemplate specified using brand_id.",
-    "notes": "string",
-    "debt": 0,
-    "subtotal_override": null,
-    "total_tax_override": null,
-    "total_discount_override": null,
-    "total_override": null,
-    "request_client_details": [],
-    "timezone": "Europe/Oslo",
-    "due_strict": false,
-    "email_message": "string"
-  },
-  "payment": {
-    "is_outgoing": false,
-    "payment_type": "purchase",
-    "amount": 0,
-    "currency": "str",
-    "net_amount": 0,
-    "fee_amount": 0,
-    "pending_amount": 0,
-    "pending_unfreeze_on": 1619740800,
-    "description": "string",
-    "paid_on": 1619740800,
-    "remote_paid_on": 1619740800
-  },
-  "issuer_details": {
-    "website": "string",
-    "legal_street_address": "string",
-    "legal_country": "st",
-    "legal_city": "string",
-    "legal_zip_code": "string",
-    "bank_accounts": [
-      {
-        "bank_account": "string",
-        "bank_code": "string"
-      }
-    ],
-    "legal_name": "string",
-    "brand_name": "string",
-    "registration_number": "string",
-    "tax_number": "string"
-  },
-  "transaction_data": {
-    "payment_method": "string",
-    "extra": {},
-    "country": "string",
-    "attempts": [
-      {
-        "type": "execute",
-        "successful": true,
-        "payment_method": "string",
-        "extra": {},
-        "country": "string",
-        "client_ip": "string",
-        "processing_time": 1619740800,
-        "error": {
-          "code": "string",
-          "message": "string"
-        }
-      }
-    ]
-  },
-  "status": "created",
-  "status_history": [
-    {
-      "status": "created",
-      "timestamp": 1619740800,
-      "related_object": {
-        "type": "string",
-        "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
-      }
-    }
-  ],
-  "viewed_on": 1619740800,
-  "company_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-  "is_test": true,
-  "user_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-  "brand_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-  "billing_template_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-  "client_id": null,
-  "send_receipt": false,
-  "is_recurring_token": true,
-  "recurring_token": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-  "skip_capture": false,
-  "force_recurring": false,
-  "reference_generated": "string",
-  "reference": "string",
-  "issued": "2020-04-30",
-  "due": 1619740800,
-  "refund_availability": "all",
-  "refundable_amount": 0,
-  "currency_conversion": {
-    "original_currency": "string",
-    "original_amount": 0,
-    "exchange_rate": 0
-  },
-  "payment_method_whitelist": [
-    "string"
-  ],
-  "success_redirect": "string",
-  "failure_redirect": "string",
-  "cancel_redirect": "string",
-  "success_callback": "string",
-  "creator_agent": "string",
-  "platform": "web",
-  "product": "purchases",
-  "created_from_ip": "string",
-  "invoice_url": "string",
-  "checkout_url": "string",
-  "direct_post_url": "string",
-  "marked_as_paid": true,
-  "order_id": "string"
+	"payment_id": "24f7401c-fc47-11ec-8d07-0242ac120015",
+	"date": "2022-07-05 09:45:03",
+	"status": "settled",
+	"order": {
+		"number": "f0a51dfa-fc43-11ec-8128-0242ac120004-1",
+		"amount": "3.01",
+		"currency": "SAR",
+		"description": "gift"
+	},
+	"customer": {
+		"name": "John Doe",
+		"email": "success@gmail.com"
+	}
 }
 ```
-
-> - You will pass the id of the transaction part as a path parameter
-

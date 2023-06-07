@@ -1,6 +1,6 @@
 {
-    "label": " Payment Methodes",
-    "link":{
-        "slug": "/payment-methodes" 
-    }
+	"label": " Payment Methods",
+	"link": {
+		"slug": "/payment-methods"
+	}
 }

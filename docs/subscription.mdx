@@ -1,0 +1,125 @@
+---
+sidebar_label: Subscription
+---
+
+# Subscription
+
+We provide you with the option to schedule your payments , so that the amount will be dedcuted automatically without the customer intervention , by creating a schedule id and with other transaction.<br></br>
+
+## Enabling Subscription
+
+you have to methode to implement the scheduling
+
+### 1- Managed by your system
+
+to have full control over the scheduling process and trigger it from your system , you can simpily in the [Purchase](../../api/gateway/purchase) request add <br></br>
+
+`recurring_init = true` to indicate that this is a recurring transaction . <br></br>
+
+now when the customer approve for the Subscription in the response you will be receiving `recurring_init_trans_id` and `recurring_token` which you need to store in your system in order to make recurring request using them in the future.
+
+### Creating recurring transaction
+
+if you have the `recurring_init_trans_id` and `recurring_token` stored on your system you make a request to [/api/v1/payment/reсurring](../../api/gateway/recurring) <br></br>
+if the transaction is successful the amount will be deducted from the customer without the need of his presence .
+
+### Sample request to indicate a Subscription transaction
+
+```json
+{
+	"merchant_key": "1d903dfda0-e8dc-11ed-bbba-d60edfb1bd8d8",
+	"operation": "purchase",
+
+	"order": {
+		"number": "order-1234",
+		"amount": "19",
+		"currency": "SAR",
+		"description": "Important gift"
+	},
+	"cancel_url": "https://test.com",
+	"success_url": "https://test.com",
+	"customer": {
+		"name": "Amer Mo",
+		"email": "aalshabebei@dineropay.com"
+	},
+	"billing_address": {
+		"country": "SA",
+		"state": "string",
+		"address": "string",
+		"city": "string",
+		"house_number": "string",
+		"zip": "string",
+		"phone": "+96600000000"
+	},
+	"recurring_init": true,
+	"hash": "416830ec3be6ac7fd6ca539a4e9dbdd5c8971097d"
+}
+```
+
+### Sample response
+
+```
+id=f0a51dfa-fc43-11ec-8128-0242ac120004
+  order_number=order-1234
+  order_amount=3.01
+  order_currency=SAR
+  order_description= gift
+  type=sale
+  status=success
+  card=411111****1111
+  card_expiration_date=12/2022
+  schedule_id=null
+  recurring_init_trans_id=f0a51dfa-fc43-11ec-8128-0242ac120004
+  recurring_token=f0e24964-fc43-11ec-a7e0-0242ac120004
+  date=2022-07-05 09:22:09
+  hash=6d8d440e25bdfc5288616ce567496948d2562852
+  customer_name=Khalid Nasser
+  customer_email=success@gmail.com
+  customer_country=SA
+  customer_state=Najd
+  customer_city=Riyadh
+  customer_address=exit 10
+  customer_ip=10.10.10.2
+
+```
+
+### 2- Managed by the payment gateway
+
+to take the complexity off of your system you can let the schduling to be handle by us , the process will be similar to the above however this time no need for your system to trigger the recurring transaction it maintain by us , and you will receive a notification calls for each payment . <br></br>
+
+first you will need to create a schdule object , there are 2 ways to create it .
+
+### dashbaord
+
+once you login to the dashbaord , on the left sidebar you will see **Schedules** click on that and you will navigate it to the Recurring Schedules page , on the top left corner you will see a plus button click on it to create a `schedule` object.
+
+### API
+
+you can create a `schedule` object using the API by sending a request to [https://api.dineropay.com/post/](../../api/gateway/schedule-id)<br></br>
+
+:::note
+this request should have the content type as `Content-Type: multipart/form-data`
+:::
+
+### example request to create a schdule id
+
+```
+
+https://api.dineropay.com/post?action="CREATE_SCHEDULE",&"client_key"="1dfeda0-e8dc-11ed-hhba-d60e6b1bd8d8",&"name"="for testing schduled payment through api",&"inverval_length"="1",&"interval_unit"="day",&"payment_count"="3",&"hash"="0D6F1971358364EEFE3E3A31928A37F8"&}=
+
+```
+
+## Create a recurring payment
+
+now that you have the schedule id you can use it in future requests to indicate that this transaction should be schduled and handled by us in case you provide the `schdule_id`, otherwise by your system. <br></br>
+
+in the request body add the parameters `recurring_init = true` and `schedule_id = xxxxx-xxx` in case if you want the scheduling to be handle by the gateway<br></br>
+
+refer to the [Payment](../../Payments/Purchase/create_payment) section for more details .
+
+:::note
+
+the schdule object can be used in more tham one transaction.
+
+keep in mind to count the first initial transaction for the recurring payments.
+:::

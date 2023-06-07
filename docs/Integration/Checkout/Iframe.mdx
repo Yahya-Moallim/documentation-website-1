@@ -1,0 +1,51 @@
+---
+sidebar_position: 2
+keywords:
+  - docs
+  - integration
+  - redirect
+  - prebuilt
+  - direct_integration
+  - iframe
+sidebar_label: Iframe
+---
+
+# Iframe
+
+is a powerful tool for integrating a our payment interface into your website. It allows you to embed external web content, such as the payment gateway's interface, seamlessly within your own webpage.<br></br>
+With an iframe, you can provide your customers with a secure and convenient payment experience directly on your website. By integrating the payment gateway within an iframe, you maintain control over the overall user interface and design, while still leveraging the advanced functionality and security features of the payment gateway.
+
+---
+
+## Implementing Iframe
+
+To show the checkout page in your domain .<br></br>
+All you need is just to past in the code redirect url received in the response to the Authentication request.<br></br>
+To know how you can get the `Redirect url` check the [API Section](../../../api/gateway/authentication-request)
+
+### example
+
+```html
+<iframe src="redirect_url" height="600" width="300"></iframe>
+```
+
+:::info
+Note that screen size can be adjusted according to your requirements.
+:::
+
+:::danger
+Important: cross-domain requests are prohibited by security policy of our service.
+:::
+
+### 3D authentication
+
+> - Your customer might get redirect for authentication against 3D Secure system of his card issuer bank
+
+### Receiving response
+
+> - After the payment being processed customer will be taken to the `success_url` or `cancel_url` specified on the request object depanding on the result
+>   also you will be notified through the callback_notification if it's configured in the dashboard
+
+:::note
+Based on the regulation here in Saudi Arabia most of the transaction required 3D authentication
+:::

@@ -8,7 +8,8 @@ const darkCodeTheme = require("prism-react-renderer/themes/dracula");
 /** @type {import('@docusaurus/types').Config} */
 const config = {
 	title: "Dinero Pay",
-	tagline: "help you to empower your online business",
+	tagline:
+		"help you to empower your online business by providing you with all the tools you need to start getting paid",
 	url: "https://dineropay.com",
 	baseUrl: "/",
 	onBrokenLinks: "warn",
@@ -72,9 +73,8 @@ const config = {
 				config: {
 					dinerpayDocs: {
 						// Note: petstore key is treated as the <id> and can be used to specify an API doc instance when using CLI commands
-						specPath: "./dineropayOAS3.yaml", // Path to designated spec file
+						specPath: "./dineropay.openAPI.json", // Path to designated spec file
 						outputDir: "api/gateway", // Output directory for generated .mdx docs
-						downloadUrl: "https://gate.dineropay.com/api/schema/v1/",
 						sidebarOptions: {
 							groupPathsBy: "tag",
 							categoryLinkSource: "tag",
@@ -137,7 +137,7 @@ const config = {
 						label: "API",
 					},
 					{
-						href: "https://gate.dineropay.com/login?continue=%2F",
+						href: "https://dashabord.dineropay.com",
 						label: "Dashboard",
 						position: "right",
 					},
@@ -152,7 +152,7 @@ const config = {
               </a>`,
 					},
 				],
-				copyright: `Copyright © ${new Date().getFullYear()} Dinero Pay, Inc. Built with ❤️ for the developers.`,
+				copyright: `Copyright © ${new Date().getFullYear()} Dinero Pay, Inc. Built with ❤️ for the Developers.`,
 			},
 			prism: {
 				theme: lightCodeTheme,

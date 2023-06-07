@@ -1,11 +1,9 @@
 {
-    "label": "Integration",
-    "position": 2,
-    "link": {
-      "type": "generated-index",
-      "slug":"/integration",
-      "description": "These are the method that we support for now to integrate with us"
-    }
-  }
-
-  
+	"label": "Integration",
+	"position": 2,
+	"link": {
+		"type": "generated-index",
+		"slug": "/integration",
+		"description": "These are the methods that we support for now to integrate with us"
+	}
+}

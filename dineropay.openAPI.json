@@ -1,0 +1,892 @@
+{
+	"openapi": "3.0.0",
+	"info": {
+		"title": "Dinero Pay Offical documentation",
+		"description": "This comprehensive guide will walk you through the various endpoints, request/response structures, and authentication mechanisms required to integrate our payment solution seamlessly into your applications. Whether you're a developer, a business owner, or a payment service provider, this documentation will empower you to leverage the power of our payment gateway effortlessly.\n We have designed this documentation to be user-friendly and easily navigable, enabling you to find the information you need quickly. Additionally, we provide code samples and SDKs in popular programming languages to further simplify the integration process.",
+		"version": ""
+	},
+	"servers": [
+		{
+			"url": "https://checkout.dineropay.com",
+			"description": "End point"
+		}
+	],
+	"paths": {
+		"/v1/session/": {
+			"post": {
+				"tags": ["Purchase"],
+				"operationId": "Authentication-request",
+				"summary": "Authentication request to create a payment session",
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/Authentication_ob"
+							},
+							"examples": {
+								"create a payment with a token": {
+									"summary": "initiate a payment with a saved card",
+									"value": {
+										"merchant_key": "1c568e26-c997-11e9-8be4-0242ac12000f",
+										"operation": "purchase",
+										"methods": ["card", "stcpay"],
+										"order": {
+											"number": "{{order_number}}",
+											"amount": "{{order_amount}}",
+											"currency": "{{order_currency}}",
+											"description": "{{order_description}}"
+										},
+										"cancel_url": "https://example.com/cancel",
+										"success_url": "https://example.com/success",
+										"customer": {
+											"name": "John Doe",
+											"email": "success@gmail.com"
+										},
+										"billing_address": {
+											"country": "SA",
+											"state": "Central",
+											"city": "Riyadh",
+											"address": "Ghernatah",
+											"zip": "94538",
+											"phone": "966xxxxxxxx"
+										},
+										"card_token": [
+											"f5d6a0ab6fcfb6487a39e2256e50fff3c95aaa97075ee5e539bb662fceff4dc1"
+										],
+										"req_token": true,
+										"hash": "{{session_hash}}"
+									}
+								},
+								"create a scheduled payment ": {
+									"summary": "create a payment for later",
+									"value": {
+										"merchant_key": "xxxxx-xxxxx-xxxxx",
+										"operation": "purchase",
+										"methods": ["card"],
+										"order": {
+											"number": "order-1234",
+											"amount": "1.00",
+											"currency": "SAR",
+											"description": "Important gift"
+										},
+										"cancel_url": "https://example.com/cancel",
+										"success_url": "https://example.com/success",
+										"customer": {
+											"name": "John Doe",
+											"email": "test@gmail.com"
+										},
+										"billing_address": {
+											"country": "SA",
+											"state": "Central",
+											"city": "Riyadh",
+											"address": "Ghernatah",
+											"zip": "123456",
+											"phone": "966xxxxxxxx"
+										},
+										"recurring_init": true,
+										"schedule_id": "57fddecf-17b9-4d38-9320-a670f0c29ec0",
+										"hash": "{{session_hash}}"
+									}
+								}
+							}
+						}
+					}
+				},
+
+				"responses": {
+					"200": {
+						"$ref": "#/components/responses/Success_authentication"
+					},
+					"400": {
+						"$ref": "#/components/responses/400"
+					}
+				}
+			}
+		},
+		"/api/v1/payment/reсurring": {
+			"post": {
+				"operationId": "charge-token",
+				"tags": ["Purchase"],
+				"summary": "Charge a transaction using a saved token",
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/Recurring_ob",
+								"example": {
+									"merchant_key": "xxxxx-xxxxx-xxxxx",
+									"order": {
+										"number": "order-1234",
+										"amount": "1.00",
+										"description": "gift"
+									},
+									"recurring_init_trans_id": "dc66cdd8-d702-11ea-9a2f-0242c0a87002",
+									"recurring_token": "9a2f-0242c0a87002",
+									"hash": "{{session_hash}}"
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"$ref": "#/components/responses/token_res--ob"
+					},
+					"400": {
+						"$ref": "#/components/responses/400"
+					}
+				}
+			}
+		},
+		"/api/v1/payment/status": {
+			"post": {
+				"tags": ["Status"],
+				"summary": "Get Transaction Status",
+				"operationId": "Check Transaction Status",
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"required": ["merchant_key", "payment_id", "hash"],
+								"properties": {
+									"merchant_key": {
+										"description": "Key for Merchant identification",
+										"type": "string",
+										"format": "uuid",
+										"example": " xxxxx-xxxxx-xxxxx"
+									},
+									"payment_id": {
+										"type": "string",
+										"maxLength": 255,
+										"format": "uuid",
+										"example": "dc66cdd8-d702-11ea-9a2f-0242c0a87002",
+										"description": "Payment ID (public)"
+									},
+									"hash": {
+										"type": "string",
+										"description": "Special signature to validate your request to Payment Platform Addition in Signature section \n Must be SHA1 of MD5 encoded string"
+									}
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"$ref": "#/components/responses/status_res--ob"
+					},
+					"400": {
+						"$ref": "#/components/responses/400"
+					}
+				}
+			}
+		},
+		"/api/v1/payment/refund": {
+			"post": {
+				"tags": ["Refund"],
+				"summary": "Refund request",
+				"operationId": "refund",
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"required": ["merchant_key", "payment_id", "hash"],
+								"properties": {
+									"merchant_key": {
+										"description": "Key for Merchant identification",
+										"type": "string",
+										"format": "uuid",
+										"example": " xxxxx-xxxxx-xxxxx"
+									},
+									"payment_id": {
+										"type": "string",
+										"maxLength": 255,
+										"format": "uuid",
+										"example": "dc66cdd8-d702-11ea-9a2f-0242c0a87002",
+										"description": "Payment ID (public)"
+									},
+									"hash": {
+										"type": "string",
+										"description": "Special signature to validate your request to Payment Platform Addition in Signature section \n Must be SHA1 of MD5 encoded string"
+									},
+									"amount": {
+										"type": "string",
+										"format": "float",
+										"example": "20.00",
+										"description": "Amount to refund. It is required for particular refund. If amount is not specified the full order amount is settled by default."
+									}
+								},
+								"example": {
+									"merchant_key": "xxxxx-xxxxx-xxxxx",
+									"payment_id": "63c781cc-de3d-11eb-a1f1-0242ac130006",
+									"amount": "0.19",
+									"hash": "{{operation_hash}}"
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"payment_id": {
+											"type": "string",
+											"maxLength": 255,
+											"format": "uuid",
+											"example": "dc66cdd8-d702-11ea-9a2f-0242c0a87002",
+											"description": "Payment ID (public)"
+										},
+										"result": {
+											"type": "string",
+											"exmaple": "accepted"
+										}
+									}
+								},
+								"example": {
+									"payment_id": "63c781cc-de3d-11eb-a1f1-0242ac130006",
+									"result": "accepted"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/post": {
+			"servers": [{ "url": "https://api.dineropay.com" }],
+			"post": {
+				"tags": ["Scheduling"],
+				"summary": "create a schedule id to be used with recurring payments",
+				"operationId": "schedule-id",
+				"requestBody": {
+					"content": {
+						"multipart/form-data": {
+							"schema": {
+								"type": "object",
+								"required": [
+									"action",
+									"client_key",
+									"name",
+									"interval_length",
+									"interval_unit",
+									"payment_count",
+									"hash"
+								],
+								"properties": {
+									"action": {
+										"description": "Action to create a new schedule - fixed value",
+										"type": "string",
+										"example": "CREATE_SCHEDULE"
+									},
+									"client_key": {
+										"type": "string",
+										"maxLength": 255,
+										"format": "uuid",
+										"example": "dc66cdd8-d702-11ea-9a2f-0242c0a87002",
+										"description": "Unique key (Merchant key)"
+									},
+									"hash": {
+										"type": "string",
+										"description": "Special signature to validate your request to Payment Platform"
+									},
+									"name": {
+										"type": "string",
+										"description": "name of the schedule id",
+										"example": "gym membership"
+									},
+									"interval_length": {
+										"type": "integer",
+										"example": "15",
+										"description": "Interval length - how often the payments occurs. Cannot be set `0`. For example, to set a schedule for payments every 15 days, you need to set:`interval_length = 15`, `interval_unit = day`"
+									},
+									"interval_unit": {
+										"type": "string",
+										"example": "day",
+										"description": "Possible values are `day` and `month`"
+									},
+									"day_of_month": {
+										"type": "integer",
+										"maximum": 31,
+										"minimum": 1,
+										"example": "10",
+										"description": "Day of month when payment has to occur. Available only if interval_unit = month. Possible values: from 1 to 31. If day_of_month = 29, 30, or 31 and there are no days 29, 30, or 31 in the month, then the last day of the month is used. If day_of_month is not defined, then payment occurs on the day the initiating payment is created"
+									},
+									"payments_count": {
+										"type": "integer",
+										"example": "4",
+										"description": "Payments count in schedule"
+									},
+									"delays": {
+										"type": "integer",
+										"example": "2",
+										"description": "Number of skipped intervals of the scheduled before payment cycle starts"
+									}
+								},
+								"example": {
+									"action": "CREATE_SCHEDULE",
+									"client_key": "63c781cc-de3d-11eb-a1f1-0242ac130006",
+									"name": "gym membership",
+									"interval_length": 20,
+									"interval_unit": "day",
+									"payments_count": 10,
+									"hash": "{{operation_hash}}"
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"action": {
+											"description": "Action to create a new schedule - fixed value",
+											"type": "string",
+											"example": "CREATE_SCHEDULE"
+										},
+										"result": {
+											"type": "string",
+											"example": "SUCCESS"
+										},
+										"id": {
+											"type": "string",
+											"format": "uuid",
+											"maxLength": 255,
+											"example": "84f2c56e-fa1a-11ed-bfb3-5acabb05365f"
+										}
+									}
+								},
+								"example": {
+									"action": "CREATE_SCHEDULE",
+									"result": "SUCCESS",
+									"id": "84f2c56e-fa1a-11ed-bfb3-5acabb05365f"
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	},
+	"components": {
+		"schemas": {
+			"Recurring_ob": {
+				"type": "object",
+				"required": [
+					"merchant_key",
+					"recurring_init_trans_id",
+					"recurring_token",
+					"hash",
+					"order"
+				],
+				"properties": {
+					"recurring_init_trans_id": {
+						"type": "string",
+						"description": "Transaction ID of the primary transaction in the Payment Platform",
+						"format": "uuid",
+						"example": "dc66cdd8-d702-11ea-9a2f-0242c0a87002"
+					},
+					"recurring_token": {
+						"type": "string",
+						"description": "Recurring token",
+						"example": "9a2f-0242c0a87002"
+					},
+					"schedule_id": {
+						"type": "string",
+						"format": "uuid",
+						"description": "Schedule ID for recurring payments it s available when `recurring_init = true` "
+					},
+					"hash": {
+						"type": "string",
+						"description": "Special signature to validate your request to Payment Platform Addition in Signature section \n Must be SHA1 of MD5 encoded string"
+					},
+					"order": {
+						"allOf": [
+							{
+								"$ref": "#/components/schemas/Order_ob"
+							}
+						]
+					}
+				}
+			},
+			"Authentication_ob": {
+				"type": "object",
+				"required": [
+					"merchant_key",
+					"operation",
+					"sucess_url",
+					"hash",
+					"order"
+				],
+				"description": "this object is used to start a a payment session",
+				"properties": {
+					"merchant_key": {
+						"description": "Key for Merchant identification",
+						"type": "string",
+						"format": "uuid",
+						"example": " xxxxx-xxxxx-xxxxx"
+					},
+					"operation": {
+						"type": "string",
+						"description": "Defines a payment transaction",
+						"enum": ["purchase"]
+					},
+					"methods": {
+						"type": "array",
+						"items": {
+							"type": "string",
+							"description": "Names of the desired payment method to be available in the checkout page",
+							"example": "[stcpay ,visa]"
+						},
+						"description": "An array of payment methods. Limits the available methods on the Checkout page (the list of the possible values in the Payment methods section). In the case of parameter absence, the pre-routing rules are applied. If pre-routing rules are not configured, all available payment methods are displayed"
+					},
+					"sucess_url": {
+						"type": "string",
+						"maxLength": 1024,
+						"format": "url",
+						"description": "URL to redirect the Customer in case of the successful payment"
+					},
+					"cancel_url": {
+						"type": "string",
+						"maxLenght": 1024,
+						"format": "url",
+						"description": "URL to return Customer in case of a payment cancellation \n (“Close” button on the Checkout page)"
+					},
+					"url_target": {
+						"type": "string",
+						"description": "Name of, or keyword for a browsing context where Customer should be returned according to HTML specification"
+					},
+					"req_token": {
+						"type": "boolean",
+						"description": "Special attribute pointing for further tokenization If the `card_token` is specified, `req_token` will be ignored"
+					},
+					"card_token": {
+						"type": "array",
+						"items": {
+							"type": "string",
+							"description": "Credit card token value"
+						},
+						"maxLength": 64,
+						"description": "Credit card token value",
+						"example": "[f5d6a0ab6fcfb6487a39e2256e50fff3c95aaa97]"
+					},
+					"recurring_init": {
+						"type": "boolean",
+						"description": "Initialization of the transaction with possible following recurring"
+					},
+					"schedule_id": {
+						"type": "string",
+						"format": "uuid",
+						"description": "Schedule ID for recurring payments it s available when `recurring_init = true` "
+					},
+					"hash": {
+						"type": "string",
+						"description": "Special signature to validate your request to Payment Platform Addition in Signature section \n Must be SHA1 of MD5 encoded string"
+					},
+					"order": {
+						"allOf": [
+							{
+								"$ref": "#/components/schemas/Order_ob"
+							}
+						]
+					},
+					"customer": {
+						"allOf": [
+							{
+								"$ref": "#/components/schemas/Customer_ob"
+							}
+						]
+					},
+					"billing_address": {
+						"type": "object",
+						"description": "Billing address information \n **Condition:** If the object or some object's parameters are NOT specified in the request, then it will be displayed on the Checkout page (if a payment method needs)",
+						"properties": {
+							"country": {
+								"$ref": "#/components/schemas/Country"
+							},
+							"state": {
+								"type": "string",
+								"format": "ISO 3166-1 alpha-2",
+								"description": "Billing state address"
+							},
+							"address": {
+								"type": "string",
+								"minimum": 2,
+								"maximum": 32,
+								"description": "Billing address"
+							},
+							"city": {
+								"type": "string",
+								"minimum": 2,
+								"maximum": 32,
+								"description": "Billing city"
+							},
+							"house_number": {
+								"type": "string",
+								"minimum": 1,
+								"maximum": 9,
+								"description": "house number",
+								"nullablle": true
+							},
+							"zip": {
+								"type": "string",
+								"minimum": 2,
+								"maximum": 10,
+								"description": "Billing zip code"
+							},
+							"phone": {
+								"type": "string",
+								"format": "phone",
+								"maxLength": 32,
+								"description": "Phone number in the `<country_code> <number>` format",
+								"example": "+966 xxxxxxxxx"
+							}
+						}
+					}
+				}
+			},
+			"Order_ob": {
+				"type": "object",
+				"description": "Information about an order",
+				"required": ["number", "amount", "currency", "description"],
+				"properties": {
+					"number": {
+						"maxLenght": 255,
+						"type": "string",
+						"description": "Order ID",
+						"exmaple": "11A22"
+					},
+					"amount": {
+						"$ref": "#/components/schemas/Amount"
+					},
+					"currency": {
+						"$ref": "#/components/schemas/Currency"
+					},
+					"description": {
+						"type": "string",
+						"maxLenght": 1024,
+						"description": "Product name",
+						"example": "gift"
+					}
+				}
+			},
+			"Customer_ob": {
+				"type": "object",
+				"description": "Customer's information. Send an object if a payment method needs",
+				"properties": {
+					"name": {
+						"type": "string",
+						"format": "Latin basic [a-z A-Z]",
+						"description": "Customer's name Condition: If the parameter is NOT specified in the request, then it will be displayed on the Checkout page (if a payment method needs) - the \"Cardholder\" field"
+					},
+					"email": {
+						"$ref": "#/components/schemas/Email"
+					}
+				}
+			},
+			"Currency": {
+				"type": "string",
+				"maxLength": 3,
+				"format": "ISO 4217",
+				"description": "Currency code in the ISO 4217 standard (e.g. 'SAR')."
+			},
+			"Country": {
+				"type": "string",
+				"maxLength": 2,
+				"format": "ISO 3166-1 alpha-2",
+				"example": "SA",
+				"description": "Country code in the ISO 3166-1 alpha-2 format (e.g. 'SA')"
+			},
+			"Email": {
+				"type": "string",
+				"format": "email",
+				"maxLength": 254,
+				"description": "Customer's email address Condition: If the parameter is NOT specified in the request, then it will be displayed on the Checkout page (if a payment method needs) - the \"E-mail\" field"
+			},
+			"Amount": {
+				"type": "float",
+				"maxLength": 255,
+				"minimun": 0,
+				"example": 22.0,
+				"description": "Pay attention that amount will be exponent so if you pass `1 it will be 1.00` "
+			}
+		},
+		"responses": {
+			"Success_authentication": {
+				"description": "OK",
+				"content": {
+					"application/json": {
+						"schema": {
+							"type": "object",
+							"description": "the session url it will be used to forward the customer to the checkout page",
+							"properties": {
+								"redirect_url": {
+									"type": "string",
+									"fromat": "url",
+									"readOnly": true
+								}
+							}
+						}
+					}
+				}
+			},
+			"400": {
+				"description": "Invalid data submitted or request processing error",
+				"content": {
+					"application/json": {
+						"schema": {
+							"type": "object",
+							"properties": {
+								"error_code": {
+									"type": "integer"
+								},
+								"error_message": {
+									"type": "string",
+									"description": "what cause the error"
+								},
+								"errors": {
+									"type": "array",
+									"items": {
+										"type": "object",
+										"properties": {
+											"error_code": {
+												"type": "integer"
+											},
+											"error_message": {
+												"type": "string",
+												"description": "what cause the error"
+											}
+										}
+									},
+									"example": {
+										"error_code": 0,
+										"error_message": "Request data is invalid",
+										"errors": [
+											{
+												"error_code": 100000,
+												"error_message": "operation: The value you selected is not a valid choice."
+											},
+											{
+												"error_code": 100000,
+												"error_message": "order.amount: This value should be greater than 0."
+											},
+											{
+												"error_code": 100000,
+												"error_message": "cancel_url: This value is not a valid URL."
+											},
+											{
+												"error_code": 100000,
+												"error_message": "hash: Hash is not valid."
+											}
+										]
+									}
+								}
+							}
+						}
+					}
+				}
+			},
+			"status_res--ob": {
+				"description": "OK",
+				"content": {
+					"application/json": {
+						"schema": {
+							"type": "object",
+							"required": ["status", "date", "payment_id", "order", "customer"],
+							"description": "the response will show if the saved card has been successfully charged or not ",
+							"properties": {
+								"status": {
+									"type": "string",
+									"enum": [
+										"prepare",
+										"settled",
+										"pending",
+										"3ds",
+										"redirect",
+										"decline",
+										"refund",
+										"reversal",
+										"chargeback"
+									],
+									"description": "Payment status",
+									"readOnly": true,
+									"example": "settled"
+								},
+								"payment_id": {
+									"type": "string",
+									"readOnly": true,
+									"maxLenght": 255,
+									"format": "uuid",
+									"description": "Transaction ID (public)",
+									"example": "dc66cdd8-d702-11ea-9a2f-0242c0a87002"
+								},
+								"reason": {
+									"type": "string",
+									"description": "Decline reason translation for unsuccessful payment. \n It displays only if the transaction is unsuccessful",
+									"readOnly": true,
+									"example": "The operation was rejected. Please contact the site support"
+								},
+								"date": {
+									"type": "strig",
+									"format": "ISO 8601",
+									"description": "Transaction date",
+									"example": "2020-08-05"
+								},
+								"order": {
+									"allOf": [
+										{
+											"$ref": "#/components/schemas/Order_ob"
+										}
+									]
+								},
+								"customer": {
+									"allOf": [
+										{
+											"$ref": "#/components/schemas/Customer_ob"
+										}
+									]
+								}
+							}
+						},
+						"examples": {
+							"success": {
+								"summary": "settled",
+								"value": {
+									"payment_id": "24f7401c-fc47-11ec-8d07-0242ac120015",
+									"date": "2022-07-05 09:45:03",
+									"status": "settled",
+									"order": {
+										"number": "f0a51dfa-fc43-11ec-8128-0242ac120004-1",
+										"amount": "3.01",
+										"currency": "SAR",
+										"description": "bloodline"
+									},
+									"customer": {
+										"name": "John Doe",
+										"email": "success@gmail.com"
+									}
+								}
+							},
+							"rejected": {
+								"summary": "declined",
+								"value": {
+									"payment_id": "03e46e96-de42-11eb-aea7-0242ac140002",
+									"date": "2021-07-06 10:07:47",
+									"status": "decline",
+									"reason": "Declined by processing",
+									"order": {
+										"number": "order-1234",
+										"amount": "1.00",
+										"currency": "SAR",
+										"description": "Important gift"
+									},
+									"customer": {
+										"name": "John Doe",
+										"email": "test@mail.com"
+									}
+								}
+							}
+						}
+					}
+				}
+			},
+			"token_res--ob": {
+				"description": "OK",
+				"content": {
+					"application/json": {
+						"schema": {
+							"type": "object",
+							"required": ["status", "date", "payment_id", "order"],
+							"description": "the response will show if the saved card has been successfully charged or not ",
+							"properties": {
+								"status": {
+									"type": "string",
+									"enum": ["settled", "pending", "declined"],
+									"description": "Payment status",
+									"readOnly": true,
+									"example": "settled"
+								},
+								"payment_id": {
+									"type": "string",
+									"readOnly": true,
+									"maxLenght": 255,
+									"format": "uuid",
+									"description": "Transaction ID (public)",
+									"example": "dc66cdd8-d702-11ea-9a2f-0242c0a87002"
+								},
+								"reason": {
+									"type": "string",
+									"description": "Decline reason translation for unsuccessful payment. \n It displays only if the transaction is unsuccessful",
+									"readOnly": true,
+									"example": "The operation was rejected. Please contact the site support"
+								},
+								"date": {
+									"type": "strig",
+									"format": "ISO 8601",
+									"description": "Transaction date",
+									"example": "2020-08-05"
+								},
+								"schedule_id": {
+									"type": "string",
+									"description": "Schedule ID for recurring payments",
+									"format": "uuid",
+									"example": "57fddecf-17b9-4d38-9320-a670f0c29ec0"
+								},
+								"order": {
+									"allOf": [
+										{
+											"$ref": "#/components/schemas/Order_ob"
+										}
+									]
+								}
+							}
+						},
+						"examples": {
+							"success": {
+								"summary": "Recurring (settled)",
+								"value": {
+									"status": "settled",
+									"payment_id": "dc66cdd8-d702-11ea-9a2f-0242c0a87002",
+									"date": "2020-08-05 07:41:10",
+									"order": {
+										"number": "order-1234",
+										"amount": "1.00",
+										"currency": "SAR",
+										"description": "gift"
+									}
+								}
+							},
+							"rejected": {
+								"summary": "Recurring (declined)",
+								"value": {
+									"status": "declined",
+									"reason": "declined by processing",
+									"payment_id": "dc66cdd8-d702-11ea-9a2f-0242c0a87002",
+									"date": "2020-08-05 07:41:10",
+									"order": {
+										"number": "order-1234",
+										"amount": "1.00",
+										"currency": "SAR",
+										"description": "gift"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}
