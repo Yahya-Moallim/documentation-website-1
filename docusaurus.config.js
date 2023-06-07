@@ -8,7 +8,8 @@ const darkCodeTheme = require("prism-react-renderer/themes/dracula");
 /** @type {import('@docusaurus/types').Config} */
 const config = {
 	title: "Dinero Pay",
-	tagline: "help you to empower your online business",
+	tagline:
+		"help you to empower your online business by providing you with all the tools you need to start getting paid",
 	url: "https://dineropay.com",
 	baseUrl: "/",
 	onBrokenLinks: "warn",
@@ -136,7 +137,7 @@ const config = {
 						label: "API",
 					},
 					{
-						href: "https://gate.dineropay.com/login?continue=%2F",
+						href: "https://dashabord.dineropay.com",
 						label: "Dashboard",
 						position: "right",
 					},
@@ -151,7 +152,7 @@ const config = {
               </a>`,
 					},
 				],
-				copyright: `Copyright © ${new Date().getFullYear()} Dinero Pay, Inc. Built with ❤️ for the developers.`,
+				copyright: `Copyright © ${new Date().getFullYear()} Dinero Pay, Inc. Built with ❤️ for the Developers.`,
 			},
 			prism: {
 				theme: lightCodeTheme,

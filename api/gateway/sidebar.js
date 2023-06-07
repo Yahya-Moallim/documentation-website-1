@@ -1,5 +1,5 @@
 module.exports = [
-	{ type: "doc", id: "gateway/public-rest-api" },
+	{ type: "doc", id: "gateway/dinero-pay-offical-documentation" },
 	{
 		type: "category",
 		label: "Purchase",

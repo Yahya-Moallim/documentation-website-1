@@ -11,7 +11,7 @@ keywords:
 # Redirect
 
 Using our Prebuilt or you can call it the redirect Integration is the fastest way to go live <br></br>
-As we are going to handle the payment process instead of you
+As we are going to handle the payment process instead of you.
 
 ## Before start
 
@@ -25,11 +25,12 @@ As we are going to handle the payment process instead of you
 Authentication request is the main request by making this request you will receive the redirect url that you will redirecdt your customer to to continue the payment process .
 Once you are ready to create a transaction
 
-> 1. Create a Authenticate <u>[object](../../api/gateway/authentication-request)</u> as json
+> 1. Create an Authenticate <u>[object](../../api/gateway/authentication-request)</u> as json
 > 2. send a `POST` reqeust to `https://checkout.dineropay.com/api/v1/session`
 > 3. In the response get the `redirect_url`
 > 4. Redirect the customer to the checkout page
-> 5. Receive the response either via `callback_notification` or `success_url`
+> 5. once the customer finish the payment process he will be redirected to `success_url` upon success or `cancel_url` upon failure payments.
+> 6. Receive the response via `callback_notification` to update the transaction status .
 
 :::info
 The list of the fields that will be dipslayed on the Checkout page depends on the request parameters and the specified payment method.
