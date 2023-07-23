@@ -1,8 +1,8 @@
 {
-    "label": "Payments",
-    "position": 3,
-    "link": {
-        "slug": "/payments"
-    }
-
+	"label": "Payments",
+	"position": 3,
+	"link": {
+		"slug": "/payments",
+		"type": "generated-index"
+	}
 }
