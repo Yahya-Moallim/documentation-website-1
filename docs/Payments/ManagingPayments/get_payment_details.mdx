@@ -8,20 +8,20 @@ keyword:
 
 # Get the payment details
 
-To get the payment status you will make a <u>[`GET /api/v1/payment/status`](../../../api/gateway/check-transaction-status)</u> <br></br>
-You will retrieve the payment status and if it's declinced you will receive the reason .
+To get the payment status, you will make a <u>[`GET /api/v1/payment/status`](../../../api/gateway/check-transaction-status)</u>. <br></br>
+You will retrieve the payment status and if it's declined, you will receive the reason.
 
 ---
 
 ## Types of payment status
 
-the payment status is a way for the gateway to tell you in what state your transaction in , and based on that you will make the appropriate action.
+The payment status is a way for the gateway to tell you what state your transaction is in, and based on that, you should take the appropriate action.
 
-By default you will recieve a `callback_notification` but in case if you want to make a follow up request to check for the payment status, you can make a <u>[`GET /api/v1/payment/status`](../../../api/gateway/check-transaction-status)</u>.
+By default, you will receive a `callback_notification`, but in case you want to make a follow-up request to check for the payment status, you can make a <u>[`GET /api/v1/payment/status`](../../../api/gateway/check-transaction-status)</u>.
 
 # Status
 
-payment status will be one of these
+Payment status will be one of these
 
 - prepare
 - settled
@@ -33,17 +33,17 @@ payment status will be one of these
 - reversal
 - chargeback
 
-> in case the transaction is not successful you receive a `reason` pramater in the response
+> If the transaction is unsuccessful, you should `receive` a reason parameter in the response.
 
 ## Sample request
 
-to check the payment status you will have to pass the `payment_id` so make sure to save it , once you recieve it from the `callback_notification`.
+To check the payment status, you will need to provide the `payment_id`, so make sure to save it once you receive it from the `callback_notification`.
 
 ```json
 {
-	"merchant_key": " xxxxx-xxxxx-xxxxx",
-	"payment_id": "dc66cdd8-d702-11ea-9a2f-0242c0a87002",
-	"hash": "xxxxxxxxxxx"
+  "merchant_key": " xxxxx-xxxxx-xxxxx",
+  "payment_id": "dc66cdd8-d702-11ea-9a2f-0242c0a87002",
+  "hash": "xxxxxxxxxxx"
 }
 ```
 
@@ -51,18 +51,18 @@ to check the payment status you will have to pass the `payment_id` so make sure 
 
 ```json
 {
-	"payment_id": "24f7401c-fc47-11ec-8d07-0242ac120015",
-	"date": "2022-07-05 09:45:03",
-	"status": "settled",
-	"order": {
-		"number": "f0a51dfa-fc43-11ec-8128-0242ac120004-1",
-		"amount": "3.01",
-		"currency": "SAR",
-		"description": "gift"
-	},
-	"customer": {
-		"name": "John Doe",
-		"email": "success@gmail.com"
-	}
+  "payment_id": "24f7401c-fc47-11ec-8d07-0242ac120015",
+  "date": "2022-07-05 09:45:03",
+  "status": "settled",
+  "order": {
+    "number": "f0a51dfa-fc43-11ec-8128-0242ac120004-1",
+    "amount": "3.01",
+    "currency": "SAR",
+    "description": "gift"
+  },
+  "customer": {
+    "name": "John Doe",
+    "email": "success@gmail.com"
+  }
 }
 ```

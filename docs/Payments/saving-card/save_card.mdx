@@ -12,9 +12,9 @@ sidebar_position: 1
 
 ## Card data tokenization
 
-For regular customers, we have made the payment page even more convenient and simple.
+For regular customers, we have made the payment page even more convenient and simpler.
 
-You can save the customer's card data so that they can reuse it for future payments.
+You can save customers' card data so that they can reuse it for future payments.
 
 > To do this, you need to send the `req_token = true` parameter in the [Authentication](../../api/gateway/authentication-request) request.
 > And then, in the `callback_notification`, you will receive a card token.
@@ -23,22 +23,21 @@ You can save the customer's card data so that they can reuse it for future payme
 
 ```json
 {
-	"merchant_key": "1d903ea0-e8dc-11ed-bbba-d60e6b1bd8d8",
-	"operation": "purchase",
-	"req_token": true,
-	"methods": ["card"],
-	"order": {
-		"number": "order-1234",
-		"amount": "1.00",
-		"currency": "SAR",
-		"description": "gift"
-	},
-	"cancel_url": "https://example.com/cancel",
-	"success_url": "https://example.com/success",
-	"hash": "416830ec3be6ac7c6ca539a4e9dbdd5c8971097d"
+  "merchant_key": "1d903ea0-e8dc-11ed-bbba-d60e6b1bd8d8",
+  "operation": "purchase",
+  "req_token": true,
+  "methods": ["card"],
+  "order": {
+    "number": "order-1234",
+    "amount": "1.00",
+    "currency": "SAR",
+    "description": "gift"
+  },
+  "cancel_url": "https://example.com/cancel",
+  "success_url": "https://example.com/success",
+  "hash": "416830ec3be6ac7c6ca539a4e9dbdd5c8971097d"
 }
 ```
 
-not that we add the `req_token` parameter in the request to indicate that we want to save the customer card .
-
-by defaut the value of `req_token` it will be `false`
+Note that we add the `req_token` parameter in the request to indicate that we wish to save the customer's card.
+By defaut the value of `req_token` will be `false`
