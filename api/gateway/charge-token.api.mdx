@@ -346,7 +346,7 @@ api:
       },
     "info":
       {
-        "title": "Dinero Pay Offical documentation",
+        "title": "Dinero Pay official documentation",
         "description": "This comprehensive guide will walk you through the various endpoints, request/response structures, and authentication mechanisms required to integrate our payment solution seamlessly into your applications. Whether you're a developer, a business owner, or a payment service provider, this documentation will empower you to leverage the power of our payment gateway effortlessly.\n We have designed this documentation to be user-friendly and easily navigable, enabling you to find the information you need quickly. Additionally, we provide code samples and SDKs in popular programming languages to further simplify the integration process.",
         "version": "",
       },
@@ -376,7 +376,7 @@ api:
       },
   }
 sidebar_class_name: "post api-method"
-info_path: api/gateway/dinero-pay-offical-documentation
+info_path: api/gateway/dinero-pay-official-documentation
 custom_edit_url: null
 ---
 
@@ -410,4 +410,3 @@ Information about an order
 Invalid data submitted or request processing error
 
 </div><div><MimeTabs schemaType={"response"}><TabItem label={"application/json"} value={"application/json"}><SchemaTabs><TabItem label={"Schema"} value={"Schema"}><details style={{}} data-collapsed={false} open={true}><summary style={{"textAlign":"left"}}><strong>Schema</strong></summary><div style={{"textAlign":"left","marginLeft":"1rem"}}></div><ul style={{"marginLeft":"1rem"}}><SchemaItem collapsible={false} name={"error_code"} required={false} deprecated={undefined} schemaDescription={undefined} schemaName={"integer"} qualifierMessage={undefined} defaultValue={undefined}></SchemaItem><SchemaItem collapsible={false} name={"error_message"} required={false} deprecated={undefined} schemaDescription={"what cause the error"} schemaName={"string"} qualifierMessage={undefined} defaultValue={undefined}></SchemaItem><SchemaItem collapsible={true} className={"schemaItem"}><details style={{}}><summary style={{}}><strong>errors</strong><span style={{"opacity":"0.6"}}> object[]</span></summary><div style={{"marginLeft":"1rem"}}><SchemaItem collapsible={false} name={"error_code"} required={false} deprecated={undefined} schemaDescription={undefined} schemaName={"integer"} qualifierMessage={undefined} defaultValue={undefined}></SchemaItem><SchemaItem collapsible={false} name={"error_message"} required={false} deprecated={undefined} schemaDescription={"what cause the error"} schemaName={"string"} qualifierMessage={undefined} defaultValue={undefined}></SchemaItem></div></details></SchemaItem></ul></details></TabItem><TabItem label={"Example (from schema)"} value={"Example (from schema)"}><ResponseSamples responseExample={"{\n  \"error_code\": 0,\n  \"error_message\": \"string\",\n  \"errors\": {\n    \"error_code\": 0,\n    \"error_message\": \"Request data is invalid\",\n    \"errors\": [\n      {\n        \"error_code\": 100000,\n        \"error_message\": \"operation: The value you selected is not a valid choice.\"\n      },\n      {\n        \"error_code\": 100000,\n        \"error_message\": \"order.amount: This value should be greater than 0.\"\n      },\n      {\n        \"error_code\": 100000,\n        \"error_message\": \"cancel_url: This value is not a valid URL.\"\n      },\n      {\n        \"error_code\": 100000,\n        \"error_message\": \"hash: Hash is not valid.\"\n      }\n    ]\n  }\n}"} language={"json"}></ResponseSamples></TabItem></SchemaTabs></TabItem></MimeTabs></div></TabItem></ApiTabs></div>
-

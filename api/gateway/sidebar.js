@@ -1,5 +1,5 @@
 module.exports = [
-	{ type: "doc", id: "gateway/dinero-pay-offical-documentation" },
+	{ type: "doc", id: "gateway/dinero-pay-official-documentation" },
 	{
 		type: "category",
 		label: "Purchase",
@@ -49,7 +49,7 @@ module.exports = [
 			{
 				type: "doc",
 				id: "gateway/schedule-id",
-				label: "create a schedule id to be used with recurring payments",
+				label: "Create a schedule id to be used with recurring payments",
 				className: "gateway-method post",
 			},
 		],
