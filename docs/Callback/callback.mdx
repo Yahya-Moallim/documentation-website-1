@@ -8,44 +8,41 @@ sidebar_position: 7
 
 # Callback notification
 
-Callback notification is the main way to receive updates regarding the payment status , so it's critical to make sure that you are implementing that correctly in your applicatoin .<br></br>
-This service allows you to subscribe to events happening in the _payment_ life cycle
-We will notify in case of an event occured.
+Callback notification is the primary way to receive updates regarding the payment status, so you must implement that correctly in your application.<br></br>
+This service allows you to receive a notification in case of an event has occurred in the _payment_ life cycle.
 
 ## Usage
 
-In order to use the the callback and receive notification you will to have to setup the notification_url <br></br>
+To use the callback and receive notifications, you must set up the `notification_url`. <br></br>
 
-> - You can set it up from the dashboard by clicking on _your avatar icon_ on the right corner.
+> - You can set it up from the dashboard by clicking on _your avatar icon_ in the right corner.
 
 ## Delivery protocol
 
-When the system send an event to your server , your system should replay with a `status_code= 200` <br></br>
-In case if it's not successfully delivered the system will make up to _3_ additional attempts<br></br>
-between each attempt the interval will increase <br></br>
-no further delivery attempts will be made if the callback is not successfully delivered , however you can resend it manually from the dashabord make sure to update the notification_url as well .
+When the system send an event to your server , your system should replay with a `status_code= 200`. <br></br>
+If it's not successfully delivered, the system will make up to **three** additional attempts between each attempt, there will be an increased interval, and no further delivery attempts will be made if the callback is not successfully delivered. However, you can resend it manually from the dashboard, but you must update the `notification_url` as well.
 
 :::note
-Please note that due to the asynchronous nature of network requests, it is possible for a callback delivery confirmation (HTTP response with a 200 series status code) to not properly arrive from the callback's target server. Therefore it is possible in case of severe network faults for the target server to receive a callback, respond to it with a 200 series HTTP status code and then receive the same callback after an interval.
+Please note that due to the asynchronous nature of network requests, it is possible for a callback delivery confirmation (HTTP response with a 200 series status code) to not properly arrive from the callback's target server. Therefore it is possible in case of severe network faults for the target server to receive a callback, respond to it with a 200 series HTTP status code, and then receive the same callback after an interval.
 :::
 
 ## Events
 
-we will send you a notification when a certain event/operation occured in the payment life cycle .
+We will send you a notification when some events/operations Occur in the payment life cycle.
 
 > you can choose what type of events to listen for by choosing them from the dasbhoard .
 
 ### List of Events
 
-| Event name | Description                                                                                                                                                                                                   |
-| ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| sale       | Emitted when a Purchase is executed. This happens as a result of POST /api/v1/session/ request executed successfully or of any of the tokenization/recurring API methods, including scheduled payments        |
-| 3ds        | Emitted when the payment cycle is entered the 3DS stage                                                                                                                                                       |
-| redirect   | Emitted when redirect_url is sent back as a result of the `POST /api/v1/session/ or the recurring the api ` request                                                                                           |
-| refund     | Emitted when a refudn transaction performed                                                                                                                                                                   |
-| void       | Emitted when a void transaction performed                                                                                                                                                                     |
-| recurring  | Emitted once POST /purchases/{id}/cancel/ request succeeds. It won't be possible to pay for the related Purchase after that. Purchase.status will be == `cancelled`                                           |
-| chargeback | Emitted when a Purchase having `skip_capture == true` has its payform submitted and "payment" performed successfully. The specified amount of funds will be placed on hold. Purchase.status will be == `hold` |
+| Event name | Description                                                                                                                                                                                                 |
+| ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| sale       | It's emitted when a purchase is executed. This happens as a result of `POST /api/v1/session/` request executed successfully or any of the tokenization/recurring API methods, including scheduled payments. |
+| 3ds        | It's emitted when the payment cycle enters the 3DS stage.                                                                                                                                                   |
+| redirect   | It's emitted when `redirect_url` is sent back as a result of the `POST /api/v1/session/` or the recurring the api request.                                                                                  |
+| refund     | It's emitted when a refund transaction is performed.                                                                                                                                                        |
+| void       | It's emitted when a void transaction is performed.                                                                                                                                                          |
+| recurring  | It's emitted when there is a scheduled payment occurs.                                                                                                                                                      |
+| chargeback | It's emitted when the bank invokes a chargeback notification.                                                                                                                                               |
 
 ## Transaction status
 
@@ -54,51 +51,49 @@ Along side with the event type you will receive the status of that event .
 :::note
 ⚠️ Pay attention
 
-> that successful transaction does not mean successful final status for the payment
-> For example :
-> Payment is successfully completed if transaction has `status` = success and type = `sale`.<br></br>
-> Payment is not completed if transaction has `status` = success and `type` = redirect. <br></br>
+> A successful transaction does not mean a successful payment. For example, the payment is successful if the transaction has `status = success` and `type = sale`.<br></br>
+> The payment is unsuccessful if the transaction has `status = success` and `type = redirect`.
 
 :::
 
 ### List of Transaction status
 
-| Transaction status | Operation type                                      | Description                                                         |
-| ------------------ | --------------------------------------------------- | ------------------------------------------------------------------- |
-| success            | sale,3ds,redirect,refund, void,recurring,chargeback | transaction is successfully completed in the payment platform       |
-| fail               | sale, refund, void, recurring                       | transaction has the errors and is not validated by payment platform |
-| waiting            | sale, refund,void, recurring                        | transaction is being processed by payment platform                  |
+| Transaction status | Operation type                                      | Description                                                              |
+| ------------------ | --------------------------------------------------- | ------------------------------------------------------------------------ |
+| success            | sale,3ds,redirect,refund, void,recurring,chargeback | The transaction is completed successfully in the payment platform.       |
+| fail               | sale, refund, void, recurring                       | The transaction has errors and is not validated by the payment platform. |
+| waiting            | sale, refund,void, recurring                        | The transaction is being processed by the payment platform.              |
 
 ## Callback parameters
 
-Below is a list of all possible values that will be sent in the callback notification
+The following is a list of all possible values in the callback notification.
 
-| Parameter               | Type   | Mandatory | Format             | Description                                                                                                                 | example                                                                                                                                                   |
-| ----------------------- | ------ | --------- | ------------------ | --------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| id                      | string | required  | uuid               | transaction id                                                                                                              | dc66cdd8-d702-11ea-9a2f-0242c0a87002                                                                                                                      |
-| order_number            | string | required  |                    | order id                                                                                                                    | order-1234                                                                                                                                                |
-| order_amount            | float  | required  |                    | order amount                                                                                                                | 2.00                                                                                                                                                      |
-| order_currency          | string | requried  | ISO 4217           | currency (3-character code)                                                                                                 | SAR                                                                                                                                                       |
-| order_description       | string | requried  |                    | product description                                                                                                         | a gift                                                                                                                                                    |
-| type                    | string | requried  |                    | operation type : [sale,3ds,redirect,refund,void,chargeback]                                                                 | sale                                                                                                                                                      |
-| status                  | string | requried  |                    | transaction status : [success, fail, waiting]                                                                               | success                                                                                                                                                   |
-| reason                  | string | optional  |                    | Decline or error reason (for "sale" and "refund" operation types only). It displays only if the transaction has FAIL status | The operation was rejected. Please contact the site support                                                                                               |
-| rrn                     | string | optional  | ISO 8583           | Retrieval Reference Number value from the acquirer system                                                                   | 2334343434                                                                                                                                                |
-| approval_code           | string | optional  |                    | Approval code value from teh acquirer system                                                                                | 000                                                                                                                                                       |
-| card                    | string | optional  | masked             | card number masked                                                                                                          | 41111**\***1111                                                                                                                                           |
-| card_expiration_data    | string | optional  |                    | card expiration date                                                                                                        | 12/2022                                                                                                                                                   |
-| card_token              | string | optional  |                    | Card token. It is available if the parameter `req_token` was enabled                                                        | VjFRaUxDSmhiR2NpT2lKU1V6STFO                                                                                                                              |
-| customer_name           | string | optional  |                    | customer's first and last name                                                                                              | Khalid nasser                                                                                                                                             |
-| customer_email          | string | optional  | email              | customer's email address                                                                                                    | test@test.com                                                                                                                                             |
-| customer_country        | string | optional  | ISO 3166-1 alpha-2 | customer's country                                                                                                          | SA                                                                                                                                                        |
-| customer_state          | string | optional  |                    | customer's state                                                                                                            | Najd                                                                                                                                                      |
-| customer_city           | string | optional  |                    | customer's city                                                                                                             | Riyadh                                                                                                                                                    |
-| customer_address        | string | optional  |                    | customer's address                                                                                                          | 123 sample street                                                                                                                                         |
-| customer_ip             | string | required  | ipv4               | customer's ip                                                                                                               | 10.10.10.10                                                                                                                                               |
-| date                    | date   | optional  |                    | transaction date                                                                                                            | 2020-08-05                                                                                                                                                |
-| recurring_inti_trans_id | string | optional  | uuid               | Reference to the first transaction that initializes the recurring (provided if recurring was initialized)                   | dc66cdd8-d702-11ea-9a2f-0242c0a87099                                                                                                                      |
-| schedule_id             | string | optional  |                    | It is available if schedule is used for recurring sale                                                                      |
-| hash                    | string | required  |                    | Special signature, used to validate callback Addition in Signature section.                                                 | **Must be SHA1 of MD5 encoded string (uppercased)**: payment_public_id + order.number + order.amount + order.currency + order.description + merchant.pass |
+| Parameter               | Type   | Mandatory | Format             | Description                                                                                                                   | example                                                                                                                                                   |
+| ----------------------- | ------ | --------- | ------------------ | ----------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| id                      | string | required  | uuid               | transaction id                                                                                                                | dc66cdd8-d702-11ea-9a2f-0242c0a87002                                                                                                                      |
+| order_number            | string | required  |                    | order id                                                                                                                      | order-1234                                                                                                                                                |
+| order_amount            | float  | required  |                    | order amount                                                                                                                  | 2.00                                                                                                                                                      |
+| order_currency          | string | required  | ISO 4217           | currency (3-character code)                                                                                                   | SAR                                                                                                                                                       |
+| order_description       | string | required  |                    | product description                                                                                                           | a gift                                                                                                                                                    |
+| type                    | string | required  |                    | operation type : [sale,3ds,redirect,refund,void,chargeback]                                                                   | sale                                                                                                                                                      |
+| status                  | string | required  |                    | transaction status : [success, fail, waiting]                                                                                 | success                                                                                                                                                   |
+| reason                  | string | optional  |                    | Decline or error reason (for "sale" and "refund" operation types only). It displays only if the transaction has a FAIL status | The operation was rejected. Please contact the site support                                                                                               |
+| rrn                     | string | optional  | ISO 8583           | Retrieval Reference Number value from the acquirer system                                                                     | 2334343434                                                                                                                                                |
+| approval_code           | string | optional  |                    | Approval code value from the acquirer system                                                                                  | 000                                                                                                                                                       |
+| card                    | string | optional  | masked             | card number masked                                                                                                            | 41111**\***1111                                                                                                                                           |
+| card_expiration_date    | string | optional  |                    | card expiration date                                                                                                          | 12/2022                                                                                                                                                   |
+| card_token              | string | optional  |                    | Card token. It is available if the parameter `req_token` was enabled                                                          | VjFRaUxDSmhiR2NpT2lKU1V6STFO                                                                                                                              |
+| customer_name           | string | optional  |                    | customer's first and last name                                                                                                | Khalid nasser                                                                                                                                             |
+| customer_email          | string | optional  | email              | customer's email address                                                                                                      | test@test.com                                                                                                                                             |
+| customer_country        | string | optional  | ISO 3166-1 alpha-2 | customer's country                                                                                                            | SA                                                                                                                                                        |
+| customer_state          | string | optional  |                    | customer's state                                                                                                              | Najd                                                                                                                                                      |
+| customer_city           | string | optional  |                    | customer's city                                                                                                               | Riyadh                                                                                                                                                    |
+| customer_address        | string | optional  |                    | customer's address                                                                                                            | 123 sample street                                                                                                                                         |
+| customer_ip             | string | required  | ipv4               | customer's ip                                                                                                                 | 10.10.10.10                                                                                                                                               |
+| date                    | date   | optional  |                    | transaction date                                                                                                              | 2020-08-05                                                                                                                                                |
+| recurring_inti_trans_id | string | optional  | uuid               | Reference to the first transaction that initializes the recurring (provided if recurring was initialized)                     | dc66cdd8-d702-11ea-9a2f-0242c0a87099                                                                                                                      |
+| schedule_id             | string | optional  |                    | It is available if schedule is used for recurring sale                                                                        |
+| hash                    | string | required  |                    | A special signature is used to validate callback Addition in the Signature section                                            | **Must be SHA1 of MD5 encoded string (uppercased)**: payment_public_id + order.number + order.amount + order.currency + order.description + merchant.pass |
 
 ### Sample callback notification request
 
@@ -130,4 +125,4 @@ Below is a list of all possible values that will be sent in the callback notific
 
 ## Update the notification_url
 
-> - In case you want to add a new or update the exsiting url , from the dashabord just replace the old one and save it .
+> - If you want to add a new one or update the existing URL from the dashboard, replace the old one and save it.

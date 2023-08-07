@@ -20,9 +20,9 @@ const sidebars = {
       collapsed:false,
       link: {
         type: "generated-index",
-        title: "GATEWAY API",
+        title: "API Gateway",
         description:
-          "Offical Documentation of Dinero Pay",
+          "Official Documentation of Dinero Pay",
         slug: "/",
         // collapsed: false,
       },

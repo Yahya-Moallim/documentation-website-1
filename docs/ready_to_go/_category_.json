@@ -1,7 +1,7 @@
 {
-    "label": " Ready to go Connector",
+    "label": " Ready To Go Connector",
     "link":{
         "type": "generated-index",
-        "description": "In order to help you with your integration checkout our list of ready-to-go connectors to the popular platforms that we’ve already built for you. It might save you some precious time if you use one of these to develop your project."
+        "description": "To help you with your integration, check out our list of ready-to-go connectors of the popular platforms built for you. They might save you time if you use one of these to develop your project."
     }
 }

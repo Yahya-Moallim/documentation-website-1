@@ -8,36 +8,36 @@ keyword:
   - password
 ---
 
-# merchant Key 🗝
+# Merchant Key 🗝
 
-Authenticate your account when using the API by including your `merchant key` in the request body <br></br>
-You can get your merchant key from the _Dashboard_ Your merchant key carry many privileges, so be sure to keep it secret!<br></br>
+Authenticate your account using the API by including your `merchant key` in the request body. <br></br>
+You can get your merchant key from the Dashboard. Your merchant key carries many privileges. So, be sure to keep it secret!<br></br>
 
-## passwrod
+## Passwrod
 
-Along side with providing the `merchant_key` in the rquest body you will also need to have access to the `password` . <br></br>
-You can get your password from the _Dashboard_. **this password will be used to create a hash that will be used as an extra security step to validate the request**. <br></br>
+Alongside providing the `merchant_key` in the request body, you will require access to the `password`. <br></br>
+You can get the password from the _Dashboard_. **This password is essential to create a hash that will ensure the integrity of the request.** <br></br>
 
 :::note
-Checkout service validates the request parameters and sends the error responses in case of an invalid data detection.<br></br>
-Go to the [Hash Validation](./hash-validation) section for more info on how this hash should be generated.
+The checkout service validates the request parameters and sends the error response in case of invalid data detection.<br></br>
+Go to the [Hash Validation](./hash-validation) section for more info on how the hash should be generated.
 
 :::
 
 ## Usage
 
-Your merchant key will be use as `merchat_key` parameter in the body <br></br>
-`merchant_key: <merchant_key>`
+Your merchant key will stand as the `merchat_key` parameter in the request body <br></br>
+`merchant_key: <merchant_key>`.
 
 > API requests without authentication will fail.
 
 ## Obtain the merchant key and the password
 
-You can optain your merchant key and the password from the [Dashboard](https://gate.dineropay.com/login?continue=%2F) <br></br>
-If you are a developer make sure to ask your merchant for access to the dashboard.
+You can optain your merchant key and the password from the [Dashboard](https://dashboard.dineropay.com/login?continue=%2F). <br></br>
+If you are a developer, ask your merchant for access to the dashboard.
 
 :::danger
-Do not share your merchant key or the passwrod in publicly accessible areas such as
+Do not share your merchant key or password in public areas, such as:
 
 - GitHub
 

@@ -8,25 +8,25 @@ keyword:
   - hash validation
 ---
 
-# Hash validation #️⃣
+# Hash Validation #️⃣
 
 ## Signature
 
-Every transaction made through the checkout service is protected by an additional layer of security.<br></br>
+Every transaction accomplished through the checkout service is protected by an additional layer of security called hash.<br></br>
 A hash value is generated based on the transaction details, such as the amount and customer information. This hash value acts as a digital signature, ensuring the integrity and authenticity of the request.
 
 ## Where it will be used
 
-As described above the hash validation will be used to validate your requests to the payment platform or to validate callback from payment platform to your system. <br></br>
+As mentioned, the hash validates the requests sent to the payment platform. Also, it is used to validate the callback received by your system from the payment platform.<br></br>
 
 :::note
-The format of the `Signature` will different based on the type of the request being sent.
+The format of the `Signature` will be different based on the information and the type of request sent.
 :::
 
 ## Authentication Signature
 
-The main request to get a payment session link . <br></br>
-It must be SHA1 of MD5 encoded string and calculated by the formula below:<br></br>
+This authentication signature is used to send the authentication request.<br></br>
+This hash must be SHA1 of the MD5 encoded string and calculated by the formula below:<br></br>
 
 ### Data used
 
@@ -40,21 +40,21 @@ It must be SHA1 of MD5 encoded string and calculated by the formula below:<br></
 
 **`sha1(md5(strtoupper(order.id,order.amount,order.currency,order.description,PASSWORD)))`**
 
-### example
+### Example
 
-the example below uses `CryptoJS` libraray
+The example below uses `CryptoJS` library
 
 ```js
 const to_md5 =
-	order.id + order.amount + order.currency + order.description + merchant.pass;
+  order.id + order.amount + order.currency + order.description + merchant.pass;
 const hash = CryptoJS.SHA1(CryptoJS.MD5(to_md5.toUpperCase()).toString());
 const result = CryptoJS.enc.Hex.stringify(hash);
 ```
 
 ## Get Transaction Status Signature
 
-This request is used to get the transaction status . <br></br>
-It must be SHA1 of MD5 encoded string and calculated by the formula below:<br></br>
+This signature is used to get the transaction status.<br></br>
+This hash must be SHA1 of the MD5 encoded string and calculated by the formula below:<br></br>
 
 ### Data used
 
@@ -65,9 +65,9 @@ It must be SHA1 of MD5 encoded string and calculated by the formula below:<br></
 
 **`sha1(md5(strtoupper(payment_id,PASSWORD)))`**
 
-### example
+### Example
 
-the example below uses `CryptoJS` libraray
+The example below uses `CryptoJS` library
 
 ```js
 const to_md5 = payment_id + merchant.pass;
@@ -77,8 +77,8 @@ const result = CryptoJS.enc.Hex.stringify(hash);
 
 ## Refund Signature
 
-To make a refund transaction . <br></br>
-It must be SHA1 of MD5 encoded string and calculated by the formula below:<br></br>
+This signature is used to initiate a refund transaction. <br></br>
+This hash must be SHA1 of the MD5 encoded string and calculated by the formula below:<br></br>
 
 ### Data used
 
@@ -90,9 +90,9 @@ It must be SHA1 of MD5 encoded string and calculated by the formula below:<br></
 
 **`sha1(md5(strtoupper(payment_id,amount,PASSWORD)))`**
 
-### example
+### Example
 
-the example below uses `CryptoJS` libraray
+The example below uses `CryptoJS` library
 
 ```js
 const to_md5 = payment_id + amount + merchant.pass;
@@ -102,8 +102,8 @@ const result = CryptoJS.enc.Hex.stringify(hash);
 
 ## Void Signature
 
-To make a void for an operation which was performed the same financial day you can use Void request. <br></br>
-It must be SHA1 of MD5 encoded string and calculated by the formula below:<br></br>
+This signature is used in void operations. Void operations are invokable only while the payment process is still pending.<br></br>
+This hash must be SHA1 of the MD5 encoded string and calculated by the formula below:<br></br>
 
 ### Data used
 
@@ -114,9 +114,9 @@ It must be SHA1 of MD5 encoded string and calculated by the formula below:<br></
 
 **`sha1(md5(strtoupper(payment_id,PASSWORD)))`**
 
-### example
+### Example
 
-the example below uses `CryptoJS` libraray
+The example below uses `CryptoJS` library
 
 ```js
 const to_md5 = payment_id + merchant.pass;
@@ -127,7 +127,7 @@ const result = CryptoJS.enc.Hex.stringify(hash);
 ## Recurring Signature
 
 To make a transaction with a saved card <br></br>
-It must be SHA1 of MD5 encoded string and calculated by the formula below:<br></br>
+This hash must be SHA1 of the MD5 encoded string and calculated by the formula below:<br></br>
 
 ### Data used
 
@@ -142,26 +142,26 @@ It must be SHA1 of MD5 encoded string and calculated by the formula below:<br></
 
 **`sha1(md5(strtoupper(recurring_init_trans_id, recurring_token,order.id,order.amount,order.description,PASSWORD)))`**
 
-### example
+### Example
 
-the example below uses `CryptoJS` libraray
+The example below uses `CryptoJS` library
 
 ```js
 const to_md5 =
-	recurring_init_trans_id +
-	recurring_token +
-	order.id +
-	order.amount +
-	order.description +
-	merchant.pass;
+  recurring_init_trans_id +
+  recurring_token +
+  order.id +
+  order.amount +
+  order.description +
+  merchant.pass;
 const hash = CryptoJS.SHA1(CryptoJS.MD5(to_md5.toUpperCase()).toString());
 const result = CryptoJS.enc.Hex.stringify(hash);
 ```
 
 ## Schedule Signature
 
-to create a schedule object <br></br>
-It must be of MD5 encoded string (toUpperCase,letters reversed) and calculated by the formula below:<br></br>
+To create a schedule object <br></br>
+This hash must be of the MD5 encoded string (toUpperCase,letters reversed) and calculated by the formula below:<br></br>
 
 ### Data used
 
@@ -171,18 +171,18 @@ It must be of MD5 encoded string (toUpperCase,letters reversed) and calculated b
 
 **`md5(strtoupper(strrev(PASSWORD)));`**
 
-### example
+### Example
 
 ```js
 // to reverse a string
 
 function reverseString(str) {
-	// empty string
-	let newString = "";
-	for (let i = str.length - 1; i >= 0; i--) {
-		newString += str[i];
-	}
-	return newString;
+  // empty string
+  let newString = "";
+  for (let i = str.length - 1; i >= 0; i--) {
+    newString += str[i];
+  }
+  return newString;
 }
 
 const to_md5 = reverseString(merchant.pass);
@@ -193,7 +193,7 @@ const result = CryptoJS.enc.Hex.stringify(hash);
 ## Callback Signature
 
 This is the notification that will be sent from us to your application . <br></br>
-It must be SHA1 of MD5 encoded string and calculated by the formula below:<br></br>
+This hash must be SHA1 of the MD5 encoded string and calculated by the formula below:<br></br>
 
 ### Data used
 
@@ -209,18 +209,18 @@ It must be SHA1 of MD5 encoded string and calculated by the formula below:<br></
 
 **`sha1(md5(strtoupper(payment_id,order.id,order.amount,order.currency,order.description,PASSWORD)))`**
 
-### example
+### Example
 
-the example below uses `CryptoJS` libraray
+The example below uses `CryptoJS` library
 
 ```js
 const to_md5 =
-	payment_id +
-	order.id +
-	order.amount +
-	order.currency +
-	order.description +
-	merchant.pass;
+  payment_id +
+  order.id +
+  order.amount +
+  order.currency +
+  order.description +
+  merchant.pass;
 const hash = CryptoJS.SHA1(CryptoJS.MD5(to_md5.toUpperCase()).toString());
 const result = CryptoJS.enc.Hex.stringify(hash);
 ```

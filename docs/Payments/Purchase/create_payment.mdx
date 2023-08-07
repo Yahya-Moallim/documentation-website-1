@@ -12,55 +12,55 @@ keyword:
 
 ## Purchase
 
-To create a payment that will let the customer pay using credit card , debit card _(mada,etc...)_ , applepay, stcpay, <br></br>
-or any saved card or authorized transaction, you will be making a purchase ( Authentication request ) to [`/api/v1/session/`](../../api/gateway/authentication-request) <br></br>
+To create a payment that will let the customer pay using a credit card, debit card Mada, applePay, stcPay, etc..., <br></br>
+or any saved card or authorized transaction, you will be making a purchase (Authentication request ) to [`/api/v1/session/`](../../api/gateway/authentication-request). <br></br>
 
-## Requirement to create a purchase reqeust ( Authentication request )
+## The requirement to create a purchase request ( Authentication request )
 
-> You must sign up for a test account [here](https://dashboard.dineropay.com/login?continue=%2F) <br></br>
-> Follow the steps [here](../../get-started#making-your-first-payment-as-easy-as-following-the-below-steps)
+> You must sign up for a test account [here](https://dashboard.dineropay.com/login?continue=%2F). <br></br>
+> Follow the steps [here](../../get-started#making-your-first-payment-as-easy-as-following-the-below-steps).
 
-Getting your merchant key and your password makes you ready to create an online transaction <br></br>
+Getting your merchant key and your password makes you ready to create an online transaction. <br></br>
 Both can be found in the <circle width ='260' text='merchant dashboard'/>
 
 ## Make payments
 
-To run payments in your application use <u>[`POST /api/v1/sessions/`](../../../api/gateway/authentication-request)</u> , request to register payments and receive the redirect_url (`redirec_url`). After the payment is processed, gateway will redirect the client back to your website (take note of `success_url`, `cancel_curl`).
+To run payments in your application use <u>[`POST /api/v1/sessions/`](../../../api/gateway/authentication-request)</u> request to register payments and receive the `redirect_url`. After the payment is processed, the gateway will redirect the client back to your website (take note of the `success_url`, `cancel_url`).
 
 ## Tokenization
 
 You can save the customer's card data so that they can reuse it for future payments.<br></br>
-in the `callback_notification` you receive the card token to be used for future payment.
-to learn more about **tokenization** check [_saving the card_](../../saving-cards)
+In the `callback_notification`, you will receive the card token used for future payments.
+To learn more about **tokenization**, check [_saving the card_](../../saving-cards).
 
 ## Check the payment status
 
-You have three options to check payment status
+You have three options to check payment status:
 
-> 1. Use `success_url` pramater of [`Authentication`](../../../api/gateway/authentication-request) request object
-> 2. Use `GET` `/api/v1/payment/status` request
+> 1. Use the `success_url` pramater of the [`Authentication`](../../../api/gateway/authentication-request) request object.
+> 2. Use the `GET` `/api/v1/payment/status` request.
 > 3. Set up a `callback_url` in the dashboard to listen for events.
 
 ---
 
 ## Sample Request
 
-Below is a sample request body with only the mandatory fileds
+Below is a sample request body with only the mandatory fields.
 
 ```json
 {
-	"merchant_key": "1d903ea0-e8dc-11ed-bbba-d60e6b1bd8d8",
-	"operation": "purchase",
-	"methods": ["card"],
-	"order": {
-		"number": "order-1234",
-		"amount": "1.00",
-		"currency": "SAR",
-		"description": "gift"
-	},
-	"cancel_url": "https://example.com/cancel",
-	"success_url": "https://example.com/success",
-	"hash": "416830ec3be6ac7c6ca539a4e9dbdd5c8971097d"
+  "merchant_key": "1d903ea0-e8dc-11ed-bbba-d60e6b1bd8d8",
+  "operation": "purchase",
+  "methods": ["card"],
+  "order": {
+    "number": "order-1234",
+    "amount": "1.00",
+    "currency": "SAR",
+    "description": "gift"
+  },
+  "cancel_url": "https://example.com/cancel",
+  "success_url": "https://example.com/success",
+  "hash": "416830ec3be6ac7c6ca539a4e9dbdd5c8971097d"
 }
 ```
 
@@ -70,11 +70,11 @@ Below is a sample request body with only the mandatory fileds
 
 ```json
 {
-	"redirect_url": "{{redirect_url}}"
+  "redirect_url": "{{redirect_url}}"
 }
 ```
 
 :::note
-The `redirect_url` will have one houre session and it will expires after that <br></br>
-The link becomes invalid after a successful payment.
+The `redirect_url` will have one houre session and it will expire after that. <br></br>
+The link will become invalid after successful payment.
 :::
