@@ -1,7 +1,7 @@
 {
 	"openapi": "3.0.0",
 	"info": {
-		"title": "Dinero Pay Offical documentation",
+		"title": "Dinero Pay official documentation",
 		"description": "This comprehensive guide will walk you through the various endpoints, request/response structures, and authentication mechanisms required to integrate our payment solution seamlessly into your applications. Whether you're a developer, a business owner, or a payment service provider, this documentation will empower you to leverage the power of our payment gateway effortlessly.\n We have designed this documentation to be user-friendly and easily navigable, enabling you to find the information you need quickly. Additionally, we provide code samples and SDKs in popular programming languages to further simplify the integration process.",
 		"version": ""
 	},

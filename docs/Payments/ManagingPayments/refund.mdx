@@ -11,28 +11,28 @@ keyword:
 
 ## Making a refund
 
-> - To make a refund you will have to make a <u>[`POST /api/v1/payment/refund`](../../../api/gateway/purchases-refund)</u> <br></br>
+> - To make a refund, you will have to make a `POST /api/v1/payment/refund`. <br></br>
 
-you will need to send the `payment_id` in the request so make sure to save it once you receive the `notification_callback`.
+You will need to send the `payment_id` in the request, so make sure to save it once you receive the `notification_callback`.
 
 ---
 
-## sample request
+## Sample request
 
 ```json
 {
-	"merchant_key": "xxxxx-xxxxx-xxxxx",
-	"payment_id": "63c781cc-de3d-11eb-a1f1-0242ac130006",
-	"amount": "0.19",
-	"hash": "{{operation_hash}}"
+  "merchant_key": "xxxxx-xxxxx-xxxxx",
+  "payment_id": "63c781cc-de3d-11eb-a1f1-0242ac130006",
+  "amount": "0.19",
+  "hash": "{{operation_hash}}"
 }
 ```
 
 :::note
 
-- Optional `amount` argument can be included in the request body to request a partial refund.
-- If it's not passed by default it will refund the full amount
-- If the transaction was success in the response the status should be `refunded`
+- The optional `amount` argument can be included in the request body to request a partial refund.
+- If it's not passed by default, it will refund the full amount.
+- If the transaction was successful, the response status should be `refunded`.
 
 :::
 
@@ -40,7 +40,7 @@ you will need to send the `payment_id` in the request so make sure to save it on
 
 ```json
 {
-	"payment_id": "63c781cc-de3d-11eb-a1f1-0242ac130006",
-	"result": "accepted"
+  "payment_id": "63c781cc-de3d-11eb-a1f1-0242ac130006",
+  "result": "accepted"
 }
 ```

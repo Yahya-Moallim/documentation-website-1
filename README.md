@@ -1,4 +1,4 @@
-# Hi ✋ this is the offical documentation website for Dinero Pay
+# Hi ✋ this is the official documentation website for Dinero Pay
 
 ---
 

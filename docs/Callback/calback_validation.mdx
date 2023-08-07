@@ -11,8 +11,8 @@ sidebar_position: 2
 
 # Callback Validation
 
-By now you should know that we use the hash to validate your request , we also send back a hash to be validated by you .<br></br>
-Each callback delivery request includes a `hash` parameter. This field contains a SHA1 of MD5 -encoded string .
+Our system validates your request using the hash. In return, we send you a hash to validate.<br></br>
+Each callback delivery request includes a `hash` parameter. This field contains a SHA1 of MD5 -encoded string.
 
 ### Data used
 
@@ -28,28 +28,28 @@ Each callback delivery request includes a `hash` parameter. This field contains 
 
 **`sha1(md5(strtoupper(payment_id,order.id,order.amount,order.currency,order.description,PASSWORD)))`**
 
-### example
+### Example
 
-the example below uses `CryptoJS` libraray
+The example below uses `CryptoJS` libraray.
 
 ```js
 const to_md5 =
-	payment_id +
-	order.id +
-	order.amount +
-	order.currency +
-	order.description +
-	merchant.pass;
+  payment_id +
+  order.id +
+  order.amount +
+  order.currency +
+  order.description +
+  merchant.pass;
 const hash = CryptoJS.SHA1(CryptoJS.MD5(to_md5.toUpperCase()).toString());
 const result = CryptoJS.enc.Hex.stringify(hash);
 ```
 
 ## Password
 
-The password key will be used to verify the `callback` as the only one have access to this password key is you <br></br>
+The password key will be used to verify the `callback`, as the only one who has access to this password key is you. <br></br>
 
 ### Obtain the password key
 
-> you can find the password key in the dashabord
+> You can find the password key in the [Dashboard](https://dashboard.dineropay.com/login?continue=%2F).
 
-for more info check the [authentication](../authentication/hash-validation) section
+For more info check the [authentication](../authentication/hash-validation) section.
