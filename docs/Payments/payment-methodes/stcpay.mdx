@@ -1,0 +1,58 @@
+---
+sidebar_label: Stcpay
+---
+
+## Prerequisite
+
+In order to start accepting stcpay payment in your applicatoin<br></br>
+
+> You will have to provide us with your stcpay MID,
+
+## Obtain the MID
+
+you can obtain the your Stcpay MID either by :
+
+> contacting our [support](mailto:support@dineropay.com) saying that you want to enable stcpay.<br></br>
+> Visit [Stcpay Merchant Portal](https://merchant.stcpay.com.sa/register/en/)
+
+Once the MID received will configure stcpay for your account.
+
+## Using stcpay
+
+Now once stcpay configured in your account stcpay should be appear in the checkout page:
+
+<div style={{ textAlign: "center" }}>
+	<img src="/img/stcpay_checkout.gif" width="250"></img>
+</div>
+
+or you can specify Stcpay in the API request to be the only payment method
+
+<div style={{ textAlign: "center" }}>
+	<img src="/img/stcpay_checkout_only.png" width="250"></img>
+</div>
+
+### samaple request
+
+make sure to add the parameter `methods` and pass `stcpay`
+
+```json
+{
+	"merchant_key": "{{merchant_key_dineropay}}",
+
+	"operation": "purchase",
+	"order": {
+		"number": "12",
+		"amount": "{{amount}}",
+		"currency": "SAR",
+		"description": "Important gift"
+	},
+	"cancel_url": "https://cancel.com",
+	"success_url": "https://success.com",
+	"customer": {
+		"name": "Amer Mo",
+		"email": "test@test.com"
+	},
+	"methods": ["stcpay"],
+	"hash": "{{hash}}"
+}
+```

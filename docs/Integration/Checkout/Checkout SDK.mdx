@@ -1,0 +1,146 @@
+---
+sidebar_position: 3
+keywords:
+  - docs
+  - integration
+  - redirect
+  - prebuilt
+  - direct_integration
+  - iframe
+sidebar_label: Checkout SDK
+---
+
+Although for the checkout page, a wide range of settings is available through the admin panel, for example, placing your own logo, changing the colors of basic elements. But if these opportunities are not enough to ensure corporate style the **Checkout SDK** empowers you to fully customize your payment form while ensuring that your payment processing remains compliant with the Payment Card Industry Data Security Standard (PCI DSS).
+
+:::caution
+Currently, only acquiring payment forms with a CARD payment method are supported (where card data is entered on the form itself). P2P, debit payment forms are not supported, and payment methods such as ApplePay, GooglePay, etc. are not supported also.
+
+:::
+
+## Payment form development
+
+When developing your own payment page or adapting an existing one, the following conditions must be met:
+
+1. Technology stack - HTML / CSS / JavaScript
+2. Project folder structure:
+
+- /img
+- /style
+- /js
+
+3. You need to connect Checkout SDK module in the payment page code:<br></br>
+
+   ```html
+   <script src="https://checkout.dineropay.com/sdk/pay-session.js"></script>
+   ```
+
+4. It is necessary to create a new instance of the PaySession class by passing to the constructor function the identifier of the HTML element of the form for entering data on the payment page and the parameter if on-the-fly validation of the payment form fields is needed (optional parameter). <br></br>Next, call the begin() method:
+
+```html
+<script>
+	const session = new PaySession({ formName: "paymentForm", validateOnInput: true });
+	session.begin();
+</script>
+```
+
+5. In the payment page HTML code, you need to link the `<input>` tags of the form to Checkout SDK module using special id identifiers. The module interacts only with those `<input>` elements that are inside the `<form>` tag and are indicated by the corresponding id:
+
+   | input               | Type               | Mandatory |
+   | ------------------- | ------------------ | --------- |
+   | Payment card number | `payer_card`       | Y         |
+   | CVV code            | `payer_cvv`        | Y         |
+   | Expiry date         | `payer_expiryDate` | Y         |
+   | Payer name          | `payer_name`       | Y         |
+   | ZIP code            | `payer_zip`        | N         |
+   | Payer city          | `payer_city`       | N         |
+   | Payer phone number  | `payer_phone`      | N         |
+   | Payer email         | `payer_email`      | N         |
+   | Payer address       | `payer-address`    | N         |
+   | Payer country       | `payer_country`    | N         |
+
+6. The Checkout SDK module implements a number of event listeners, the result of which is available for processing on the form page. Event handling is optional.
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+<Tabs>
+<TabItem value="onDecline" label="onDecline">
+
+Called when the response declined is received at the time of payment processing or when checking the session state. Returns an object with the error message: `{message: string}`.
+
+#### Event Handler code example
+
+```js
+session.onDecline = function (event) {
+	document.querySelector(".decline-message").innerText = event.message;
+};
+```
+
+</TabItem>
+<TabItem value="onSuccess" label="onSuccess">
+
+Called when the response completed is received at the time of payment processing or when checking the session status. Returns an object with successUrl: `{successUrl: string}`.
+
+#### Event Handler code example
+
+```js
+session.onSuccess = function (event) {
+	location.href = event.successUrl;
+};
+```
+
+</TabItem>
+<TabItem value="onFormReady" label="onFormReady">
+
+Called after getting the current session. Doesn't return any values.#### Event handler code example
+
+#### Event Handler code example
+
+```js
+session.onFormReady = function () {
+	document.querySelector(".form-wrapper").classList.add("show");
+};
+```
+
+</TabItem>
+<TabItem value="handleError" label="handleError">
+
+called after an error occurs when sending a payment processing request. Returns an error object.
+
+#### Event Handler code example
+
+```js
+session.onFormReady = function () {
+	document.querySelector(".form-wrapper").classList.add("show");
+};
+```
+
+</TabItem>
+<TabItem value="onInputValidation" label="onInputValidation">
+
+Called when an on-the-fly validation error occurs for one of the inputs with id listed earlier (if the parameter validateOnInput: true was passed to the constructor) or as a general validation when submitting the form. Returns a validation error object: `{result: string, inputId: string}`.
+
+#### Event Handler code example
+
+```js
+session.onInputValidation = function (event) {
+	if (event.result === "error") {
+		document.getElementById(event.inputId)?.classList.add("text-field--error");
+		document.getElementById(event.inputId + "Error")?.classList.add("display-error");
+	} else {
+		document.getElementById(event.inputId)?.classList.remove("text-field--error");
+		document.getElementById(event.inputId + "Error")?.classList.remove("display-error");
+	}
+};
+```
+
+</TabItem>
+</Tabs>
+
+## Submitting the Payment form
+
+After developing the payment form, it is necessary to send the project archive, including the source code and all used files, to (support Team )[] for review, security testing and placement on the platform resources.
+
+## Example
+
+An example of the payment form code can be downloaded from the [link](@site/static/files/ex.zip)

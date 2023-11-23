@@ -8,8 +8,8 @@ const darkCodeTheme = require("prism-react-renderer/themes/dracula");
 /** @type {import('@docusaurus/types').Config} */
 const config = {
 	title: "Dinero Pay",
-	tagline:
-		"help you to empower your online business by providing you with all the tools you need to start getting paid",
+	staticDirectories: ["public", "static"],
+	tagline: "help you to empower your online business by providing you with all the tools you need to start getting paid",
 	url: "https://dineropay.com",
 	baseUrl: "/",
 	onBrokenLinks: "warn",
@@ -111,6 +111,10 @@ const config = {
 	themeConfig:
 		/** @type {import('@docusaurus/preset-classic').ThemeConfig} */
 		({
+			metadata: [
+				{ name: "payment gateway", content: "payment gateway in Saudi Arabia" },
+				{ name: "technical guide | mada , visa , mastercard, applpay , stcpay", content: "we support mada , visa, mastercard ,applepay, stcpay" },
+			],
 			docs: {
 				sidebar: {
 					autoCollapseCategories: true,
@@ -137,7 +141,12 @@ const config = {
 						label: "API",
 					},
 					{
-						href: "https://dashabord.dineropay.com",
+						type: "html",
+						position: "right",
+						value: `<a href="/checkoutAPI.json" download> <span style="display:flex; align-items:center"><img src="/img/postman.svg" style="width:2rem;margin-right:.5rem"></img>checkout collection</span> </a>`,
+					},
+					{
+						href: "https://dashaboard.dineropay.com",
 						label: "Dashboard",
 						position: "right",
 					},
@@ -148,7 +157,7 @@ const config = {
 				links: [
 					{
 						html: ` <a href="https://dineropay.com" target="_blank" rel="noreferrer noopener">
-                <img src="https://cdn.jsdelivr.net/gh/Dinero-Pay-PG/documenation-website@main/static/img/dineropayS.svg" alt="Find more about Dinero Pay" width="114" height="51" />
+                <img src="/img/dineropayS.svg" alt="Find more about Dinero Pay" width="114" height="51" />
               </a>`,
 					},
 				],

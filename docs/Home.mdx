@@ -1,6 +1,7 @@
 ---
 sidebar_position: 1
-slug: /get-started
+sidebar_label: Home
+slug: /
 ---
 
 # Getting Started
@@ -29,10 +30,10 @@ With our payment gateway, you can accept all kinds of payment methods, including
 
 ## Start Immediately
 
-import Card from "../../src/components/card/Cards";
+import Card from "../src/components/card/Cards";
 
 <br></br>
-<div class="WrapperIntro" style={{ display: "flex", justifyContent: "space-between" }}>
+<div class="WrapperIntro" style={{ display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: "1.2rem" }}>
 	<Card type="plugin" link="../ready_to_go/plugins" text="Plugin" />
 	<Card type="api" link="../../api" text="API" />
 	<Card type="integration" link="../integration" text="Integration" />
@@ -53,3 +54,19 @@ and that you are receiving the response in the `notification_url`, you can use [
 :::note
 Based on the regulations here in Saudi Arabia, most of the transactions require 3D authentication.
 :::
+
+<!--
+an example of custom card usign the existing card of docsaraus
+import CardBox from "@site/src/theme/DocCard";
+
+<CardBox
+	item={{
+		type: "link",
+		href: "/integration",
+		label: "Hosted",
+		custom: true, // to control the width of cards insitated by us
+		icon: "hosted",
+		description: "this is just for testing purposes",
+	}}
+/>
+-->

@@ -1,0 +1,49 @@
+---
+sidebar_label: Card
+---
+
+# Card
+
+By default, you will be accepting all types of cards supported in Saudi Arabia [MADA,VISA,MASTERCARD].
+
+## Prerequisite
+
+You will have to open an account in one of the supported banks.<br></br>
+One of our team member will guide throw the process just make sure to create a test account request From
+[Test Account](https://dineropay.com/test-account), and we will get back to you.
+
+## Using the card payment method
+
+once we configure your account the card payment should be available in the checkout page.<br></br>
+By default all enabled payment will be showing in the payment page , so if you only require the card payment method to be present in the checkout page in the API request pass `card` in the `methods` array.
+
+<div style={{ textAlign: "center" }}>
+	<img src="/img/card.png" width="250"></img>
+</div>
+
+### Request sample
+
+```json
+{
+	"merchant_key": "{{merchant_key}}",
+
+	"operation": "purchase",
+	"order": {
+		"number": "12",
+		"amount": "1.00",
+		"currency": "SAR",
+		"description": "Important gift"
+	},
+	"cancel_url": "https://cancel.com",
+	"success_url": "https://success.com",
+	"customer": {
+		"name": "Amer Mo",
+		"email": "test@test.com"
+	},
+	"billing_address": {
+		"phone": "966666666666"
+	},
+	"methods": ["card"],
+	"hash": "{{hash}}"
+}
+```

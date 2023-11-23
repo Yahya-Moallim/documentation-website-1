@@ -20,12 +20,16 @@ As we are going to handle the payment process instead of you.
 
 ---
 
+## Checkout process
+
+![checkout process](/img/checkout_flow.png)
+
 ## Make an Authentication request
 
 Authentication request is the main request by making this request you will receive the redirect url that you will redirecdt your customer to to continue the payment process .
 Once you are ready to create a transaction
 
-> 1. Create an Authenticate <u>[object](../../api/gateway/authentication-request)</u> as json
+> 1. Create an Authentication <u>[object](../../api/gateway/authentication-request)</u> as json
 > 2. send a `POST` reqeust to `https://checkout.dineropay.com/api/v1/session`
 > 3. In the response get the `redirect_url`
 > 4. Redirect the customer to the checkout page
@@ -41,18 +45,18 @@ For more details check the section below.
 
 ```json
 {
-  "merchant_key": "1d903ea0-e8dc-11ed-bbba-d60e6b1bd8d8",
-  "operation": "purchase",
-  "methods": ["card"],
-  "order": {
-    "number": "order-1234",
-    "amount": "1.00",
-    "currency": "SAR",
-    "description": "gift"
-  },
-  "cancel_url": "https://example.com/cancel",
-  "success_url": "https://example.com/success",
-  "hash": "416830ec3be6ac7c6ca539a4e9dbdd5c8971097d"
+	"merchant_key": "1d903ea0-e8dc-11ed-bbba-d60e6b1bd8d8",
+	"operation": "purchase",
+	"methods": ["card"],
+	"order": {
+		"number": "order-1234",
+		"amount": "1.00",
+		"currency": "SAR",
+		"description": "gift"
+	},
+	"cancel_url": "https://example.com/cancel",
+	"success_url": "https://example.com/success",
+	"hash": "416830ec3be6ac7c6ca539a4e9dbdd5c8971097d"
 }
 ```
 
@@ -94,7 +98,7 @@ The Checkout page has the fields validation. In case of the invalid data the err
 As we stated above the fields shown in the checkout page will depand on the payment method , and the data sent in the request body <br></br>
 you can decide what fields need to be shown by refereing to the table above and send in the request body the fields that you don't want it to be shown to the customer .
 
-## Hosed page Customization
+## Hosted page Customization
 
 We give you the option to customaize the payment page with the preferences of the merchant .
 The action is available for the authorized users only.

@@ -1,5 +1,6 @@
 ---
 sidebar_label: Subscription
+sidebar_position: 9
 ---
 
 # Subscription
@@ -24,32 +25,32 @@ If you have the `recurring_init_trans_id` and `recurring_token` stored on your s
 
 ```json
 {
-  "merchant_key": "1d903dfda0-e8dc-11ed-bbba-d60edfb1bd8d8",
-  "operation": "purchase",
+	"merchant_key": "1d903dfda0-e8dc-11ed-bbba-d60edfb1bd8d8",
+	"operation": "purchase",
 
-  "order": {
-    "number": "order-1234",
-    "amount": "19",
-    "currency": "SAR",
-    "description": "Important gift"
-  },
-  "cancel_url": "https://test.com",
-  "success_url": "https://test.com",
-  "customer": {
-    "name": "Amer Mo",
-    "email": "aalshabebei@dineropay.com"
-  },
-  "billing_address": {
-    "country": "SA",
-    "state": "string",
-    "address": "string",
-    "city": "string",
-    "house_number": "string",
-    "zip": "string",
-    "phone": "+96600000000"
-  },
-  "recurring_init": true,
-  "hash": "416830ec3be6ac7fd6ca539a4e9dbdd5c8971097d"
+	"order": {
+		"number": "order-1234",
+		"amount": "19",
+		"currency": "SAR",
+		"description": "Important gift"
+	},
+	"cancel_url": "https://test.com",
+	"success_url": "https://test.com",
+	"customer": {
+		"name": "Amer Mo",
+		"email": "aalshabebei@dineropay.com"
+	},
+	"billing_address": {
+		"country": "SA",
+		"state": "string",
+		"address": "string",
+		"city": "string",
+		"house_number": "string",
+		"zip": "string",
+		"phone": "+96600000000"
+	},
+	"recurring_init": true,
+	"hash": "416830ec3be6ac7fd6ca539a4e9dbdd5c8971097d"
 }
 ```
 

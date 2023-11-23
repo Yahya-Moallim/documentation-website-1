@@ -1,0 +1,1127 @@
+{
+	"info": {
+		"_postman_id": "6d446c1e-de72-4c1c-8231-f848313c586f",
+		"name": "Checkout Integration",
+		"description": "Please follow [https://docs.dineropay.com](https://docs.dineropay.com) to see Checkout integration description and more details.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "16531609",
+		"_collection_link": "https://restless-moon-45854.postman.co/workspace/Akurateco~b8afb714-bd48-4d07-9846-1712e2017047/collection/16531609-6d446c1e-de72-4c1c-8231-f848313c586f?action=share&source=collection_link&creator=16531609"
+	},
+	"item": [
+		{
+			"name": "Authentication request",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var order_number = \"12\";",
+							"var order_amount = \"1.00\";",
+							"var order_currency = \"SAR\";",
+							"var order_description = \"Important gift\";",
+							"var merchant_pass = pm.environment.get(\"password_dineropay\");",
+							"console.log(merchant_pass);",
+							"",
+							"//formula:",
+							"var to_md5 = order_number + order_amount + order_currency + order_description + merchant_pass;",
+							"// Use the CryptoJS",
+							"",
+							"var hash = CryptoJS.SHA1(CryptoJS.MD5(to_md5.toUpperCase()).toString());",
+							"var result = CryptoJS.enc.Hex.stringify(hash);",
+							"",
+							"pm.environment.set(\"hash\", result);"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Body matches redirect_url\", function () {",
+							"    pm.expect(pm.response.text()).to.include(\"redirect_url\");",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{  \n   \"merchant_key\":\"{{merchant_key_dineropay}}\",\n   \"operation\":\"purchase\",\n   \"order\":{\n      \"number\":\"12\",\n      \"amount\": \"1.00\",\n      \"currency\":\"SAR\",\n      \"description\":\"Important gift\"\n   },\n   \"cancel_url\":\"https://cancel.com\",\n   \"success_url\":\"https://success.com\",\n   \"customer\":{\n      \"name\":\"John doo\",\n      \"email\":\"test@test.com\"\n   },\n   \"billing_address\":{\n       \"country\":\"SA\",\n       \"state\":\"Central\",\n       \"city\":\"Riyadh\",\n       \"district\":\"Central\",\n       \"address\":\"Alnozha\",\n       \"house_number\":\"2\",\n       \"zip\":\"11421\"\n   },\n   \"methods\":[],\n   \"hash\":\"{{hash}}\"\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url_dineropay}}/api/v1/session",
+					"host": [
+						"{{url_dineropay}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"session"
+					]
+				},
+				"description": "### This is the main request used to create a redirect url .\n\n### Prerequisites\n\n- merchant key\n- password\n    \n\n### Hash\n\nmake sure to use the proper hash format refer to the document\n\n## Methods paramter\n\nmethods parameter accepts an array of available payments methods which is one of \\[\"stcpay\",applepay\",\"card\"\\] , you can specify a specific methods or leave empty to display all available methods"
+			},
+			"response": [
+				{
+					"name": "Authentication (OK)",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{  \n   \"merchant_key\":\"xxxxx-xxxxx-xxxxx\",\n   \"operation\":\"purchase\",\n   \"methods\":[\n       \"card\"\n   ],\n   \"order\":{\n      \"number\":\"order-1234\",\n      \"amount\": \"0.19\",\n      \"currency\":\"USD\",\n      \"description\":\"Important gift\"\n   },\n   \"cancel_url\":\"https://example.com/cancel\",\n   \"success_url\":\"https://example.com/success\",\n   \"customer\":{\n      \"name\":\"John Doe\",\n      \"email\":\"test@gmail.com\"\n   },\n   \"recurring_init\": \"true\",\n   \"hash\":\"{{session_hash}}\"\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{CHECKOUT_HOST}}/api/v1/session",
+							"host": [
+								"{{CHECKOUT_HOST}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"session"
+							]
+						}
+					},
+					"status": "Response OK",
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Server",
+							"value": "nginx"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Transfer-Encoding",
+							"value": "chunked"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "X-Powered-By",
+							"value": "PHP/7.4.2"
+						},
+						{
+							"key": "Cache-Control",
+							"value": "no-cache, private"
+						},
+						{
+							"key": "Date",
+							"value": "Fri, 31 Jul 2020 09:06:28 GMT"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"redirect_url\": \"{{CHECKOUT_HOST}/auth/ZXlKMGVYQWlPaUpLVjFRaUxDSmhiR2NpT2lKU1V6STFOaUo5LmV5SnBZWFFpT2pFMU9UWXhPRFl6T0Rnc0ltcDBhU0k2SWpGbE5qTTNObVZoTFdRek1HUXRNVEZsWVMxaE16QXlMVEF5TkRKak1HRTRNekF4TWlJc0ltVjRjQ0k2TVRVNU5qRTRPVGs0T0gwLm9CMmVhdlRtTU5DMXFTajlDVFlqQ0dOMDlHdUs1NXRkQTVpWFR3d2F2cWR0cEpEU2NRWWFaT3Z5dmJSVjJUSFNUVlFlS0NUX3pRdFNycDlKS1M4X0pqUzRMclM5MnUyNXRfSHNGa1FUQ0VOdGtadHQtaGxONERYdVhkLTU5cEhKLUN1RXBqSmZ4UDZEQXhFaVAxWEpRZDlyQldNa1RQVDdGZm1ac0g4LTM5YnV6LTI3MWxKMndkekdvSGJYa0NKVnNTNFJldGxrbno2U3dGd3ZFMW5KNDhwYTBGMDNLWjBpNnhpRFVPR3p2U0ZKdGZfMndDTTdzTTdsemc1TlBmSDl0Q0RKQmZEaG1hUmJCRmR6RlZMZlJncG5tMzB3VWpTMGMxbmt6SkkxOGJTd2Z6Z0hfZFpnc1cyUFhCM2ZLdG9pWDJXeFRsQzlxR204QTRYVm9EQy1mOWxvRHlMd0F5eV9xY3JrWmNuQTJVSjk5Zl91c0cwODZKUlBTT0I4VHVRZndSTzUxSEN2bEU2TXdFYzVYRmtnYjBleEZRcXdpNGE4S2RlWV9HX3ZQam42bnpZODdtVzFINlpQMjJ0dzVzazYtUENMeHdvNXctUmFBWC1mYVVhcEVHTzFLZkVHbndaQWZBZVNyc3U4MV9XQUFJMlN5RUxGWi1IU1lXMUZLWFgybzNNeF93Ty1DS3FLTWZsUTV1cGc2eDAybzhsbFhoeGJlVmVIOWlkMHgzYldRWE9vWk5hWm1MeVpJMmJsT2dtVDV0cHR4NHNQNDNqT0NtYW1sdkxyUkZvQmxCNTJ4V0RUQTBZQnhBLW5meUxCRHRJN0dPaVRWQjJ5cWd1Z1lBdGRfbWFQN2x2YTJpbVJWaHhxT0R5SlRiZThxcDdhWkw4bkJvTHZocnZDOHlv\"\n}"
+				}
+			]
+		},
+		{
+			"name": "Initiate a Recurring Transaction",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var order_number = \"order-1234\";",
+							"var order_amount = \"0.19\";",
+							"var order_currency = \"usd\";",
+							"var order_description = \"Important gift\";",
+							"var merchant_pass = pm.environment.get(\"merch1_pass_post\");",
+							"",
+							"//formula:",
+							"var to_md5 = order_number + order_amount + order_currency + order_description + merchant_pass;",
+							"// Use the CryptoJS",
+							"",
+							"var hash = CryptoJS.SHA1(CryptoJS.MD5(to_md5.toUpperCase()).toString());",
+							"var result = CryptoJS.enc.Hex.stringify(hash);",
+							"// Set the new environment variable",
+							"postman.setEnvironmentVariable('session_hash', result);"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Body matches redirect_url\", function () {",
+							"    pm.expect(pm.response.text()).to.include(\"redirect_url\");",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{  \n   \"merchant_key\":\"{{merchant_key}}\",\n   \"operation\":\"purchase\",\n   \"order\":{\n      \"number\":\"order-1234\",\n      \"amount\": \"1.00\",\n      \"currency\":\"SAR\",\n      \"description\":\"Important gift\"\n   },\n   \"cancel_url\":\"https://google.com\",\n   \"success_url\":\"https://google.com\",\n   \"customer\":{\n      \"name\":\"Amer Mo\",\n      \"email\":\"test@test.com\"\n   },\n     \"billing_address\": {\n    \"country\": \"SA\",\n    \"state\": \"string\",\n    \"address\": \"string\",\n    \"city\": \"string\",\n    \"house_number\": \"string\",\n    \"zip\": \"string\",\n    \"phone\": \"+96600000000\"\n  },\n  \"recurring_init\":true,\n  \"schedule_id\":\"84f2c56e-fa1a-11ed-bfb3-5acabb05365f\",\n   \"hash\":\"{{hash}}\"\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url_dineropay}}}/api/v1/session",
+					"host": [
+						"{{url_dineropay}}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"session"
+					]
+				},
+				"description": "By adding `recurring_init=true` it will indicate to us that this transaction is a part of subscriptions , if the customer approved you will receieve in the callback the `recurring_token` and `recurring_init_trans_id` to trigger new transaction using the card in the future .\n\nIn case you want the schedule to be managed by us you will have to send the `schedule_id` in the request , and the next payments will be triggred by us,"
+			},
+			"response": [
+				{
+					"name": "Authentication (OK)",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{  \n   \"merchant_key\":\"xxxxx-xxxxx-xxxxx\",\n   \"operation\":\"purchase\",\n   \"methods\":[\n       \"card\"\n   ],\n   \"order\":{\n      \"number\":\"order-1234\",\n      \"amount\": \"0.19\",\n      \"currency\":\"USD\",\n      \"description\":\"Important gift\"\n   },\n   \"cancel_url\":\"https://example.com/cancel\",\n   \"success_url\":\"https://example.com/success\",\n   \"customer\":{\n      \"name\":\"John Doe\",\n      \"email\":\"test@gmail.com\"\n   },\n   \"recurring_init\": \"true\",\n   \"hash\":\"{{session_hash}}\"\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{CHECKOUT_HOST}}/api/v1/session",
+							"host": [
+								"{{CHECKOUT_HOST}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"session"
+							]
+						}
+					},
+					"status": "Response OK",
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Server",
+							"value": "nginx"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Transfer-Encoding",
+							"value": "chunked"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "X-Powered-By",
+							"value": "PHP/7.4.2"
+						},
+						{
+							"key": "Cache-Control",
+							"value": "no-cache, private"
+						},
+						{
+							"key": "Date",
+							"value": "Fri, 31 Jul 2020 09:06:28 GMT"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"redirect_url\": \"{{CHECKOUT_HOST}/auth/ZXlKMGVYQWlPaUpLVjFRaUxDSmhiR2NpT2lKU1V6STFOaUo5LmV5SnBZWFFpT2pFMU9UWXhPRFl6T0Rnc0ltcDBhU0k2SWpGbE5qTTNObVZoTFdRek1HUXRNVEZsWVMxaE16QXlMVEF5TkRKak1HRTRNekF4TWlJc0ltVjRjQ0k2TVRVNU5qRTRPVGs0T0gwLm9CMmVhdlRtTU5DMXFTajlDVFlqQ0dOMDlHdUs1NXRkQTVpWFR3d2F2cWR0cEpEU2NRWWFaT3Z5dmJSVjJUSFNUVlFlS0NUX3pRdFNycDlKS1M4X0pqUzRMclM5MnUyNXRfSHNGa1FUQ0VOdGtadHQtaGxONERYdVhkLTU5cEhKLUN1RXBqSmZ4UDZEQXhFaVAxWEpRZDlyQldNa1RQVDdGZm1ac0g4LTM5YnV6LTI3MWxKMndkekdvSGJYa0NKVnNTNFJldGxrbno2U3dGd3ZFMW5KNDhwYTBGMDNLWjBpNnhpRFVPR3p2U0ZKdGZfMndDTTdzTTdsemc1TlBmSDl0Q0RKQmZEaG1hUmJCRmR6RlZMZlJncG5tMzB3VWpTMGMxbmt6SkkxOGJTd2Z6Z0hfZFpnc1cyUFhCM2ZLdG9pWDJXeFRsQzlxR204QTRYVm9EQy1mOWxvRHlMd0F5eV9xY3JrWmNuQTJVSjk5Zl91c0cwODZKUlBTT0I4VHVRZndSTzUxSEN2bEU2TXdFYzVYRmtnYjBleEZRcXdpNGE4S2RlWV9HX3ZQam42bnpZODdtVzFINlpQMjJ0dzVzazYtUENMeHdvNXctUmFBWC1mYVVhcEVHTzFLZkVHbndaQWZBZVNyc3U4MV9XQUFJMlN5RUxGWi1IU1lXMUZLWFgybzNNeF93Ty1DS3FLTWZsUTV1cGc2eDAybzhsbFhoeGJlVmVIOWlkMHgzYldRWE9vWk5hWm1MeVpJMmJsT2dtVDV0cHR4NHNQNDNqT0NtYW1sdkxyUkZvQmxCNTJ4V0RUQTBZQnhBLW5meUxCRHRJN0dPaVRWQjJ5cWd1Z1lBdGRfbWFQN2x2YTJpbVJWaHhxT0R5SlRiZThxcDdhWkw4bkJvTHZocnZDOHlv\"\n}"
+				}
+			]
+		},
+		{
+			"name": "Creating a Recurring Transaction using Recurring Token",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var merchant_pass = '13a4822c5907ed235f3a068c76184fc3';",
+							"var order_number = \"order-1234\";",
+							"var order_amount = \"0.01\";",
+							"var order_currency = \"USD\";",
+							"var order_description = \"bloodline\";",
+							"var recurring_init_trans_id = \"f921d458-cac2-11ec-9cd5-0242ac120013\";",
+							"var recurring_token = \"f9e2ee4a-cac2-11ec-8f8a-0242ac120013\";",
+							"",
+							"//formula:",
+							"//var recurring_token = \"6eee615a-cab5-11ec-b176-0242ac120013\";",
+							"var to_md5 = recurring_init_trans_id + recurring_token + order_number + order_amount + order_description + merchant_pass;",
+							"// Use the CryptoJS",
+							"",
+							"var hash = CryptoJS.SHA1(CryptoJS.MD5(to_md5.toUpperCase()).toString());",
+							"var result = CryptoJS.enc.Hex.stringify(hash);",
+							"// Set the new environment variable",
+							"postman.setEnvironmentVariable('session_hash', result);",
+							"pm.variables.set('order_amount', order_amount);",
+							"pm.variables.set('order_currency', order_currency);",
+							"pm.variables.set('order_description', order_description);",
+							"pm.variables.set('order_number', order_number);",
+							"pm.variables.set('recurring_init_trans_id', recurring_init_trans_id);",
+							"pm.variables.set('recurring_token', recurring_token);",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{ \n   \"merchant_key\":\"{{merchant_key}}\",\n   \"order\":{\n      \"number\":{{orderId}},\n      \"amount\": {{amount}},\n      \"description\":{{description}}\n},     \n    \"customer\":{\n        \"name\":\"amer\",\n        \"email\":\"test@test.com\"\n    },\n    \"recurring_token\":\"\",\n    \"recurring_init_trans_id\":\"\",\n    \"hash\":\"{{hash}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url_dineropay}}/api/v1/payment/recurring",
+					"host": [
+						"{{url_dineropay}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"payment",
+						"recurring"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Recurring (settled)",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{ \n   \"merchant_key\":\"xxxxx-xxxxx-xxxxx\",\n   \"order\":{\n      \"number\":\"order-1234\",\n      \"amount\": \"0.19\",\n      \"description\":\"very important gift\"\n},     \n       \"recurring_init_trans_id\":\"dc66cdd8-d702-11ea-9a2f-0242c0a87002\", \n       \"recurring_token\":\"9a2f-0242c0a87002\",\n       \"hash\":\"{{session_hash}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{CHECKOUT_HOST}}/api/v1/payment/reсurring",
+							"host": [
+								"{{CHECKOUT_HOST}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"payment",
+								"reсurring"
+							]
+						}
+					},
+					"status": "Response OK",
+					"_postman_previewlanguage": "json",
+					"header": null,
+					"cookie": [],
+					"body": "{\n    \"status\": \"settled\",\n    \"payment_id\": \"dc66cdd8-d702-11ea-9a2f-0242c0a87002\",\n    \"date\": \"2020-08-05 07:41:10\",\n    \"order\": {\n        \"number\": \"order-1234\",\n        \"amount\": \"0.19\",\n        \"currency\": \"USD\",\n        \"description\": \"very important gift\"\n    }\n}"
+				},
+				{
+					"name": "Recurring (declined)",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{ \n   \"merchant_key\":\"xxxxx-xxxxx-xxxxx\",\n   \"order\":{\n      \"number\":\"order-1234\",\n      \"amount\": \"0.19\",\n      \"description\":\"very important gift\"\n},     \n       \"recurring_init_trans_id\":\"dc66cdd8-d702-11ea-9a2f-0242c0a87002\", \n       \"recurring_token\":\"9a2f-0242c0a87002\",\n       \"hash\":\"{{session_hash}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{CHECKOUT_HOST}}/api/v1/payment/reсurring",
+							"host": [
+								"{{CHECKOUT_HOST}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"payment",
+								"reсurring"
+							]
+						}
+					},
+					"status": "Response OK",
+					"_postman_previewlanguage": "json",
+					"header": null,
+					"cookie": [],
+					"body": "{\n    \"status\": \"declined\",\n    \"reason\": \"declined by processing\",\n    \"payment_id\": \"dc66cdd8-d702-11ea-9a2f-0242c0a87002\",\n    \"date\": \"2020-08-05 07:41:10\",\n    \"order\": {\n        \"number\": \"order-1234\",\n        \"amount\": \"0.19\",\n        \"currency\": \"USD\",\n        \"description\": \"very important gift\"\n    }\n}"
+				}
+			]
+		},
+		{
+			"name": "GET_TRANS_STATUS request",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var payment_id = \"63c781cc-de3d-11eb-a1f1-0242ac130006\";",
+							"var merchant_pass = pm.environment.get(\"merch1_pass_post\");",
+							"",
+							"//formula:",
+							"var to_md5 = payment_id + merchant_pass;",
+							"// Use the CryptoJS",
+							"",
+							"var hash = CryptoJS.SHA1(CryptoJS.MD5(to_md5.toUpperCase()).toString());",
+							"var result = CryptoJS.enc.Hex.stringify(hash);",
+							"// Set the new environment variable",
+							"postman.setEnvironmentVariable('operation_hash', result);"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{  \n   \"merchant_key\":\"{{merchant_key}}\",\n   \"payment_id\":\"9987e66e-f874-11ed-ad08-2e29c6620980\",\n   \"hash\":\"b319ebe6b43c3c034ef20e637d9af2ef74a6981c\"\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{CHECKOUT_HOST}}/api/v1/payment/status",
+					"host": [
+						"{{CHECKOUT_HOST}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"payment",
+						"status"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "GET_TRANS_STATUS request (settled)",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{  \n   \"merchant_key\":\"xxxxx-xxxxx-xxxxx\",\n   \"payment_id\":\"63c781cc-de3d-11eb-a1f1-0242ac130006\",\n   \"hash\":\"{{operation_hash}}\"\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{CHECKOUT_HOST}}/api/v1/payment/status",
+							"host": [
+								"{{CHECKOUT_HOST}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"payment",
+								"status"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Server",
+							"value": "nginx"
+						},
+						{
+							"key": "Date",
+							"value": "Tue, 06 Jul 2021 10:05:53 GMT"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json",
+							"name": "Content-Type",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "Transfer-Encoding",
+							"value": "chunked"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "X-Powered-By",
+							"value": "PHP/7.4.10"
+						},
+						{
+							"key": "Cache-Control",
+							"value": "private, must-revalidate"
+						},
+						{
+							"key": "pragma",
+							"value": "no-cache"
+						},
+						{
+							"key": "expires",
+							"value": "-1"
+						},
+						{
+							"key": "X-Content-Type-Options",
+							"value": "nosniff"
+						},
+						{
+							"key": "X-XSS-Protection",
+							"value": "1; mode=block"
+						},
+						{
+							"key": "Strict-Transport-Security",
+							"value": "max-age=31536000"
+						},
+						{
+							"key": "Content-Security-Policy",
+							"value": "default-src 'self' 'unsafe-inline' 'unsafe-eval' data: https://*.google-analytics.com https://*.googleapis.com https://*.gstatic.com http://www.w3.org https://*.rafinita.com"
+						}
+					],
+					"cookie": [],
+					"body": ""
+				},
+				{
+					"name": "GET_TRANS_STATUS request (declined)",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{  \n   \"merchant_key\":\"xxxxx-xxxxx-xxxxx\",\n   \"payment_id\":\"03e46e96-de42-11eb-aea7-0242ac140002\",\n   \"hash\":\"{{operation_hash}}\"\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{CHECKOUT_HOST}}/api/v1/payment/status",
+							"host": [
+								"{{CHECKOUT_HOST}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"payment",
+								"status"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Server",
+							"value": "nginx"
+						},
+						{
+							"key": "Date",
+							"value": "Tue, 06 Jul 2021 10:09:28 GMT"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Transfer-Encoding",
+							"value": "chunked"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "X-Powered-By",
+							"value": "PHP/7.4.10"
+						},
+						{
+							"key": "Cache-Control",
+							"value": "private, must-revalidate"
+						},
+						{
+							"key": "pragma",
+							"value": "no-cache"
+						},
+						{
+							"key": "expires",
+							"value": "-1"
+						},
+						{
+							"key": "X-Content-Type-Options",
+							"value": "nosniff"
+						},
+						{
+							"key": "X-XSS-Protection",
+							"value": "1; mode=block"
+						},
+						{
+							"key": "Strict-Transport-Security",
+							"value": "max-age=31536000"
+						},
+						{
+							"key": "Content-Security-Policy",
+							"value": "default-src 'self' 'unsafe-inline' 'unsafe-eval' data: https://*.google-analytics.com https://*.googleapis.com https://*.gstatic.com http://www.w3.org https://*.rafinita.com"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"payment_id\": \"03e46e96-de42-11eb-aea7-0242ac140002\",\n    \"date\": \"2021-07-06 10:07:47\",\n    \"status\": \"decline\",\n    \"reason\": \"Declined by processing\",\n    \"order\": {\n        \"number\": \"order-1234\",\n        \"amount\": \"0.19\",\n        \"currency\": \"USD\",\n        \"description\": \"Important gift\"\n    },\n    \"customer\": {\n        \"name\": \"John Doe\",\n        \"email\": \"test@mail.com\"\n    }\n}"
+				}
+			]
+		},
+		{
+			"name": "Refund request",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var payment_id = \"63c781cc-de3d-11eb-a1f1-0242ac130006\";",
+							"var amount = \"0.19\";",
+							"var merchant_pass = pm.environment.get(\"merch1_pass_post\");",
+							"",
+							"//formula:",
+							"var to_md5 = payment_id + amount + merchant_pass;",
+							"// Use the CryptoJS",
+							"",
+							"var hash = CryptoJS.SHA1(CryptoJS.MD5(to_md5.toUpperCase()).toString());",
+							"var result = CryptoJS.enc.Hex.stringify(hash);",
+							"// Set the new environment variable",
+							"postman.setEnvironmentVariable('operation_hash', result);"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{  \n   \"merchant_key\":\"{{merchant_key}}\",\n   \"payment_id\":\"63c781cc-de3d-11eb-a1f1-0242ac130006\",\n   \"amount\":{{amount}},\n   \"hash\":\"{{hash}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{CHECKOUT_HOST}}/api/v1/payment/refund",
+					"host": [
+						"{{CHECKOUT_HOST}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"payment",
+						"refund"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Refund request (accepted)",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{  \n   \"merchant_key\":\"xxxxx-xxxxx-xxxxx\",\n   \"payment_id\":\"63c781cc-de3d-11eb-a1f1-0242ac130006\",\n   \"amount\":\"0.10\",\n   \"hash\":\"{{operation_hash}}\"\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{CHECKOUT_HOST}}/api/v1/payment/refund",
+							"host": [
+								"{{CHECKOUT_HOST}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"payment",
+								"refund"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Server",
+							"value": "nginx"
+						},
+						{
+							"key": "Date",
+							"value": "Tue, 06 Jul 2021 10:26:35 GMT"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Transfer-Encoding",
+							"value": "chunked"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "X-Powered-By",
+							"value": "PHP/7.4.10"
+						},
+						{
+							"key": "Cache-Control",
+							"value": "private, must-revalidate"
+						},
+						{
+							"key": "pragma",
+							"value": "no-cache"
+						},
+						{
+							"key": "expires",
+							"value": "-1"
+						},
+						{
+							"key": "X-Content-Type-Options",
+							"value": "nosniff"
+						},
+						{
+							"key": "X-XSS-Protection",
+							"value": "1; mode=block"
+						},
+						{
+							"key": "Strict-Transport-Security",
+							"value": "max-age=31536000"
+						},
+						{
+							"key": "Content-Security-Policy",
+							"value": "default-src 'self' 'unsafe-inline' 'unsafe-eval' data: https://*.google-analytics.com https://*.googleapis.com https://*.gstatic.com http://www.w3.org https://*.rafinita.com"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"payment_id\": \"63c781cc-de3d-11eb-a1f1-0242ac130006\",\n    \"result\": \"accepted\"\n}"
+				}
+			]
+		},
+		{
+			"name": "Authentication request with card token ",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{  \n   \"merchant_key\":\"{{merchant_key}}\",\n   \"operation\":\"purchase\",\n\n   \"order\":{\n      \"number\":{{orderId}},\n      \"amount\": {{amount}},\n      \"currency\":{{currency}},\n      \"description\":{{description}}\n   },\n   \"cancel_url\":\"https://google.com\",\n   \"success_url\":\"https://google.com\",\n   \"customer\":{\n      \"name\":\"Amer Mo\",\n      \"email\":\"test@email.com\"\n   },\n     \"billing_address\": {\n    \"country\": \"SA\",\n    \"state\": \"string\",\n    \"address\": \"string\",\n    \"city\": \"string\",\n    \"house_number\": \"string\",\n    \"zip\": \"string\",\n    \"phone\": \"+96600000000\"\n  },\n  \"card_token\":[\"fce13e31fe507b21c0a4f080743dfdd66f31edb09fc71cf76601ad6702b9e6bd\"],\n   \"hash\":\"{{hash}}\"\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url_dineropay}}/api/v1/session",
+					"host": [
+						"{{url_dineropay}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"session"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create A Schedule id  Copy",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "action",
+							"value": "CREATE_SCHEDULE",
+							"type": "text"
+						},
+						{
+							"key": "client_key",
+							"value": "1d903ea0-e8dc-11ed-bbba-d60e6b1bd8d8",
+							"type": "text"
+						},
+						{
+							"key": "name",
+							"value": "for testing schduled payment through api",
+							"type": "text"
+						},
+						{
+							"key": "interval_length",
+							"value": "1",
+							"type": "text"
+						},
+						{
+							"key": "interval_unit",
+							"value": "day",
+							"type": "text"
+						},
+						{
+							"key": "payments_count",
+							"value": "3",
+							"type": "text"
+						},
+						{
+							"key": "hash",
+							"value": "6578a6a84c1f19d7d9d6ecef7641b8d1",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "https://api.rafinita.com/post?action=\"CREATE_SCHEDULE\",&\"client_key\"=\"1d903ea0-e8dc-11ed-bbba-d60e6b1bd8d8\",&\"name\"=\"for testing schduled payment through api\",&\"inverval_length\"=\"1\",&\"interval_unit\"=\"day\",&\"payment_count\"=\"3\",&\"hash\"=\"0D6F1971358364EEFE3E3A31928A37F8\"",
+					"protocol": "https",
+					"host": [
+						"api",
+						"rafinita",
+						"com"
+					],
+					"path": [
+						"post"
+					],
+					"query": [
+						{
+							"key": "",
+							"value": "",
+							"disabled": true
+						},
+						{
+							"key": "action",
+							"value": "\"CREATE_SCHEDULE\","
+						},
+						{
+							"key": "\"client_key\"",
+							"value": "\"1d903ea0-e8dc-11ed-bbba-d60e6b1bd8d8\","
+						},
+						{
+							"key": "\"name\"",
+							"value": "\"for testing schduled payment through api\","
+						},
+						{
+							"key": "\"inverval_length\"",
+							"value": "\"1\","
+						},
+						{
+							"key": "\"interval_unit\"",
+							"value": "\"day\","
+						},
+						{
+							"key": "\"payment_count\"",
+							"value": "\"3\","
+						},
+						{
+							"key": "\"hash\"",
+							"value": "\"0D6F1971358364EEFE3E3A31928A37F8\""
+						},
+						{
+							"key": "}",
+							"value": "",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Create A Schedule id ",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "action",
+									"value": "CREATE_SCHEDULE",
+									"type": "text"
+								},
+								{
+									"key": "client_key",
+									"value": "1d903ea0-e8dc-11ed-bbba-d60e6b1bd8d8",
+									"type": "text"
+								},
+								{
+									"key": "name",
+									"value": "for testing schduled payment through api",
+									"type": "text"
+								},
+								{
+									"key": "interval_length",
+									"value": "1",
+									"type": "text"
+								},
+								{
+									"key": "interval_unit",
+									"value": "day",
+									"type": "text"
+								},
+								{
+									"key": "payments_count",
+									"value": "3",
+									"type": "text"
+								},
+								{
+									"key": "hash",
+									"value": "6578a6a84c1f19d7d9d6ecef7641b8d1",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "https://api.rafinita.com/post?action=\"CREATE_SCHEDULE\",&\"client_key\"=\"1d903ea0-e8dc-11ed-bbba-d60e6b1bd8d8\",&\"name\"=\"for testing schduled payment through api\",&\"inverval_length\"=\"1\",&\"interval_unit\"=\"day\",&\"payment_count\"=\"3\",&\"hash\"=\"0D6F1971358364EEFE3E3A31928A37F8\"&}=",
+							"protocol": "https",
+							"host": [
+								"api",
+								"rafinita",
+								"com"
+							],
+							"path": [
+								"post"
+							],
+							"query": [
+								{
+									"key": "",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "action",
+									"value": "\"CREATE_SCHEDULE\","
+								},
+								{
+									"key": "\"client_key\"",
+									"value": "\"1d903ea0-e8dc-11ed-bbba-d60e6b1bd8d8\","
+								},
+								{
+									"key": "\"name\"",
+									"value": "\"for testing schduled payment through api\","
+								},
+								{
+									"key": "\"inverval_length\"",
+									"value": "\"1\","
+								},
+								{
+									"key": "\"interval_unit\"",
+									"value": "\"day\","
+								},
+								{
+									"key": "\"payment_count\"",
+									"value": "\"3\","
+								},
+								{
+									"key": "\"hash\"",
+									"value": "\"0D6F1971358364EEFE3E3A31928A37F8\""
+								},
+								{
+									"key": "}",
+									"value": ""
+								}
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Date",
+							"value": "Wed, 24 May 2023 10:05:33 GMT"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json",
+							"name": "Content-Type",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "Transfer-Encoding",
+							"value": "chunked"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Set-Cookie",
+							"value": "PHPSESSID=8lhprsvopt7rka2rgr42f9op55; path=/; secure; HttpOnly; SameSite=lax"
+						},
+						{
+							"key": "Cache-Control",
+							"value": "max-age=0, must-revalidate, private"
+						},
+						{
+							"key": "Expires",
+							"value": "Wed, 24 May 2023 10:05:33 GMT"
+						},
+						{
+							"key": "X-Frame-Options",
+							"value": "SAMEORIGIN"
+						},
+						{
+							"key": "X-Content-Type-Options",
+							"value": "nosniff"
+						},
+						{
+							"key": "X-XSS-Protection",
+							"value": "1; mode=block"
+						},
+						{
+							"key": "Strict-Transport-Security",
+							"value": "max-age=15724800; includeSubDomains"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"action\": \"CREATE_SCHEDULE\",\n    \"result\": \"SUCCESS\",\n    \"id\": \"84f2c56e-fa1a-11ed-bfb3-5acabb05365f\",\n    \"name\": \"for testing schduled payment through api\",\n    \"interval_length\": 1,\n    \"interval_unit\": \"day\",\n    \"payments_count\": 3,\n    \"paused\": \"N\"\n}"
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "amount",
+			"value": "0.10",
+			"type": "string"
+		},
+		{
+			"key": "currency",
+			"value": "SAR",
+			"type": "string"
+		},
+		{
+			"key": "description",
+			"value": "gift",
+			"type": "string"
+		},
+		{
+			"key": "orderId",
+			"value": "2222",
+			"type": "string"
+		},
+		{
+			"value": "",
+			"type": "string",
+			"disabled": true
+		}
+	]
+}
