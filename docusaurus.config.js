@@ -124,6 +124,7 @@ const config = {
 				logo: {
 					alt: "Dinerpay logo",
 					src: "img/dineropayS.svg",
+					href: "https://www.dineropay.com",
 				},
 				items: [
 					{
