@@ -55,3 +55,17 @@ and that you are receiving the response in the `notification_url`, you can use [
 :::note
 Based on the regulations here in Saudi Arabia, most of the transactions require 3D authentication.
 :::
+
+{/* an example of custom card usign the existing card of docsaraus */}
+import CardBox from "@site/src/theme/DocCard";
+
+<CardBox
+	item={{
+		type: "link",
+		href: "/integration",
+		label: "Hosted",
+		custom: true, // to control the width of cards insitated by us
+		icon: "hosted",
+		description: "this is just for testing purposes",
+	}}
+/>
