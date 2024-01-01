@@ -3,7 +3,7 @@
 	"position": 2,
 	"link": {
 		"type": "generated-index",
-		"slug": "/auth-and-capture",
+		"slug": "payments/auth_and_capture",
 		"description": "In a basic payment flow, the payable amount from your payment request is authorized and captured immediately during the transaction flow, but sometimes you may want to charge the customer a different amount or extend the period of authorization to capture the payment at a later point in time."
 	}
 }

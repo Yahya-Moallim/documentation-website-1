@@ -1,7 +1,7 @@
 {
-    "label": "Manging Payments",
-    "position": 5,
-    "link":{
-        "slug": "/manage_payments"
-    }
+	"label": "Manging Payments",
+	"position": 5,
+	"link": {
+		"slug": "payments/manage_payments"
+	}
 }

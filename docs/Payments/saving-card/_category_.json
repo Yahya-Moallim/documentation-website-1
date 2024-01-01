@@ -4,6 +4,6 @@
 	"link": {
 		"type": "generated-index",
 		"description": "In Dinero Pay, we offer the option to securely store customers' card details for future use, following PCI standards.",
-		"slug": "/saving-cards"
+		"slug": "/payments/saving_cards"
 	}
 }

@@ -1,7 +1,8 @@
 {
-    "label": " Ready To Go Connector",
-    "link":{
-        "type": "generated-index",
-        "description": "To help you with your integration, check out our list of ready-to-go connectors of the popular platforms built for you. They might save you time if you use one of these to develop your project."
-    }
+	"label": " Ready To Go Connector",
+	"link": {
+		"type": "generated-index",
+		"slug": "/connectors",
+		"description": "To help you with your integration, check out our list of ready-to-go connectors of the popular platforms built for you. They might save you time if you use one of these to develop your project."
+	}
 }

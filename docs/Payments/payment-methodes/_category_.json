@@ -2,7 +2,7 @@
 	"label": " Payment Methods",
 	"link": {
 		"type": "generated-index",
-		"slug": "/payment-methods",
+		"slug": "payments/payment-methods",
 		"description": "These are the supported payments methods [applapy,stcpay,card] that you can enable in the checkout page"
 	}
 }

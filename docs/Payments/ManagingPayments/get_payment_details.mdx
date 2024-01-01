@@ -1,5 +1,6 @@
 ---
 sidebar_label: Get payment status
+slug: /payments/get_payment_details
 keyword:
   - docs
   - transaction
@@ -41,9 +42,9 @@ To check the payment status, you will need to provide the `payment_id`, so make 
 
 ```json
 {
-  "merchant_key": " xxxxx-xxxxx-xxxxx",
-  "payment_id": "dc66cdd8-d702-11ea-9a2f-0242c0a87002",
-  "hash": "xxxxxxxxxxx"
+	"merchant_key": " xxxxx-xxxxx-xxxxx",
+	"payment_id": "dc66cdd8-d702-11ea-9a2f-0242c0a87002",
+	"hash": "xxxxxxxxxxx"
 }
 ```
 
@@ -51,18 +52,18 @@ To check the payment status, you will need to provide the `payment_id`, so make 
 
 ```json
 {
-  "payment_id": "24f7401c-fc47-11ec-8d07-0242ac120015",
-  "date": "2022-07-05 09:45:03",
-  "status": "settled",
-  "order": {
-    "number": "f0a51dfa-fc43-11ec-8128-0242ac120004-1",
-    "amount": "3.01",
-    "currency": "SAR",
-    "description": "gift"
-  },
-  "customer": {
-    "name": "John Doe",
-    "email": "success@gmail.com"
-  }
+	"payment_id": "24f7401c-fc47-11ec-8d07-0242ac120015",
+	"date": "2022-07-05 09:45:03",
+	"status": "settled",
+	"order": {
+		"number": "f0a51dfa-fc43-11ec-8128-0242ac120004-1",
+		"amount": "3.01",
+		"currency": "SAR",
+		"description": "gift"
+	},
+	"customer": {
+		"name": "John Doe",
+		"email": "success@gmail.com"
+	}
 }
 ```

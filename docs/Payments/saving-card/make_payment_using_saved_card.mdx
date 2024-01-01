@@ -1,5 +1,6 @@
 ---
 sidebar_label: Make payment with a saved card
+slug: /payments/saving_cards/purchase
 keyword:
   - doc
   - tokenization
@@ -18,20 +19,18 @@ If you have saved the token from a previous request, you can use it to make an [
 
 ```json
 {
-  "merchant_key": "1c568e26-c997-11e9-8be4-0242ac12000f",
-  "operation": "purchase",
-  "order": {
-    "number": "{{order_number}}",
-    "amount": "{{order_amount}}",
-    "currency": "{{order_currency}}",
-    "description": "{{order_description}}"
-  },
-  "cancel_url": "https://example.com/cancel",
-  "success_url": "https://example.com/success",
-  "card_token": [
-    "f5d6a0ab6fcfb6487a39e2256e50fff3c95aaa97075ee5e539bb662fceff4dc1"
-  ],
-  "hash": "{{session_hash}}"
+	"merchant_key": "1c568e26-c997-11e9-8be4-0242ac12000f",
+	"operation": "purchase",
+	"order": {
+		"number": "{{order_number}}",
+		"amount": "{{order_amount}}",
+		"currency": "{{order_currency}}",
+		"description": "{{order_description}}"
+	},
+	"cancel_url": "https://example.com/cancel",
+	"success_url": "https://example.com/success",
+	"card_token": ["f5d6a0ab6fcfb6487a39e2256e50fff3c95aaa97075ee5e539bb662fceff4dc1"],
+	"hash": "{{session_hash}}"
 }
 ```
 
