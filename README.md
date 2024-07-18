@@ -12,10 +12,10 @@
 
 ## TODO LIST
 
-- [ ] adding some reference screenshots to help delevering the information.
-- [ ] adding void to managing payment section to the api also.
+- [x] adding some reference screenshots to help delevering the information.
+- [x] adding void to managing payment section to the api also.
 - [x] update auth and capture
-- [ ] update applepay section to have both direct and hosted
+- [x] update applepay section to have both direct and hosted
 - [x] add how to update,delete, a saved card if it is exist
 - [x] update the refund section
 - [x] update callback notification on all sections
@@ -24,4 +24,4 @@
 - [x] update the table of list of operation
 - [x] check the noticaiton url update admin or merchant
 - [x] subscription section
-- [ ] split the s2s and checkout api by adding tags to seperate them.
+- [x] split the s2s and checkout api by adding tags to seperate them.

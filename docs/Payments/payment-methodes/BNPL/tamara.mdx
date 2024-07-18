@@ -1,0 +1,71 @@
+---
+sidebar_label: Tamara
+slug: /payments/payment-methods/buy-now-pay-later/tamara
+---
+
+# Tamara
+
+With Tamara you can let your customers shop now and split their payments in 2, 3 and 4.
+
+## Prerequisite
+
+Make sure to reach to our support team to activate the service [support team](mailto:support@dineropay.com). <br></br>
+One of our team member will guide throw the process.
+
+## Using tamara
+
+once we configure your account to use tamara payment option you can start the testing.<br></br>
+By default all enabled payments will be showing in the checkout page, however some may requrie additinal configuration that need to be sent to the service provider like tamara in this case.
+If you only require tamara option to be present in the checkout page, in the Authentication you will need to pass a specific list of parameters in the 'parameters' object that are needed for tamara payment option and pass `tamara` in the `methods` array.
+
+### Parameters need to be passed in the parameters object
+
+| Parameter            | Type   | Mandatory | Description                                    |
+| -------------------- | ------ | --------- | ---------------------------------------------- |
+| shipping_amount      | Number | Yes       | Shipping amount                                |
+| tax_amount           | Number | Yes       | Tax amount                                     |
+| product_reference_id | String | Yes       | The unique id of the item from merchant's side |
+| product_type         | String | Yes       | Product type                                   |
+| product_sku          | String | Yes       | Product sku                                    |
+| product_amount       | Number | Yes       | Product amount                                 |
+
+### Request sample
+
+```json
+{
+	"merchant_key": "xxxxx-xxxxx-xxxxx",
+	"operation": "purchase",
+	"methods": ["tamara"],
+	"parameters": {
+		"tamara": {
+			" shipping_amount ": 1.01,
+			"tax_amount": 1.01,
+			"product_reference_id": "item54321",
+			"product_type": "Clothes",
+			"product_sku": "ABC-12345-S-BL",
+			"product_amount": 998.17
+		}
+	},
+	"order": {
+		"number": "order-1234",
+		"amount": "1000.19",
+		"currency": "SAR",
+		"description": "Important gift"
+	},
+	"cancel_url": "https://example.com/cancel",
+	"success_url": "https://example.com/success",
+	"customer": {
+		"name": "John Doe",
+		"email": "test@gmail.com"
+	},
+	"billing_address": {
+		"country": "US",
+		"state": "CA",
+		"city": "Los Angeles",
+		"address": "Moor Building 35274",
+		"zip": "123456",
+		"phone": "347771112233"
+	},
+	"hash": "{{session_hash}}"
+}
+```

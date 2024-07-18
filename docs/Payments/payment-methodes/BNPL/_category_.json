@@ -1,0 +1,8 @@
+{
+	"label": "BNPL",
+	"link": {
+		"type": "generated-index",
+		"slug": "payments/payment-methods/buy-now-pay-later",
+		"description": "These are the supported BNPL services [Tabby, Tamara] that you can enable, make sure to contact the support team for activation"
+	}
+}

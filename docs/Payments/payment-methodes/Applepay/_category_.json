@@ -1,0 +1,8 @@
+{
+	"label": "Applepay",
+	"link": {
+		"type": "generated-index",
+		"slug": "payments/payment-methods/applepay",
+		"description": "To enable applepay you have two option Hosted which require no configuration from your side or direct which give more control on how to display applepay button"
+	}
+}

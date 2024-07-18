@@ -1,6 +1,6 @@
 ---
-sidebar_label: Applepay
-slug: /payments/payment-methods/applepay
+sidebar_label: Direct applepay
+slug: /payments/payment-methods/applepay/direct
 ---
 
 By default, **applePay** will be enabled once you go live. We refer to this as the hosted method, it will save you time and there is no need for any additional configuration, as it is handled by the gateway.<br></br>
@@ -13,7 +13,7 @@ At the moment we only support hosted applePay which doesn't require any configur
 
 :::
 
-## Using applepay
+## Using Hosted applepay
 
 once your account is in live mode appleay should appear as a payment option in the checkout page.
 
@@ -25,7 +25,7 @@ or you can specify applepay in the API request to be the only payment method
 
 ### samaple request
 
-make sure to add the parameter `methods` and pass `stcpay`
+make sure to add the parameter `methods` and pass `applepay`
 
 ```json
 {

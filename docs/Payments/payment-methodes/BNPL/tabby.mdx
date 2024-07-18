@@ -1,0 +1,65 @@
+---
+sidebar_label: Tabby
+slug: /payments/payment-methods/buy-now-pay-later/tabby
+---
+
+# Tabby
+
+Let your customers shop now and pay in 4 interest-free payments, with no fees, not even a late fee, while you get paid in full-upfront.
+
+## Prerequisite
+
+Make sure to reach to our support team to activate the service [support team](mailto:support@dineropay.com). <br></br>
+One of our team member will guide throw the process.
+
+## Using tabby
+
+once we configure your account to use tabby payment option you can start the testing.<br></br>
+By default all enabled payments will be showing in the checkout page, however some may requrie additinal configuration that need to be sent to the service provider like tabby in this case.
+If you only require tabby option to be present in the checkout page, in the Authentication you will need to pass a specific list of parameters in the 'parameters' object that are needed for tabby payment option and pass `tabby` in the `methods` array.
+
+### Parameters need to be passed in the parameters object
+
+| Parameter              | Type   | Mandatory | Description                                                                                                                                                                                   |
+| ---------------------- | ------ | --------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| category               | String | Yes       | Required as name of high-level category (Clothes, Electronics,etc.); or a tree of category-subcategory1-subcategory2; or id of the category and table with category-ids data mapped provided. |
+| buyer_registered_since | String | Yes       | Time the customer got registred with you, in UTC, and displayed in ISO 8601 datetime format.                                                                                                  |
+| buyer_loyalty_level    | Number | Yes       | Default: 0 Customer's loyalty level within your store, should be sent as a number of successfully placed orders in the store with any payment methods.                                        |
+
+### Request sample
+
+```json
+{
+	"merchant_key": "xxxxx-xxxxx-xxxxx",
+	"operation": "purchase",
+	"methods": ["tabby"],
+	"parameters": {
+		"tabby": {
+			"category": " Clothes ",
+			"buyer_registered_since": " 2019-08-2414:15:22",
+			"buyer_loyalty_level": 0
+		}
+	},
+	"order": {
+		"number": "order-1234",
+		"amount": "1000.19",
+		"currency": "SAR",
+		"description": "Important gift"
+	},
+	"cancel_url": "https://example.com/cancel",
+	"success_url": "https://example.com/success",
+	"customer": {
+		"name": "John Doe",
+		"email": "test@gmail.com"
+	},
+	"billing_address": {
+		"country": "US",
+		"state": "CA",
+		"city": "Los Angeles",
+		"address": "Moor Building 35274",
+		"zip": "123456",
+		"phone": "347771112233"
+	},
+	"hash": "{{session_hash}}"
+}
+```
