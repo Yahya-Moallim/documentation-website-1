@@ -3,7 +3,7 @@
 	"position": 2,
 	"link": {
 		"type": "generated-index",
-		"slug": "/checkout-integration",
+		"slug": "/integration/checkout",
 		"description": "The Checkout service is a fast and easy way to create a secure payment page. It allows collecting and submitting payments and sending them for processing."
 	}
 }

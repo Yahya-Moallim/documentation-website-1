@@ -7,10 +7,21 @@ keywords:
   - prebuilt
   - direct_integration
 sidebar_label: Server To Server
+slug: /integration/s2s
 ---
 
 ** 🔜 Coming Soon ... **
 
 :::note
-In case you require S2S integration, you can contact us at <a href = "mailto: developer@dineropay.com">developer@dineropay.com</a> we sure can help with that.
+S2S API can be used with direct applepay , it uses a different endpoint than [Checkout API](./Checkout/) and different API structure.
+For details on how to use S2S SPI [visit](https://docs.rafinita.com/s2s_apm#apple-pay).
+S2S dose not use json for it's API requests all request should be send as `Content-Type: multipart/form-data.`
 :::
+
+## Prerequisite
+
+- Inform the [support team](mailto:support@dineropay.com) that you are willing to use the S2S to activate it for your account
+
+## Endpoint
+
+Note that when using S2S API don't use the checkout API use this instead `https://api.dineropay.com/v2/post`

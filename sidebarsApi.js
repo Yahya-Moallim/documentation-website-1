@@ -13,23 +13,22 @@
 
 /** @type {import('@docusaurus/plugin-content-docs').SidebarsConfig} */
 const sidebars = {
-  openApiSidebar: [
-    {
-      type: "category",
-      label: "API",
-      collapsed:false,
-      link: {
-        type: "generated-index",
-        title: "API Gateway",
-        description:
-          "Official Documentation of Dinero Pay",
-        slug: "/",
-        // collapsed: false,
-      },
-      // @ts-ignore
-      items: require("./api/gateway/sidebar.js")
-    }
-  ]
+	openApiSidebar: [
+		{
+			type: "category",
+			label: "API",
+			collapsed: false,
+			link: {
+				type: "generated-index",
+				title: "API Gateway",
+				description: "Official Documentation of Dinero Pay",
+				slug: "/",
+				// collapsed: false,
+			},
+			// @ts-ignore
+			items: require("./api/gateway/sidebar.js"),
+		},
+	],
 };
 
 module.exports = sidebars;
