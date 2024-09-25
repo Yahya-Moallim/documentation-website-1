@@ -147,7 +147,7 @@ const config = {
 						value: `<a href="/checkoutAPI.json" download> <span style="display:flex; align-items:center"><img src="/img/postman.svg" style="width:2rem;margin-right:.5rem"></img>checkout collection</span> </a>`,
 					},
 					{
-						href: "https://dashaboard.dineropay.com",
+						href: "https://dashboard.dineropay.com",
 						label: "Dashboard",
 						position: "right",
 					},
