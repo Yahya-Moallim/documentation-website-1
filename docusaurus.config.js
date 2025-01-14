@@ -123,7 +123,7 @@ const config = {
 			navbar: {
 				logo: {
 					alt: "Dinerpay logo",
-					src: "img/dineropayS.svg",
+					src: "/static/img/logo.svg",
 					href: "https://www.dineropay.com",
 				},
 				items: [
@@ -158,7 +158,7 @@ const config = {
 				links: [
 					{
 						html: ` <a href="https://dineropay.com" target="_blank" rel="noreferrer noopener">
-                <img src="/img/dineropayS.svg" alt="Find more about Dinero Pay" width="114" height="51" />
+                <img src="/static/img/dinero-pay-logo.svg" alt="Find more about Dinero Pay" width="114" height="51" />
               </a>`,
 					},
 				],
