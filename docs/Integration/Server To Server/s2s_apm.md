@@ -3,8 +3,8 @@ id: s2s_apm
 title: S2S APM
 ---
 
-Version: 3.5.1<br/>
-Released: 2024/11/15<br/>
+Version: 3.6.2<br/>
+Released: 2025/02/26<br/>
 
 ## Introduction
 ---
@@ -36,6 +36,33 @@ If cascading is triggered for the order, you will receive callbacks for the firs
 Additionally, for the last attempt, the callback will include only the final status. That is, callbacks regarding 3DS or redirects will not be sent. 
 Callbacks for intermediate attempts (between the first decline and the last payment attempt) are not sent._
 
+⚠️ **Pay attention**
+
+>If the required method is `GET` and the `redirect_url` contains query parameters, such as:  
+>`redirect_url=https://example.domain.com/?parameter=1`  
+>
+>There are two possible approaches for implementing the redirect:
+>
+>***Option 1***: Redirecting the customer by sending query parameters within the form inputs<br/>
+>Parse the query parameters from the `redirect_url` and pass them as input elements in an HTML 
+>form:
+>
+>**Example:**  
+>```
+><form action="https://example.domain.com" method="GET">
+>  <input name="parameter" value="1">
+>  <input type="submit" value="Go">
+></form>
+>```
+>
+>***Option 2***: Redirect Using JavaScript<br/>
+>Use JavaScript to redirect the customer to the specified ```redirect_url``` with the query parameters:
+>
+>**Example:**  
+>```
+>document.location = 'https://example.domain.com/?parameter=1';
+>```
+
 ### Client Registration
 
 Before you get an account to access Payment Platform, you must provide the following data to the Payment Platform administrator.
@@ -65,6 +92,11 @@ Merchants can’t make payments if the S2S APM protocol is not mapped.
 
 For the transaction you must send the **server to server HTTPS POST** request to the Payment Platform URL (PAYMENT_URL). In response Payment Platform will return the JSON ([http://json.org/)](http://json.org/)) encoded string.
 
+⚠️ **Pay attention** <br/>
+> The S2S (Server-to-Server) protocol requires requests to be sent with the following content type:
+Header:<br/>
+Content-Type: application/x-www-form-urlencoded
+
 ### List of possible actions in Payment Platform
 
 When you make request to Payment Platform, you need to specify action that needs to be done. Possible actions are:
@@ -75,6 +107,7 @@ When you make request to Payment Platform, you need to specify action that needs
 | CREDITVOID | Creates REFUND transaction |
 | VOID | Creates VOID transaction |
 | CREDIT2VIRTUAL | Creates CREDIT2VIRTUAL transaction |
+| CREDIT2CRYPTO | Creates CREDIT transaction |
 | DEBIT2VIRTUAL | Creates DEBIT transaction as a part of transfer flow |
 | GET_TRANS_STATUS | Gets status of transaction in Payment Platform |
 
@@ -130,6 +163,7 @@ This request is sent by POST in the background (e.g. through PHP CURL).
 | `action` | Action to perform (=SALE) | = SALE | + |
 | `client_key` | Unique client key (CLIENT_KEY) | | + |
 | `channel_id` | Payment channel (Sub-account) | String up to 16 characters | - |
+| `crypto_network` | Blockchain network | String up to 50 characters.<br /> You can use an arbitrary value or choose one of the following:<br />•	ERC20<br /> •	TRC20<br /> •	BEP20<br /> • BEP2<br /> •	OMNI<br /> •	solana<br /> •	polygon<br /> | - |
 | `brand` | Brand through which the transaction is performed | String up to 36 characters(Appendix B) | + |
 | `order_id` | Transaction ID in the Clients system | String up to 255 characters | + |
 | `order_amount` | The amount of the transaction.<br/> <br/> **For purchase operation with crypto:** <br /> Do not send parameter at all if you want to create a transaction with an unknown amount - for cases when the amount is set by the payer outside the merchant site (for example, in an app). As well, you have to omit "amount" parameter for hash calculation for such cases. |Format depends on currency.<br />Send Integer type value for currencies with zero-exponent. <br /> **Example:** <font color='grey'>1000</font><br />Send Float type value for currencies with exponents 2, 3, 4.<br />Format for 2-exponent currencies: <font color='grey'>XX.XX</font> <br /> **Example:** <font color='grey'>100.99</font><br />**Pay attention** that currencies 'UGX', 'JPY', 'KRW', 'CLP' must be send in the format <font color='grey'>XX.XX</font>, with the zeros after comma. <br /> **Example:** <font color='grey'>100.00</font><br />Format for 3-exponent currencies: <font color='grey'>XXX.XXX</font> <br /> **Example:** <font color='grey'>100.999.</font><br />Format for 4-exponent currencies: <font color='grey'>XXX.XXXX</font> <br /> **Example:** <font color='grey'>100.9999</font><br /> <br/> ⚠️ **Note!** For crypto currencies use the exponent as appropriate for the specific currency.| + |
@@ -242,18 +276,14 @@ You will get JSON encoded string with transaction result.
 | Parameter   | Description                                                                                                 |
 |-------------|-------------------------------------------------------------------------------------------------------------|
 | ```action```      | SALE                                                                                                        |
-| ```result```      | SUCCESS                                                                                                       |
+| ```result```      | INIT                                                                                                       |
 | ```status```      | PENDING                                                                                                     |
-| ```order_id```    | Transaction ID in the Client's system                                                                       |
+| ```order_id```    | Order ID in the Client's system                                                                       |
 | ```trans_id```    | Transaction ID in the Payment Platform                                                                      |
-| ```hash```    	| Hash                                                                    |
 | ```trans_date```  | Transaction date in the Payment Platform                                                                    |
 | ```descriptor```  | This is a string which the owner of the credit card will see in the statement from the bank. In most cases, this is the Customer's support web-site |
 | ```amount```      | Order amount                                                                                                |
 | ```currency```    |  Currency                                                                                               |
-| ```crypto_address```    | Public address of a cryptocurrency wallet                                                                                                  |
-| ```crypto_network```    | Blockchain network where the transaction is taking place                                                                                                    |
-
 
 **Successful sale response**
 
@@ -274,6 +304,18 @@ You will get JSON encoded string with transaction result.
 | `amount` | Order amount |
 | `currency` | Currency |
 | `custom_data` | Object with the custom data. <br/> This block duplicates the arbitrary parameters that were passed in the payment request |
+|`connector_name` ** \* ** | Connector's name (Payment Gateway)|
+|`rrn` ** \* ** | Retrieval Reference Number value from the acquirer system|
+|`approval_code` ** \* ** | Approval code value from the acquirer system|
+| `gateway_id` **\*** | Gateway ID – transaction identifier provided by payment gateway|
+| `extra_gateway_id`**\*** | Extra Gateway ID – additional transaction identifier provided by payment gateway.|
+| `merchant_name`** \* ** | Merchant Name|
+| `mid_name` ** \* ** | MID Name|
+|`issuer_country` ** \* ** | Issuer Country|
+|`issuer_bank` ** \* ** | Issuer Bank|
+
+
+** \* ** The parameters are included if the appropriate setup is configured in the admin panel (see “Add Extended Data to Callback” block in the Configurations -> Protocol Mappings section).
 
 **Unsuccessful sale response**
 
@@ -459,9 +501,21 @@ You will get JSON encoded string with transaction result.
 |```order_id```|Order ID in the Client’s system|
 |```trans_id```|Transaction ID in the Payment Platform|
 |```trans_date```|Transaction date in the Payment Platform|
-|```hash```|Special signature to validate callback. See Appendix A, Credit2Virtual callback signature|
 |```amount``` | Order amount |
 |```currency``` | Currency |
+|`connector_name` ** \* ** | Connector's name (Payment Gateway)|
+|`rrn` ** \* ** | Retrieval Reference Number value from the acquirer system|
+|`approval_code` ** \* ** | Approval code value from the acquirer system|
+| `gateway_id` **\*** | Gateway ID – transaction identifier provided by payment gateway|
+| `extra_gateway_id`**\*** | Extra Gateway ID – additional transaction identifier provided by payment gateway.|
+| `merchant_name`** \* ** | Merchant Name|
+| `mid_name` ** \* ** | MID Name|
+|`issuer_country` ** \* ** | Issuer Country|
+|`issuer_bank` ** \* ** | Issuer Bank|
+|```hash```|Special signature to validate callback. See Appendix A, Credit2Virtual callback signature|
+
+** \* ** The parameters are included if the appropriate setup is configured in the admin panel (see “Add Extended Data to Callback” block in the Configurations -> Protocol Mappings section).
+
 
 <details>
 	<summary markdown="span">Response Example (Successful result)</summary>
@@ -517,6 +571,103 @@ action=CREDIT2VIRTUAL&result=UNDEFINED&status=PREPARE&order_id=64401210&trans_id
 ```
 </details>
 
+## CREDIT2CRYPTO request
+---
+CREDIT2CRYPTO request is used to create CREDIT transaction in Payment Platform.
+
+This operation transfers funds from merchant`s crypto wallet to customer.
+
+This request is sent by POST in the background (e.g., through PHP CURL).
+
+### Request parameters
+
+|**Parameter**|**Description**|**Values**|**Required**|
+| - | - | - | :-: |
+|```action```|CREDIT2CRYPTO|CREDIT2CRYPTO|+|
+|```client_key```|Unique client key (CLIENT_KEY)||+|
+|```channel_id```|Payment channel (Sub-account)|String up to 16 characters|-|
+|```brand```|Brand through which the transaction is performed|String up to 36 characters|+|
+|```order_id```|Order ID in the Clients system|String up to 255 characters|+|
+|```order_amount```|The amount of the transaction|Format depends on currency|+|
+|```order_currency```|Crypto currency|alpha code, from 3 to 6 characters|+|
+|```order_description```|Description of the transaction (product name)|String up to 1024 characters|+|
+|```crypto_network```|Blockchain network|String up to 50 characters<br /> <br />You can use an arbitrary value or choose one of the following:<br /> •	ERC20 <br /> •	TRC20 <br /> •	BEP20 <br /> • BEP2 <br /> •	OMNI <br /> •	solana <br /> •	polygon |-|
+|```parameters```|Array of the parameters for specific brand|(Appendix C)|-|
+|```hash```|Special signature to validate your request to Payment Platform|See Appendix A, Credit2Virtual signature.|+|
+
+### Response Parameters
+
+You will get JSON encoded string with transaction result.
+
+**Synchronous - INIT transaction response (for crypto flow)**
+
+|**Parameter**|**Description**|
+| - | - |
+|```action```|CREDIT2CRYPTO|
+|```result```|INIT / UNDEFINED / DECLINED|
+|```status```|PENDING if success<br /> PREPARE if undefined status<br /> DECLINED if fail|
+|```order_id```|Order ID in the Client’s system|
+|```trans_id```|Transaction ID in the Payment Platform|
+|```trans_date```|Transaction date in the Payment Platform|
+|```descriptor```|Additional payment description|
+|```amount``` | Order amount |
+|```currency``` | Currency |
+
+### Callback Parameters
+**Callback - INIT transaction response**
+
+|**Parameter**|**Description**|
+| - | - |
+|```action```|CREDIT2CRYPTO|
+|```result```|INIT|
+|```status```|PENDING if success<br />DECLINED if fail|
+|```order_id```|Order ID in the Client’s system|
+|```trans_id```|Transaction ID in the Payment Platform|
+|```trans_date```|Transaction ID in the Client's system|
+|```descriptor```|Additional payment description|
+|```amount``` | Order amount |
+|```currency``` | Currency |
+
+**Callback - Successful response**
+
+|**Parameter**|**Description**|
+| - | - |
+|```action```|CREDIT2CRYPTO|
+|```result```|SUCCESS|
+|```status```|SETTLED|
+|```order_id```|Order ID in the Client’s system|
+|```trans_id```|Transaction ID in the Payment Platform|
+|```amount``` | Order amount |
+|```currency``` | Currency |
+|```trans_date```|Transaction date in the Payment Platform|
+
+**Callback - Unsuccessful response**
+
+|**Parameter**|**Description**|
+| - | - |
+|```action```|CREDIT2CRYPTO|
+|```result```|DECLINED|
+|```status```|DECLINED|
+|```order_id```|Order ID in the Client’s system|
+|```trans_id```|Transaction ID in the Payment Platform|
+|```amount``` | Order amount |
+|```currency``` | Currency |
+|```trans_date```|Transaction date in the Payment Platform|
+|```decline_reason```|The reason why the transaction was declined|
+
+**Callback - Undefined response**
+
+|**Parameter**|**Description**|
+| - | - |
+|```action```|CREDIT2CRYPTO|
+|```result```|UNDEFINED|
+|```status```|PREPARE / PENDING|
+|```order_id```|Order ID in the Client’s system|
+|```trans_id```|Transaction ID in the Payment Platform|
+|```trans_date```|Transaction date in the Payment Platform|
+|```amount``` | Order amount |
+|```currency``` | Currency |
+
 ## CREDITVOID request
 ---
 CREDITVOID request is used to complete REFUND transactions.
@@ -557,7 +708,18 @@ This request is sent by POST in the background (e.g. through PHP CURL).
 | `trans_id`        | Transaction ID in the Payment Platform                     |
 | `creditvoid_date` | Date of the refund/reversal                                |
 | `amount`          | Amount of refund                                           |
+|`connector_name` ** \* ** | Connector's name (Payment Gateway)|
+|`rrn` ** \* ** | Retrieval Reference Number value from the acquirer system|
+|`approval_code` ** \* ** | Approval code value from the acquirer system|
+| `gateway_id` **\*** | Gateway ID – transaction identifier provided by payment gateway|
+| `extra_gateway_id`**\*** | Extra Gateway ID – additional transaction identifier provided by payment gateway.|
+| `merchant_name`** \* ** | Merchant Name|
+| `mid_name` ** \* ** | MID Name|
+|`issuer_country` ** \* ** | Issuer Country|
+|`issuer_bank` ** \* ** | Issuer Bank|
 | `hash`            | Special signature, used to validate callback. See Appendix A, Creditvoid signature.|
+
+** \* ** The parameters are included if the appropriate setup is configured in the admin panel (see “Add Extended Data to Callback” block in the Configurations -> Protocol Mappings section).
 
 **Unsuccessful refund response**
 
@@ -653,7 +815,18 @@ You will get JSON encoded string with transaction result.
 | `order_id`      | Transaction ID in the Merchant's system |
 | `trans_id`      | Transaction ID in the Payment Platform |
 | `trans_date`    | Transaction date in the Payment Platform |
+|`connector_name` ** \* ** | Connector's name (Payment Gateway)|
+|`rrn` ** \* ** | Retrieval Reference Number value from the acquirer system|
+|`approval_code` ** \* ** | Approval code value from the acquirer system|
+| `gateway_id` **\*** | Gateway ID – transaction identifier provided by payment gateway|
+| `extra_gateway_id`**\*** | Extra Gateway ID – additional transaction identifier provided by payment gateway.|
+| `merchant_name`** \* ** | Merchant Name|
+| `mid_name` ** \* ** | MID Name|
+|`issuer_country` ** \* ** | Issuer Country|
+|`issuer_bank` ** \* ** | Issuer Bank|
 | `hash`          | Special signature, used to validate callback, see Appendix A, Formula 2 |
+
+** \* ** The parameters are included if the appropriate setup is configured in the admin panel (see “Add Extended Data to Callback” block in the Configurations -> Protocol Mappings section).
 
 **Unsuccessful void response**
 
@@ -797,7 +970,18 @@ You will get JSON encoded string with transaction result. If your account suppor
 | ```currency```    | Currency                                           |
 | ```commission```  | Commission for transaction                         |
 | ```total_amount```| Total amount for transaction: total_amount = amount + commission |
+|`connector_name` ** \* ** | Connector's name (Payment Gateway)|
+|`rrn` ** \* ** | Retrieval Reference Number value from the acquirer system|
+|`approval_code` ** \* ** | Approval code value from the acquirer system|
+| `gateway_id` **\*** | Gateway ID – transaction identifier provided by payment gateway|
+| `extra_gateway_id`**\*** | Extra Gateway ID – additional transaction identifier provided by payment gateway.|
+| `merchant_name`** \* ** | Merchant Name|
+| `mid_name` ** \* ** | MID Name|
+|`issuer_country` ** \* ** | Issuer Country|
+|`issuer_bank` ** \* ** | Issuer Bank|
 | ```hash```| Special signature, used to validate callback, see Appendix A, Formula 2 |
+
+** \* ** The parameters are included if the appropriate setup is configured in the admin panel (see “Add Extended Data to Callback” block in the Configurations -> Protocol Mappings section).
 
 **Unsuccessful response**
 
@@ -918,7 +1102,18 @@ You will get JSON encoded string with transaction result.
 | `currency`        | Currency                                           |
 | `commission`      | Commission for transaction                         |
 | `total_amount`    | Total amount for transaction                       |
+|`connector_name` ** \* ** | Connector's name (Payment Gateway)|
+|`rrn` ** \* ** | Retrieval Reference Number value from the acquirer system|
+|`approval_code` ** \* ** | Approval code value from the acquirer system|
+| `gateway_id` **\*** | Gateway ID – transaction identifier provided by payment gateway|
+| `extra_gateway_id`**\*** | Extra Gateway ID – additional transaction identifier provided by payment gateway.|
+| `merchant_name`** \* ** | Merchant Name|
+| `mid_name` ** \* ** | MID Name|
+|`issuer_country` ** \* ** | Issuer Country|
+|`issuer_bank` ** \* ** | Issuer Bank|
 | `hash`            | Special signature, used to validate callback, see Appendix A, Formula 2|
+
+** \* ** The parameters are included if the appropriate setup is configured in the admin panel (see “Add Extended Data to Callback” block in the Configurations -> Protocol Mappings section).
 
 **Unsuccessful response**
 
@@ -1019,7 +1214,18 @@ You will get JSON encoded string (see an example on Appendix B) with transaction
 | `currency`     | Currency                                          |
 | `commission`   | Commission for transaction                        |
 | `total_amount` | Total amount for transaction                     |
+|`connector_name` ** \* ** | Connector's name (Payment Gateway)|
+|`rrn` ** \* ** | Retrieval Reference Number value from the acquirer system|
+|`approval_code` ** \* ** | Approval code value from the acquirer system|
+| `gateway_id` **\*** | Gateway ID – transaction identifier provided by payment gateway|
+| `extra_gateway_id`**\*** | Extra Gateway ID – additional transaction identifier provided by payment gateway.|
+| `merchant_name`** \* ** | Merchant Name|
+| `mid_name` ** \* ** | MID Name|
+|`issuer_country` ** \* ** | Issuer Country|
+|`issuer_bank` ** \* ** | Issuer Bank|
 | ```hash```| Special signature, used to validate callback, see Appendix A, Formula 2 |
+
+** \* ** The parameters are included if the appropriate setup is configured in the admin panel (see “Add Extended Data to Callback” block in the Configurations -> Protocol Mappings section).
 
 **Unsuccessful response**
 
@@ -1120,7 +1326,8 @@ Use the following brand names as values for the ```brand``` parameter in the req
 ```cardpaymentz```<br/>
 ```citizen```<br/>
 ```cnfmo``` <br/>
-```crypto-btg``` <br/>
+```crypto-btg``` (available for Credit2Crypto, see Appendix D for details)<br/>
+```dcp```<br/>
 ```dl```<br/>
 ```dlocal```<br/>
 ```doku-hpp``` (see Appendix B for Sale operation details)<br/>
@@ -1156,11 +1363,15 @@ Use the following brand names as values for the ```brand``` parameter in the req
 ```nv-apm``` <br/>
 ```om-wallet``` <br/>
 ```one-collection``` (available for Credit2Virtual, see Appendix C for details)<br/>
+```pagsmile``` (see Appendix B for Sale operation details)<br/>
+```panapay-netbanking```<br/>
+```panapay-upi```<br/>
 ```papara``` (available for Credit2Virtual, see Appendix C for details) <br/>
-```payablhpp```
+```payablhpp```<br/>
+```payftr-in``` (available for Credit2Virtual - see Appendix C for details)<br/>
 ```payhere``` <br/>
 ```paymentrush``` <br/>
-```payneteasyhpp``` (required to additionally send parameters in the SALE request: payer_first_name, payer_last_name, payer_address, payer_city, payer_state, payer_zip, payer_country, payer_phone, payer_email) <br/>
+```payneteasyhpp``` (required to additionally send parameters in the SALE request: payer_first_name, payer_last_name, payer_address, payer_city, payer_state, payer_zip, payer_country, payer_phone, payer_email; available for Credit2Virtual - see Appendix C for details)<br/>
 ```payok-payout``` (available for Credit2Virtual, see Appendix C for details) <br/>
 ```payok-promptpay```<br/>
 ```payok-upi``` (see Appendix B for Sale operation details)<br/>
@@ -1172,8 +1383,10 @@ Use the following brand names as values for the ```brand``` parameter in the req
 ```pr-creditcard``` (available for Credit2Virtual, see Appendix C for details)<br/>
 ```pr-cryptocurrency```<br/>
 ```pr-online``` (available for Credit2Virtual, see Appendix C for details)<br/>
-```ptn-sms``` (see Appendix B for Sale operation details; available for Credit2Virtual - see Appendix C for details)<br/>
+```ptbs``` <br/>
 ```ptn-email``` (see Appendix B for Sale operation details; available for Credit2Virtual - see Appendix C for details)<br/>
+```ptn-inapp``` <br/>
+```ptn-sms``` (see Appendix B for Sale operation details; available for Credit2Virtual - see Appendix C for details)<br/>
 ```pyk-bkmexpress``` (see Appendix B for Sale operation details) <br/>
 ```pyk-dana```  <br/>
 ```pyk-linkaja```<br/>
@@ -1190,8 +1403,10 @@ Use the following brand names as values for the ```brand``` parameter in the req
 ```pyk-viettelpay``` (see Appendix B for Sale operation details) <br/>
 ```pyk-zalopay``` (see Appendix B for Sale operation details) <br/>
 ```sepa```<br/>
+```sofortuber```<br/>	
 ```stcpay```<br/>
 ```stripe-js```<br/>
+```swifipay-deposit```<br/>
 ```sz-in-imps```<br/>
 ```sz-in-paytm```<br/>
 ```sz-in-upi``` (see Appendix B for Sale operation details)<br/>
@@ -1208,8 +1423,10 @@ Use the following brand names as values for the ```brand``` parameter in the req
 ```trustgate```<br/>
 ```unipayment``` <br/>
 ```vcard``` (see Appendix B for Sale operation details)<br/>
+```vouchstar```<br/>
 ```vpayapp_upi```<br/>
-```yo-uganda-limited``` (see Appendix B for Sale operation details; available for Credit2Virtual - see Appendix C for details)<br/>
+```webpaygate```<br/>
+```winnerpay``` (available for Credit2Virtual - see Appendix C for details)<br/>
 ```xprowirelatam-ted```<br/>
 ```xprowirelatam-cash```<br/>
 ```xprowirelatam-bank-transfer```<br/>
@@ -1218,6 +1435,7 @@ Use the following brand names as values for the ```brand``` parameter in the req
 ```xprowirelatam-pix```<br/>
 ```xswitfly```<br/>
 ```yapily``` (see Appendix B for Sale operation details) <br/>
+```yo-uganda-limited``` (see Appendix B for Sale operation details; available for Credit2Virtual - see Appendix C for details)<br/>
 ```zeropay``` (available for Credit2Virtual, see Appendix C for details)<br/>
 
 ## Appendix A
@@ -1357,11 +1575,13 @@ To simulate success scenario use ```identifier``` parameter value success@gmail.
 
 ### Apple Pay
 
-To provide the payers with the possibility of Apple Pay payments you can connect to the Checkout or work directly via S2S APM protocol. 
+To use the Apple Pay payment method, configure the Wallets setting in the admin dashboard. Ensure that the payment provider has confirmed the Apple Pay certificates and verified your domain in the Apple Pay account.
 
-If you work via Checkout page you don’t need any additional development on your side. 
+To enable payers to make Apple Pay payments, you can either connect to the Checkout page or work directly via the S2S APM protocol:
 
-If you work via S2S APM protocol, you must pass you must be able to obtain Apple Pay payment token that must be passed in the SALE request.
+**Checkout Page**: No additional development is required on your side.
+
+**S2S APM Protocol**: You must be able to obtain the Apple Pay payment token and include it in the SALE request.
 
 Regardless of the protocol you have to make settings in the admin panel and set the following configurations:
 
@@ -1389,10 +1609,7 @@ After you implement Apple Pay payment tokens generation on your site, you need t
   <summary markdown="span">Request example</summary>
 
 ```
-curl –d "action=SALE&client_key=c2b8fb04-110f-11ea-bcd3-0242c0a85004&brand=applepay&order_id=ORDER12345&order_amount=100
-&order_currency=USD&order_description=Product&payer_ip=127.0.0.0&return_url=https//:apple.com&identifier=0987654321
-&parameters[paymentToken]= {"paymentData":{"data":"sSnxW26Va2jj0+QqIrK6zyBve6z3L5j6mNk3iaVcfUwmz76\/bu8008BfkRRp7wZvsUtmrMbaHv0MCNCTW70QLAvLCw61kNidMNEzu2r4rGOXUGJQMMvgPgjXuRafWA8628HcOrrrvAtoljlaAbm\/8ucZVNhDdOFRgfCENqI13GVXhit2sNsN9MsgMsN4odCl7qX837RfJoXgCv7OC00L9ciqpqlMV0pc7jXb2XWN47DCyyRwja5OGMMHuD+heQ8OwCDq5g1mDBww6Neeubl6zpksdNafBjhtEl4nDJ1nPH6IJET4uPgcbgii9rkaEIHXbKVILB0AjUbX4X8Adk91jG7scRAYmB92H75\/6uRvREFvhqvIAlc8C4F5b3ObiB1MpwZt7DwcZIpWz3QJ2WSUGwmc+Qiv4pRV8d5Xw2sSGiEG","signature":"MIAGCSqGSIb3DQEHAqCAMIACAQExDTALBglghkgBZQMEAgEwgAYJKoZIhvcNAQcBAACggDCCA+MwggOIoAMCAQICCEwwQUlRnVQ2MAoGCCqGSM49BAMCMHoxLjAsBgNVBAMMJUFwcGxlIEFwcGxpY2F0aW9uIEludGVncmF0aW9uIENBIC0gRzMxJjAkBgNVBAsMHUFwcGxlIENlcnRpZmljYXRpb24gQXV0aG9yaXR5MRMwEQYDVQQKDApBcHBsZSBJbmMuMQswCQYDVQQGEwJVUzAeFw0xOTA1MTgwMTMyNTdaFw0yNDA1MTYwMTMyNTdaMF8xJTAjBgNVBAMMHGVjYy1zbXAtYnJva2VyLXNpZ25fVUM0LVBST0QxFDASBgNVBAsMC2lPUyBTeXN0ZW1zMRMwEQYDVQQKDApBcHBsZSBJbmMuMQswCQYDVQQGEwJVUzBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABMIVd+3r1seyIY9o3XCQoSGNx7C9bywoPYRgldlK9KVBG4NCDtgR80B+gzMfHFTD9+syINa61dTv9JKJiT58DxOjggIRMIICDTAMBgNVHRMBAf8EAjAAMB8GA1UdIwQYMBaAFCPyScRPk+TvJ+bE9ihsP6K7\/S5LMEUGCCsGAQUFBwEBBDkwNzA1BggrBgEFBQcwAYYpaHR0cDovL29jc3AuYXBwbGUuY29tL29jc3AwNC1hcHBsZWFpY2EzMDIwggEdBgNVHSAEggEUMIIBEDCCAQwGCSqGSIb3Y2QFATCB\/jCBwwYIKwYBBQUHAgIwgbYMgbNSZWxpYW5jZSBvbiB0aGlzIGNlcnRpZmljYXRlIGJ5IGFueSBwYXJ0eSBhc3N1bWVzIGFjY2VwdGFuY2Ugb2YgdGhlIHRoZW4gYXBwbGljYWJsZSBzdGFuZGFyZCB0ZXJtcyBhbmQgY29uZGl0aW9ucyBvZiB1c2UsIGNlcnRpZmljYXRlIHBvbGljeSBhbmQgY2VydGlmaWNhdGlvbiBwcmFjdGljZSBzdGF0ZW1lbnRzLjA2BggrBgEFBQcCARYqaHR0cDovL3d3dy5hcHBsZS5jb20vY2VydGlmaWNhdGVhdXRob3JpdHkvMDQGA1UdHwQtMCswKaAnoCWGI2h0dHA6Ly9jcmwuYXBwbGUuY29tL2FwcGxlYWljYTMuY3JsMB0GA1UdDgQWBBSUV9tv1XSBhomJdi9+V4UH55tYJDAOBgNVHQ8BAf8EBAMCB4AwDwYJKoZIhvdjZAYdBAIFADAKBggqhkjOPQQDAgNJADBGAiEAvglXH+ceHnNbVeWvrLTHL+tEXzAYUiLHJRACth69b1UCIQDRizUKXdbdbrF0YDWxHrLOh8+j5q9svYOAiQ3ILN2qYzCCAu4wggJ1oAMCAQICCEltL786mNqXMAoGCCqGSM49BAMCMGcxGzAZBgNVBAMMEkFwcGxlIFJvb3QgQ0EgLSBHMzEmMCQGA1UECwwdQXBwbGUgQ2VydGlmaWNhdGlvbiBBdXRob3JpdHkxEzARBgNVBAoMCkFwcGxlIEluYy4xCzAJBgNVBAYTAlVTMB4XDTE0MDUwNjIzNDYzMFoXDTI5MDUwNjIzNDYzMFowejEuMCwGA1UEAwwlQXBwbGUgQXBwbGljYXRpb24gSW50ZWdyYXRpb24gQ0EgLSBHMzEmMCQGA1UECwwdQXBwbGUgQ2VydGlmaWNhdGlvbiBBdXRob3JpdHkxEzARBgNVBAoMCkFwcGxlIEluYy4xCzAJBgNVBAYTAlVTMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE8BcRhBnXZIXVGl4lgQd26ICi7957rk3gjfxLk+EzVtVmWzWuItCXdg0iTnu6CP12F86Iy3a7ZnC+yOgphP9URaOB9zCB9DBGBggrBgEFBQcBAQQ6MDgwNgYIKwYBBQUHMAGGKmh0dHA6Ly9vY3NwLmFwcGxlLmNvbS9vY3NwMDQtYXBwbGVyb290Y2FnMzAdBgNVHQ4EFgQUI\/JJxE+T5O8n5sT2KGw\/orv9LkswDwYDVR0TAQH\/BAUwAwEB\/zAfBgNVHSMEGDAWgBS7sN6hWDOImqSKmd6+veuv2sskqzA3BgNVHR8EMDAuMCygKqAohiZodHRwOi8vY3JsLmFwcGxlLmNvbS9hcHBsZXJvb3RjYWczLmNybDAOBgNVHQ8BAf8EBAMCAQYwEAYKKoZIhvdjZAYCDgQCBQAwCgYIKoZIzj0EAwIDZwAwZAIwOs9yg1EWmbGG+zXDVspiv\/QX7dkPdU2ijr7xnIFeQreJ+Jj3m1mfmNVBDY+d6cL+AjAyLdVEIbCjBXdsXfM4O5Bn\/Rd8LCFtlk\/GcmmCEm9U+Hp9G5nLmwmJIWEGmQ8Jkh0AADGCAYcwggGDAgEBMIGGMHoxLjAsBgNVBAMMJUFwcGxlIEFwcGxpY2F0aW9uIEludGVncmF0aW9uIENBIC0gRzMxJjAkBgNVBAsMHUFwcGxlIENlcnRpZmljYXRpb24gQXV0aG9yaXR5MRMwEQYDVQQKDApBcHBsZSBJbmMuMQswCQYDVQQGEwJVUwIITDBBSVGdVDYwCwYJYIZIAWUDBAIBoIGTMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTI0MDExNzE4MTkzM1owKAYJKoZIhvcNAQk0MRswGTALBglghkgBZQMEAgGhCgYIKoZIzj0EAwIwLwYJKoZIhvcNAQkEMSIEIIQ9tom6W3WBqvRdnqAgXd7UW2Qg8ls2rvUEAmfYApD6MAoGCCqGSM49BAMCBEYwRAIgV0aosrF2PwHNfZGkiETl7IXJhCvC+lAq2Nw0qD6aNtYCIF7vK1mGv3qZXi38i4iyfLvMd5TwHID3T2EyN1H7EP7gAAAAAAAA","header":{"publicKeyHash":"nNc4Fl8dRqE+1J\/ibwLTPoXuzYtF3ZJlu7D5CUBZc5w=","ephemeralPublicKey":"MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE6ah1mcW4JkG9jdptrUmprzlOjvF3iK7JOt3wom28HS1MLwrWIKNY7R3Mmp\/tJqMeInAwZZWgXCXXmnujA3Bcig==","transactionId":"d71de566079d19b44545fa7aa3be682f916f995f5de585021fa9af8cb115a461"},"version":"EC_v1"},"paymentMethod":{"displayName":"Visa 6244","network":"Visa","type":"credit"},"transactionIdentifier":"d71de566079d19b44545fa7aa3be682f916f995f5de585021fa9af8cb115a461"}","transactionId":"5145cb84015f49a24e9add4752737b6b3124e9cf98f3ab247c4f4a8017f17286"},"version":"EC_v1"},"paymentMethod":{"displayName":"Visa 0224","network":"Visa","type":"debit"},"transactionIdentifier":"5145CB84015F49A24E9ADD4752737B6B3124E9CF98F3AB247C4F4A8017F17286"}
-[&hash=](http://client.site.com/return.php&recurring_init=Y&hash=02cdb60b5c923e06c1b1d71da94b2a39)"a1a6de416405ada72bb47a49176471dc"[ https://test.apiurl.com](https://test.apiurl.com/) -k
+curl -d "action=SALE&client_key=YOUR_CLIENT_KEY&brand=applepay&order_id=ORDER12345&order_amount=100.01&order_currency=USD&order_description=Product&payer_ip=123.123.123.123&return_url=http://client.site.com/return.php&identifier=USER_IDENTIFIER&parameters[paymentToken]={\"paymentData\":{\"data\":\"YOUR_ENCRYPTED_DATA\",\"signature\":\"YOUR_SIGNATURE\",\"header\":{\"publicKeyHash\":\"YOUR_PUBLIC_KEY_HASH\",\"ephemeralPublicKey\":\"YOUR_EPHEMERAL_PUBLIC_KEY\",\"transactionId\":\"YOUR_TRANSACTION_ID\"},\"version\":\"EC_v1\"},\"paymentMethod\":{\"displayName\":\"Visa 6244\",\"network\":\"Visa\",\"type\":\"credit\"},\"transactionIdentifier\":\"YOUR_TRANSACTION_IDENTIFIER\"},{\"transactionId\":\"TRANSACTION_ID_2\",\"version\":\"EC_v1\"},\"paymentMethod\":{\"displayName\":\"Visa 0224\",\"network\":\"Visa\",\"type\":\"debit\"},\"transactionIdentifier\":\"TRANSACTION_IDENTIFIER_2\"}&hash=YOUR_HASH" https://test.apiurl.com/post-va -k
 ```
 </details>
 
@@ -1491,6 +1708,46 @@ hash=2702ae0c4f99506dc29b5615ba9ee3c0" https://test.apiurl.com –k
 ```
 </details>
 
+
+### dl
+If you set the value ```dl``` for the brand parameter you have to specify in your request the next parameters as well:
+
+|**Parameter**|**Description**|**Values**|**Required**|
+| - | - | - | :-: |
+| ```document_number``` | Customer's personal ID | String | + |
+
+<details>
+	<summary markdown="span">Sample curl request</summary>
+
+```
+curl -d "action=SALE&client_key=c2b8fb04-110f-11ea-bcd3-0242c0a85004&
+brand=dl&order_id=ORDER12345&order_amount=1.99&order_currency=USD&order_description=Product&identifier=NA&
+payer_first_name=John&payer_last_name=Doe&payer_address=BigStreet&payer_country=US&payer_state=CA&payer_city=City&
+payer_zip=123456&payer_email=doe@example.com&payer_phone=199999999&
+payer_ip=123.123.123.123&parameters[document_number]=1234567890&
+hash=2702ae0c4f99506dc29b5615ba9ee3c0" https://test.apiurl.com –k
+```
+</details>
+
+### dlocal
+If you set the value ```dlocal``` for the brand parameter you have to specify in your request the next parameters as well:
+
+|**Parameter**|**Description**|**Values**|**Required**|
+| - | - | - | :-: |
+| ```document_number``` | Customer's personal ID | String | + |
+<details>
+	<summary markdown="span">Sample curl request</summary>
+
+```
+curl -d "action=SALE&client_key=c2b8fb04-110f-11ea-bcd3-0242c0a85004&
+brand=dlocal&order_id=ORDER12345&order_amount=1.99&order_currency=USD&order_description=Product&identifier=NA&
+payer_first_name=John&payer_last_name=Doe&payer_address=BigStreet&payer_country=US&payer_state=CA&payer_city=City&
+payer_zip=123456&payer_email=doe@example.com&payer_phone=199999999&
+payer_ip=123.123.123.123&parameters[document_number]=1234567890&
+hash=2702ae0c4f99506dc29b5615ba9ee3c0" https://test.apiurl.com –k
+```
+</details>
+
 ### doku-hpp
 If the payer chooses the ```doku-hpp``` payment method, the redirection to another page will happen to finish the payment.
 You can add to the Authentication request a specific list of parameters which may be required for the ```doku-hpp``` payment method.
@@ -1508,52 +1765,10 @@ You can add to the Authentication request a specific list of parameters which ma
 | ```product_type```    | _String_      | Conditional | Type of the item in this transaction. This paramater mandatory if you want to use Indodana                       |
 
 <details>
-  <summary markdown="span">Authentication request example</summary>
+  <summary markdown="span">Sample curl request</summary>
 
 ```
-curl --location -g --request POST '{{CHECKOUT_HOST}}/api/v1/session' \
---header 'Content-Type: application/json' \
---data-raw '{
-  "merchant_key": "xxxxx-xxxxx-xxxxx",
-  "operation": "purchase",
-  "methods": [
-    "doku-hpp"
-  ],
-  "parameters": {
-    "doku-hpp`": {
-      "product_reference_id": "1",
-      "product_name": "Fresh flowers",
-      "product_quantity": "1",
-      "product_sku": "FF01",
-      "product_category": "gift-and-flowers",
-      "product_url": "http://example.com/",
-      "product_image_url": "http://example.com/",
-      "product_type": "ABC"
-    }
-  },
-  "order": {
-    "number": "order-1234",
-    "amount": "1000",
-    "currency": "IDR",
-    "description": "Important gift"
-  },
-  "cancel_url": "https://example.com/cancel",
-  "success_url": "https://example.com/success",
-  "customer": {
-    "name": "John Doe",
-    "email": "test@gmail.com"
-  },
-  "billing_address": {
-    "country": "US",
-    "state": "CA",
-    "city": "Los Angeles",
-    "address": "Moor Building 35274",
-    "zip": "123456",
-    "phone": "347771112233"
-  },
-  "hash": "{{session_hash}}"
-}
-'
+curl -d "action=SALE&client_key=c2b8fb04-110f-11ea-bcd3-0242c0a85004&brand=doku-hpp&order_id=ORDER12345&order_amount=1.99&order_currency=USD&order_description=Product&identifier=NA&payer_first_name=John&payer_last_name=Doe&payer_address=BigStreet&payer_country=US&payer_state=CA&payer_city=City&payer_zip=123456&payer_email=doe@example.com&payer_phone=199999999&payer_ip=123.123.123.123&parameters[product_reference_id]=1&parameters[product_name]=Fresh flowers&parameters[product_quantity]=1&parameters[product_sku]=FF01&parameters[product_category]=gift-and-flowers&parameters[product_url]=http://example.com&parameters[product_image_url]=http://example.com&parameters[product_type]=ABC&hash=2702ae0c4f99506dc29b5615ba9ee3c0" https://test.apiurl.com –k
 ```
 </details>
 
@@ -1656,11 +1871,7 @@ As a result you receive you will be returned a dataset with ```PaymentData.token
   <summary markdown="span">Request Example</summary>
 
 ```
-curl –d "action=SALE&client_key=c2b8fb04-110f-11ea-bcd3-0242c0a85004&brand=googlepay&order_id=ORDER12345&order_amount=100
-&order_currency=USD&order_description=Product&payer_ip=127.0.0.0&return_url=https//:apple.com&identifier=0987654321&
-parameters[paymentToken] = {"apiVersionMinor":0,"apiVersion":2,"paymentMethodData":{"description":"Visa \u2006\u2022\u2022\u2022\u2022\u20065237","tokenizationData":{"type":"PAYMENT_GATEWAY","token":"{\"signature\":\"MEUCIQCmG9CSxMYyrdHr93/0VPjgM2tLy6t/+kwTngBtHCguNAIgfsh6MWiaYtoEfkWJp0KpmiyWTu6f/845UXU96ERnxT0\\u003d\",\"intermediateSigningKey\":{\"signedKey\":\"{\\\"keyValue\\\":\\\"MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEUDf+weSWhii31Exn8d3WHufrnsiQP4weDoRQgF8VlaBbdTxm5xlxrfseZU3IDaUGKwwpNTRhkWVo/+arRrXf1A\\\\u003d\\\\u003d\\\",\\\"keyExpiration\\\":\\\"1706136902000\\\"}\",\"signatures\":[\"MEYCIQDfIHM6RIj7HEE8y1T6oSOVbd8iDCtTFSmJidRphrOP/wIhAPRjdHe1ulwr1gUEzxLGdA73dEoc6IbqHoSJJqtEMSYk\"]},\"protocolVersion\":\"ECv2\",\"signedMessage\":\"{\\\"encryptedMessage\\\":\\\"gNZVNFqhgZc8WFPjCljFC4NtSWpLI9NyEEKuNnPoMtZM4yfELLf34vtfL1lWORuxup+sCQ+CPEdPFZJsFmZtox8sEsNTfDFP0sJOfGwA10+0/2b8NeewNjbzU5VIyc+nwtn2Au3XgoLDYgDyPBJ6exuaY2yjTR3/UpeHK5JEIgbmN+fdPCOPngIzRkGURTauIvDibQUZeNjDhzHgebcoWF5m0gs2jO1jkAaSrajDa8g6emin2aNXImt41Rk0+hk9kOi6QqZavo2wV4+Lf17o9HlNWERNVKFqhECJ57Rkp7MRlzQyFyaIhfGkynY/KHJNc8HZ04CWyx1Dco0lARiLNIfVF2mploPf8Va8DcCC67FbLLOH0YoY3UmWGLlGY8qNmpsMsL5ULEeSUGMLCxr4mhZZ/C4rBf7tDcz/Auh9qkbsz7rNsa/9l88jc5UcIMHVeTOOXjHnGR3yB4O5AFKvOob9XaDaKDJjXlUtycynCKu9Mo03C2AFGqkzBNh/I8pCLKiqzd4ntauyKeLDvNqTaLLbZOVoqRN4Z0gtUfL7yaYqmSiAgg0N+lOiM/qsqoKFrxiATduxl5kgxffXQAY\\\\u003d\\\",\\\"ephemeralPublicKey\\\":\\\"BPluTrJ3LqHzodjl0ZXjIRy2XKWWLibakj4hdf9vlnSsGR1kzdTpyFitSJ9DqyKdxmCbyAh2A7gcJf5XlcX3k9k\\\\u003d\\\",\\\"tag\\\":\\\"br8r3h8GF5jQwgfxAcNH/nQXt5+ySEUuaHRmpqYqWek\\\\u003d\\\"}\"}"},"type":"CARD","info":{"cardNetwork":"VISA","cardDetails":"5237"}}}
-[&hash=](http://client.site.com/return.php&recurring_init=Y&hash=02cdb60b5c923e06c1b1d71da94b2a39)"a1a6de416405ada72bb47a49176471dc"[ https://test.apiurl.com](https://test.apiurl.com/) -k
-   
+curl -d "action=SALE&client_key=YOUR_CLIENT_KEY&brand=googlepay&order_id=ORDER_ID&order_amount=100.01&order_currency=USD&order_description=Product&payer_ip=123.123.123.123&return_url=http://client.site.com/return.php&identifier=USER_IDENTIFIER&parameters[paymentToken]={\"apiVersionMinor\": 0, \"apiVersion\": 2, \"paymentMethodData\": {\"description\": \"Mastercard •••• 5179\", \"tokenizationData\": {\"type\": \"PAYMENT_GATEWAY\", \"token\": {\"signature\": \"YOUR_SIGNATURE\", \"intermediateSigningKey\": {\"signedKey\": \"YOUR_SIGNED_KEY\", \"signatures\": [\"YOUR_SIGNATURE_2\"]}, \"protocolVersion\": \"ECv2\", \"signedMessage\": {\"encryptedMessage\": \"ENCRYPTED_MESSAGE\", \"ephemeralPublicKey\": \"EPHEMERAL_PUBLIC_KEY\", \"tag\": \"TAG\"}}}, \"type\": \"CARD\", \"info\": {\"cardNetwork\": \"MASTERCARD\", \"cardDetails\": \"5179\"}}}&hash=YOUR_HASH" https://test.apiurl.com/post-va -k
 ```
 </details>
 
@@ -1672,29 +1883,13 @@ parameters[paymentToken] = {"apiVersionMinor":0,"apiVersion":2,"paymentMethodDat
 
 **Set up Google Pay**
 
-To set up Google Pay, you first need to determine who acts as the gateway when processing payments: the platform or the payment provider. This depends on which side decrypts the Google Pay payment token.
-   * If the platform decrypts the token and then sends the decrypted payment data to the payment provider, the platform acts as the gateway.
-   * If the payment provider decrypts the token (i.e., expects to receive an encrypted payment token in the payment request), the payment provider is the gateway.
+The admin panel settings apply to merchants integrated with the platform via the Checkout protocol. <br/><br/>
+For merchants using the S2S protocol and obtaining the Google Pay payment token independently, these settings will not apply. <br/><br/>
+Exceptions are "Environment" and “Private Key” configurations. <br/><br/>
+The "Environment" configuration remains relevant, as it defines the environment where the token was generated and from which the platform expects to receive payment data. Ensure that the environment used to generate the payment token matches the corresponding setting in the admin panel to avoid processing issues.<br/><br/>
+The “Private Key” is required for Google token decryption. If it is absent, the card flow cannot be applied to the payment. <br/><br/>
+Additionally, to work with Google Pay payments, you must verify the website domains from which Google Pay is processed in the Google Business Console.
 
-The gateway (whether it is the platform or the payment provider processing Google Pay) must provide the following information:
-
-   * **Gateway**: The name of the gateway.
-   * **Gateway Merchant ID**: The merchant identifier in the gateway's system.
-  
-⚠️ **Note** <br/>
-
-> If the payment provider is the gateway, it is important to clarify whether they expect the token to include additional information, such as the payer's address or phone number.
-
-The next step is to enter the data into the admin panel.
-
-Go to the "Merchants" section, initiate editing, open the "Wallets" tab, navigate to the Google Pay settings, and fill in the following fields:
-   * **Merchant Identifier**: Enter the identifier from the Google Business Console. If the platform is the gateway, you can duplicate the Gateway Merchant ID here.
-   * **Gateway**: The gateway for interaction with Google Pay.
-   * **Gateway Merchant ID**: The merchant identifier in the Google gateway.
-   * **Private Key (required for decrypted token)**: The key for decrypting the payment token. If the platform is the gateway, the key should be provided by the platform. If the payment provider is the gateway, the key is not required.
-   * **Include Additional Parameters to Google Token**: Depending on the payment provider's requirements.
-
-Additionally, to work with Google Pay payments, you must verify the checkout domains from which Google Pay is processed in the Google Business Console. For domain verification, you may need to contact support.
 
 ### hayvn
 
@@ -1783,6 +1978,29 @@ curl -d "action=SALE&client_key=c2b8fb04-110f-11ea-bcd3-0242c0a85004&brand=m2p-w
 &payer_country=US&payer_state=CA&payer_city=City&payer_zip=123456&payer_email=doe@example.com
 &payer_phone=199999999&payer_ip=123.123.123.123&parameters[withdrawalCurrency]=BTC&parameters[address]=43j5hg734rhbfj&parameters[tradingAccountLogin]=login
 &hash=2702ae0c4f99506dc29b5615ba9ee3c0" https://test.apiurl.com/post-va -k
+```
+</details>
+
+### pagsmile
+If you set the value ```pagsmile``` for the brand parameter you have to specify in your request the next parameters. The following parameters are required, except for transactions in Guatemala, Panama, or Costa Rica:
+
+| **Parameter** | **Type** | **Mandatory** | **Description** |
+| --- | --- | --- | :---: |
+| ```document_number``` | _String_ | Conditional| Customer's ID.<br/> **Condition:** If the parameter is NOT specified in the request, then it will be collected on the Checkout page |
+| ```document_type``` | _String_ | Conditional| Customer's identification type.<br/> **Condition:** If the parameter is NOT specified in the request, then it will be collected on the Checkout page |
+<details>
+	<summary markdown="span">Sample curl request</summary>
+
+```
+curl -d "action=SALE&client_key=c2b8fb04-110f-11ea-bcd3-0242c0a85004&
+brand=pagsmile&order_id=ORDER12345&order_amount=1.99&order_currency=BRL&
+order_description=Product&identifier=NA&payer_first_name=John&
+payer_last_name=Doe&payer_address=BigStreet&payer_country=BR&
+payer_city=City&payer_zip=123456&payer_email=doe@example.com&
+payer_phone=199999999&payer_ip=123.123.123.123&
+parameters[document_number]=11032341882&
+parameters[document_type]=CPF&
+hash=2702ae0c4f99506dc29b5615ba9ee3c0" https://test.apiurl.com –k
 ```
 </details>
 
@@ -2438,6 +2656,75 @@ curl -d "action=CREDIT2VIRTUAL&client_key=c2b8fb04-110f-11ea-bcd3-0242c0a85004&b
 ```
 </details>
 
+### payneteasyhpp
+If you set the value ```payneteasyhpp``` for the brand parameter you have to specify in your request the next parameters as well:
+
+| Parameter     | Description                              | Values       | Required    |
+|---------------|------------------------------------------|--------------|-------------|
+| ```first_name``   | Receiver's first name. Can also be sent as first_name | String (128)  | Required for countries: <br /> Uganda (UGX)<br /> Kenia (KES)|
+| ```last_name```        | Receiver's last name. Can also be sent as last_name              | String (128)  | Required for countries:<br />Uganda (UGX)<br />Kenia (KES)<br />|
+| ```payee_first_name```         | Receiver's first name. Can also be sent as first_name                                  | String  (128) | Required for countries: <br /> Ghana (GHS)<br /> |
+| ```payee_last_name```       | Receiver's last name. Can also be sent as last_name                              | String (128)  | Required for countries:<br /> Ghana (GHS)           |
+| ```phone```       | The phone parameter is the wallet, where the money would be sent.                             | String  | Required for countries:<br /> Uganda (UGX)<br /> Kenia (KES) |
+| ```account_number```    | Bank account number                  | String (32) | Required for countries:<br /> Nigeria (NGN)<br /> Cameron (XAF)<br /> Ghana (GHS)<br /> Zambia (ZMW)|
+| ```account_name```    | Bank account name                | String (128) | Required for countries:<br /> Nigeria (NGN)<br /> Cameron (XAF)<br /> Ghana (GHS)|
+| ```payee_phone```     | Receiver's phone. Can also be sent as phone                  | String (128) | Required for countries:<br /> Nigeria (NGN)<br /> Cameron (XAF)<br /> Ghana (GHS)<br /> Zambia (ZMW)|
+| ```payee_email```         | Receiver's email. Can also be sent as email.                           | String (128) | Required for countries:<br /> Nigeria (NGN)|
+| ```bank_name```         | Name of the bank        | String (255) | Required for<br /> Nigeria (NGN)|
+| ```bank_code```    | Bank code              | String (32) | Required for<br />Nigeria (NGN)|
+| ```payee_country``` | Receiver's country code. Can also be sent as country                  | String (3) | Required for Ghana (GHS) |
+
+<details>
+	<summary markdown="span">Sample curl request</summary>
+
+```
+curl -d "action=CREDIT2VIRTUAL&client_key=c2b8fb04-110f-11ea-bcd3-0242c0a85004
+&brand=payneteasyhpp&order_id=ORDER12345&order_amount=1000&order_currency=GHS
+&order_description=Product&parameters[payee_first_name]=John&parameters[payee_last_name]=Doe
+&parameters[payee_ phone]=233557009903&parameters[payee_ country]=GH
+&parameters[account_name]=MTN&parameters[account_ number]=233557009903
+&hash=a1a6de416405ada72bb47a49176471dc" https://test.apiurl.com/post -k
+
+```
+</details>
+
+
+### payftr-in 
+If you set the value ```payftr-in``` for the brand parameter you have to specify in your request the next parameters as well:
+
+| Parameter  | Description              | Values                   | Required |
+|------------|--------------------------|--------------------------|----------|
+| ```country``` | Transaction country code    | String                   | +     |
+| ```account_holder_name``` | Account holder name   | String                   | +     |
+| ```account_number``` | Account Number    | String                   | +     |
+| ```bank_name``` | Bank Name    | String                   | +     |
+| ```bank_code``` | Bank code    | String                   | +     |
+| ```phone``` | Phone    | String                   | +     |
+| ```email``` | Email    | String                   | +     |
+
+<details>
+	<summary markdown="span">Sample curl request</summary>
+
+```
+curl -d "action=CREDIT2VIRTUAL
+&client_key=c2b8fb04-110f-11ea-bcd3-0242c0a85004
+&brand=payftr-in
+&order_id=ORDER12345
+&order_amount=100.00
+&order_currency=INR
+&order_description=Product
+&parameters[country]=IN
+&parameters[account_holder_name]=Jane Doe
+&parameters[account_number]=1233455790
+&parameters[bank_name]=India Bank
+&parameters[bank_code]=HDFC0000123
+&parameters[phone]=1234567890
+&parameters[email]=sakinaka@email.com
+&hash=a1a6de416405ada72bb47a49176471dc" https://test.apiurl.com/post -k
+```
+</details>
+
+
 ### payok-payout
 
 If you set the value ```payok-payout``` for the brand parameter you have to specify in your request the next parameters as well:
@@ -2454,7 +2741,7 @@ If you set the value ```payok-payout``` for the brand parameter you have to spec
 | ```lastName```     | Beneficiary's Last Name                  | String (20)  | +           |
 | ```email```         | User's email                             | String (45)  | +           |
 | ```phone```         | The cardholder's phone number            | String (20)  | +           |
-| ```personal_id```    | Identity ID of the payee                 | String (12)  | Conditional |
+| ```personalId```    | Identity ID of the payee                 | String (12)  | Conditional |
 | ```personalType```* | ID type of the payee                     | String (10)  | Conditional |
 | ```accountType```*  | Account type of the payee                | String (10)  | Conditional |
 
@@ -2604,7 +2891,7 @@ If you set the value ```pyk-payout``` for the brand parameter you have to specif
 | ```lastName```     | Beneficiary's Last Name                  | String (20)  | +           |
 | ```email```         | User's email                             | String (45)  | +           |
 | ```phone```         | The cardholder's phone number            | String (20)  | +           |
-| ```personal_id```    | Identity ID of the payee                 | String (12)  | Conditional |
+| ```personalId```    | Identity ID of the payee                 | String (12)  | Conditional |
 | ```personalType```* | ID type of the payee                     | String (10)  | Conditional |
 | ```accountType```*  | Account type of the payee                | String (10)  | Conditional |
 
@@ -2643,6 +2930,33 @@ ADH7BAGR0RGuAAAAAElFTkSuQmCC&parameters[ProviderReferenceText]=thank you &hash=a
 ```
 </details>
 
+### winnerpay
+
+If you set the value ```winnerpay``` for the brand parameter you have to specify in your request the next parameters as well:
+
+|**Parameter**|**Description**|**Values**|**Required**|
+| - | - | - | :-: |
+|```contact_id```|The Bitso-generated, unique identifier of your receiving account. You get this identifier back when you create the contact account.|String |+/-|
+|```beneficiary```|The recipient of the withdrawn funds.It is required if you don’t send “contact_id” parameter.|String |+/-|
+|```clabe```|The unique, 18-number identifier of the receiving bank account that follows the Mexican standard for account numbering (Clave Bancaria Estandarizada).It is required if you don’t send “contact_id” parameter.|String |+/-|
+
+<details>
+	<summary markdown="span">Sample curl request</summary>
+
+```
+curl -d "action=CREDIT2VIRTUAL
+&client_key=c2b8fb04-110f-11ea-bcd3-0242c0a85004
+&brand=winnerpay
+&order_id=ORDER12345
+&order_amount=100.00
+&order_currency=MXN
+&order_description=Product
+&parameters[beneficiary]= recipient name
+&parameters[clabe]= 6543210987654321
+&hash=a1a6de416405ada72bb47a49176471dc" https://test.apiurl.com/post -k
+```
+</details>
+
 ### zeropay (BTC Globals)
 
 If you set the value “zeropay” for the ```brand``` parameter you have to specify in your request the next parameters as well:
@@ -2664,5 +2978,33 @@ curl -d "action=CREDIT2VIRTUAL&client_key=c2b8fb04-110f-11ea-bcd3-0242c0a85004&b
 &order_currency=INR&order_description=Product
 &parameters[upiId]=2267896548@ybl&parameters[payoutType]=EXPRESS
 &parameters[paymentMethod]=UPI&hash=a1a6de416405ada72bb47a49176471dc" https://test.apiurl.com/post -k
+```
+</details>
+
+## Appendix D
+---
+You have to add to your CREDIT2CRYPTO request specific list of parameters which is determined by the value for the ```brand``` parameter.
+
+You should get additional information from account manager.
+
+### crypto-btg
+
+If you set the value ```crypto-btg``` for the brand parameter you have to specify in your request the next parameters as well:
+
+|**Parameter**|**Description**|**Values**|**Required**|
+| - | - | - | :-: |
+|```address``` | Destination address <br /> Max length: <= 250 characters<br /> Example: 2MvrwRYBAuRtPTiZ5MyKg42Ke55W3fZJfZS.| String | - |
+| ```type``` | Required for transactions from MPC wallets. "acceleration" speeds up transactions with a certain nonce by adjusting the gas setting. "accountSet" is for XRP AccountSet transactions. "enabletoken" is for SOL. "stakingLock" and "stakingUnlock" are for Stacks delegations. "transfer" is for native-asset transfers. "trustline" is for Stellar trustline transactions.<br /> Possible types include: [acceleration, accountSet, enabletoken, stakingLock, stakingUnlock, transfer, transfertoken, trustline] <br /><br />For AVAX, possible types include: 'addValidator', 'export', and 'import'.<br /><br /> For XRP, possible types include: 'payment' and 'accountSet'. The default is 'payment'. <br /><br /> For STX, type is required.| String |- |
+| ```memo_id``` | Memo ID (for XLM (Stellar) currency) <br /> Integer that is typically used to refer to an ID in the recipient's system (such as an invoice number or a customer ID).| String |- |
+
+<details>
+	<summary markdown="span">Sample curl request</summary>
+
+```
+curl -d "action=CREDIT2VIRTUAL&client_key=c2b8fb04-110f-11ea-bcd3-0242c0a85004
+&brand=crypto-btg&order_id=ORDER12345&order_amount=10&order_currency=XRP
+&order_description=Product&parameters[address]=2MvrwRYBAuRtPTiZ5MyKg42Ke55W3fZJfZS 
+&parameters[type]=payment&parameters[memo_id]=0987654321
+&hash=a1a6de416405ada72bb47a49176471dc" https://test.apiurl.com/post -k
 ```
 </details>

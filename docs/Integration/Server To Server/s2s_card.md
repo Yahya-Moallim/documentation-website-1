@@ -2,8 +2,8 @@
 id: s2s_card
 title: S2S CARD
 ---
-Version: 5.4.2<br/>
-Released: 2024/11/15<br/>
+Version: 5.6.2<br/>
+Released: 2025/02/26<br/>
 
 ## Introduction
 ---
@@ -57,6 +57,11 @@ Merchants can’t make payments if the S2S CARD protocol is not mapped.
 
 For the transaction, you must send the server to server HTTPS POST request with fields listed below to Payment Platform URL (PAYMENT_URL). In response Payment Platform will return the JSON ([http://json.org/](http://json.org/)) encoded string.
 
+⚠️ **Pay attention** <br/>
+> The S2S (Server-to-Server) protocol requires requests to be sent with the following content type:
+Header:<br/>
+Content-Type: application/x-www-form-urlencoded
+
 #### 3DS features
 
 If your account supports 3D-Secure and credit card supports 3D-Secure, then Payment Platform will return the link to the 3D-Secure Access Control Server to perform 3D-Secure verification. In this case, you need to redirect the cardholder at this link. If there are also some parameters except the link in the result, you will need to redirect the cardholder at this link together with the parameters using the method of data transmitting indicated in the same result.
@@ -75,6 +80,35 @@ In the case of 3D-Secure after verification on the side of the 3D-Secure server,
 >> ```Redirect_params``` is a value that depends on any particular acquirer. Possible ```redirect_params```: ```PaReq```, ```TermUrl```, and many other multiple values. Each acquirer can send values in different ways and our interface is unified to be able to process redirects to all versions of 3DS and redirection regardless of the acquirer.
 >>
 >>In general, the redirect works as follows: obtain the response sent from our server, check if it contains redirect data along with associated parameters, and, if redirect data is present, generate an HTML document with a form. Return this HTML content as the response to the customer’s browser. The customer’s browser will automatically handle the redirect process.
+>>
+>>
+>>
+>>
+>> ⚠️ **NOTE:** <br/>
+>>If the required method is `GET` and the `redirect_url` contains query parameters, such as:  
+>>`redirect_url=https://example.domain.com/?parameter=1`  
+>>
+>>There are two possible approaches for implementing the redirect:
+>>
+>>***Option 1***: Redirecting the customer by sending query parameters within the form inputs<br/>
+>>Parse the query parameters from the `redirect_url` and pass them as input elements in an HTML 
+>>form.
+>>
+>>**Example:**  
+>>```
+>><form action="https://example.domain.com" method="GET">
+>>  <input name="parameter" value="1">
+>>  <input type="submit" value="Go">
+>></form>
+>>```
+>>
+>>***Option 2***: Redirect Using JavaScript <br/>
+>>Use JavaScript to redirect the customer to the specified ```redirect_url``` with the query parameters:
+>>
+>>**Example:**  
+>>```
+>>document.location = 'https://example.domain.com/?parameter=1';
+>>```
 
 
 #### Redirect parameters
@@ -227,7 +261,9 @@ In the particular cases, you will receive callback for the first payment attempt
 | ```card_number``` | Credit Card Number || + * |
 | ```card_exp_month``` | Month of expiry of the credit card | Month in the form XX | + * |
 | ```card_exp_year``` | Year of expiry of the credit card | Year in the form XXXX | + * |
-| ```card_cvv2``` | CVV/CVC2 credit card verification code | 3-4 symbols | + |
+| ```card_cvv2``` | CVV/CVC2 credit card verification code | 3-4 symbols | + ** |
+| ```digital_wallet``` | Determines the use of digital wallets<br/><br/>Possible values:<br/> •	googlepay<br/>•	applepay<br/> Make sure that both digital_wallet and payment_token parameters are specified | String | - |
+| ```payment_token``` | Digital wallet token value<br/> <br/>Provide payment token received from Apple Pay or Google Pay.<br/> Make sure that both ```digital_wallet``` and ```payment_token``` parameters are specified.<br/> If the ```card_token``` is specified, ```payment_token``` will be ignored.<br/> If the optional ```payment_token``` and card data are specified,  ```payment_token``` will be ignored. | String | - |
 | ```payer_first_name``` | Customer's name | String up to 32 characters | + |
 | ```payer_last_name``` | Customer's surname | String up to 32 characters | + |
 | ```payer_middle_name``` | Customer's middle name | String up to 32 characters | - |
@@ -250,9 +286,11 @@ In the particular cases, you will receive callback for the first payment attempt
 | ```auth``` | Indicates that transaction must be only authenticated, but not captured | Y or N (default N) | - |
 | ```parameters``` | Object that contains extra-parameters required by the acquirer |Format: <br/> ```parameters [param1]: value1``` <br/> ```parameters [param2]: value2``` <br/> ```parameters [paramN]: valueN``` | - |</br>See Appendix C for more details| - |
 | ```custom_data``` | Array with the custom data <br/> This block duplicates the arbitrary parameters that were passed in the payment request |Format: <br/> ```custom_data [param1]: value1``` <br/> ```custom_data [param2]: value2``` <br/> ```custom_data [paramN]: valueN``` | - |
-| ```hash``` | Special signature to validate your request to Payment Platform |See Appendix A, Formula 1 | + |
+| ```hash``` | Special signature to validate your request to Payment Platform |See Appendix A, Formula 1 <br/> In case of digital wallets - Formula 8| + |
 
-*_This field becomes optional if ```card_token``` is specified_
+*_This field becomes optional if ```card_token``` or ```payment_token``` is specified_
+
+** _This field becomes optional if ```payment_token``` is specified_
 
 If the optional parameter ```card_token``` and card data are specified, ```card_token``` will be ignored.
 
@@ -280,6 +318,8 @@ You will get JSON encoded string (see an example on Appendix B) with transaction
 | ```card_token``` | If the parameter `req_token` was enabled Payment Platform returns the token value |
 | ```amount``` | Order amount |
 | ```currency``` | Currency |
+| ```digital_wallet``` | Wallet provider: googlepay, applepay |
+| ```pan_type``` | It refers to digital payments, such as Apple Pay and Google Pay, and the card numbers returned as a result of payment token decryption: DPAN (Digital Primary Account Number) and FPAN (Funding Primary Account Number). |
 
 ##### Unsuccessful sale response
 
@@ -295,6 +335,8 @@ You will get JSON encoded string (see an example on Appendix B) with transaction
 | ```amount``` | Order amount |
 | ```currency``` | Currency |
 | ```decline_reason``` | The reason why the transaction was declined |
+| ```digital_wallet``` | Wallet provider: googlepay, applepay |
+| ```pan_type``` | It refers to digital payments, such as Apple Pay and Google Pay, and the card numbers returned as a result of payment token decryption: DPAN (Digital Primary Account Number) and FPAN (Funding Primary Account Number). |
 
 ##### 3D-Secure transaction response
 
@@ -312,6 +354,8 @@ You will get JSON encoded string (see an example on Appendix B) with transaction
 | ```redirect_url``` | URL to which the Merchant should redirect the Customer |
 | ```redirect_params``` | Object of specific 3DS parameters. It is array if ```redirect_params``` have no data. The availability of the ```redirect_params``` depends on the data transmitted by the acquirer. ```redirect_params``` may be missing. It usually happens when ```redirect_method``` = GET |
 | ```redirect_method``` | The method of transferring parameters (POST / GET) |
+| ```digital_wallet``` | Wallet provider: googlepay, applepay |
+| ```pan_type``` | It refers to digital payments, such as Apple Pay and Google Pay, and the card numbers returned as a result of payment token decryption: DPAN (Digital Primary Account Number) and FPAN (Funding Primary Account Number). |
 
 ##### Undefined sale response
 
@@ -326,6 +370,8 @@ You will get JSON encoded string (see an example on Appendix B) with transaction
 | ```descriptor``` | Descriptor from the bank, the same as cardholder will see in the bank statement |
 | ```amount``` | Order amount |
 | ```currency``` | Currency |
+| ```digital_wallet``` | Wallet provider: googlepay, applepay |
+| ```pan_type``` | It refers to digital payments, such as Apple Pay and Google Pay, and the card numbers returned as a result of payment token decryption: DPAN (Digital Primary Account Number) and FPAN (Funding Primary Account Number). |
 
 #### Callback parameters
 
@@ -342,7 +388,16 @@ You will get JSON encoded string (see an example on Appendix B) with transaction
 | ```recurring_token``` | Recurring token (get if account support recurring sales and was initialization transaction for following recurring) |
 | ```schedule_id``` | It is available if schedule is used for recurring sale |
 | ```card_token``` | If the parameter `req_token` was enabled Payment Platform returns the token value |
-|```card```|Card mask|
+|`connector_name` ** \* ** | Connector's name (Payment Gateway)|
+|`rrn` ** \* ** | Retrieval Reference Number value from the acquirer system|
+|`approval_code` ** \* ** | Approval code value from the acquirer system|
+| `gateway_id` ** \* ** | Gateway ID – transaction identifier provided by payment gateway|
+| `extra_gateway_id` ** \* ** | Extra Gateway ID – additional transaction identifier provided by payment gateway|
+| `merchant_name`** \* ** | Merchant Name|
+| `mid_name` ** \* ** | MID Name|
+|`issuer_country` ** \* ** | Issuer Country|
+|`issuer_bank` ** \* ** | Issuer Bank|
+|```card```|Card mask. <br/> If a digital wallet was used, the value obtained when decrypting the wallet token will be provided in this parameter|
 |```card_expiration_date```| Card expiration date|
 | ```trans_date``` | Transaction date in the Payment Platform |
 | ```descriptor``` | Descriptor from the bank, the same as cardholder will see in the bank statement |
@@ -353,6 +408,10 @@ You will get JSON encoded string (see an example on Appendix B) with transaction
 | ```exchange_currency``` | Original currency.<br />It returns if the currency exchange has been applied for the payment. |
 | ```exchange_amount``` | Original amount.<br />It returns if the currency exchange has been applied for the payment. |
 | ```custom_data``` | Object with the custom data. <br/> This block duplicates the arbitrary parameters that were passed in the payment request|
+| ```digital_wallet``` | Wallet provider: googlepay, applepay |
+| ```pan_type``` | It refers to digital payments, such as Apple Pay and Google Pay, and the card numbers returned as a result of payment token decryption: DPAN (Digital Primary Account Number) and FPAN (Funding Primary Account Number). |
+
+** \* ** The parameters are included if the appropriate setup is configured in the admin panel (see “Add Extended Data to Callback” block in the Configurations -> Protocol Mappings section).
 
 ##### Unsuccessful sale response
 
@@ -366,6 +425,8 @@ You will get JSON encoded string (see an example on Appendix B) with transaction
 | ```trans_date``` | Transaction date in the Payment Platform |
 | ```decline_reason``` | Description of the cancellation of the transaction |
 | ```custom_data``` | Object with the custom data. <br/> This block duplicates the arbitrary parameters that were passed in the payment request|
+| ```digital_wallet``` | Wallet provider: googlepay, applepay |
+| ```pan_type``` | It refers to digital payments, such as Apple Pay and Google Pay, and the card numbers returned as a result of payment token decryption: DPAN (Digital Primary Account Number) and FPAN (Funding Primary Account Number). |
 | ```hash``` | Special signature, used to validate callback, see Appendix A, Formula 2 |
 
 ##### 3D-Secure transaction response
@@ -377,7 +438,6 @@ You will get JSON encoded string (see an example on Appendix B) with transaction
 | ```status``` | 3DS/REDIRECT |
 | ```order_id``` | Transaction ID in the Merchant`s system |
 | ```trans_id``` | Transaction ID in the Payment Platform |
-| ```hash``` | Special signature, used to validate callback, see Appendix A, Formula 2 |
 | ```trans_date``` | Transaction date in the Payment Platform |
 | ```descriptor``` | Descriptor from the bank, the same as cardholder will see in the bank statement |
 | ```amount``` | Order amount |
@@ -386,6 +446,9 @@ You will get JSON encoded string (see an example on Appendix B) with transaction
 | ```redirect_params``` | Object with the parameters. It is array if ```redirect_params``` have no data. The availability of the ```redirect_params``` depends on the data transmitted by the acquirer. ```redirect_params``` may be missing. It usually happens when ```redirect_method``` = GET |
 | ```redirect_method``` | The method of transferring parameters (POST or GET) |
 | ```custom_data``` | Object with the custom data. <br/> This block duplicates the arbitrary parameters that were passed in the payment request|
+| ```digital_wallet``` | Wallet provider: googlepay, applepay |
+| ```pan_type``` | It refers to digital payments, such as Apple Pay and Google Pay, and the card numbers returned as a result of payment token decryption: DPAN (Digital Primary Account Number) and FPAN (Funding Primary Account Number). |
+| ```hash``` | Special signature, used to validate callback, see Appendix A, Formula 2 |
 
 ##### Undefined sale response
 
@@ -401,6 +464,8 @@ You will get JSON encoded string (see an example on Appendix B) with transaction
 | ```amount``` | Order amount |
 | ```currency``` | Order currency |
 | ```custom_data``` | Object with the custom data. <br/> This block duplicates the arbitrary parameters that were passed in the payment request|
+| ```digital_wallet``` | Wallet provider: googlepay, applepay |
+| ```pan_type``` | It refers to digital payments, such as Apple Pay and Google Pay, and the card numbers returned as a result of payment token decryption: DPAN (Digital Primary Account Number) and FPAN (Funding Primary Account Number). |
 | ```hash``` | Special signature, used to validate callback, see Appendix A, Formula 2 |
 
 ### CAPTURE request
@@ -481,7 +546,19 @@ This request is sent by POST in the background (e.g. through PHP CURL).
 | ```trans_date``` | Transaction date in the Payment Platform |
 | ```descriptor``` | Descriptor from the bank, the same as cardholder will see in the bank statement |
 | ```currency``` | Currency |
+|`connector_name` ** \* ** | Connector's name (Payment Gateway)|
+|`rrn` ** \* ** | Retrieval Reference Number value from the acquirer system|
+|`approval_code` ** \* ** | Approval code value from the acquirer system|
+| `gateway_id` ** \* ** | Gateway ID – transaction identifier provided by payment gateway|
+| `extra_gateway_id`**\***| Extra Gateway ID – additional transaction identifier provided by payment gateway|
+| `merchant_name`** \* ** | Merchant Name|
+| `mid_name` ** \* ** | MID Name|
+|`issuer_country` ** \* ** | Issuer Country|
+|`issuer_bank` ** \* ** | Issuer Bank|
 | ```hash``` | Special signature, used to validate callback, see Appendix A, Formula 2 |
+
+** \* ** The parameters are included if the appropriate setup is configured in the admin panel (see “Add Extended Data to Callback” block in the Configurations -> Protocol Mappings section).
+
 
 ##### Unsuccessful capture response
 
@@ -556,7 +633,19 @@ This request is sent by POST in the background (e.g. through PHP CURL).
 | ```trans_id``` | Transaction ID in the Payment Platform |
 | ```creditvoid_date``` | Date of the refund/reversal |
 | ```amount``` | Amount of refund |
+|`connector_name` ** \* ** | Connector's name (Payment Gateway)|
+|`rrn` ** \* ** | Retrieval Reference Number value from the acquirer system|
+|`approval_code` ** \* ** | Approval code value from the acquirer system|
+| `gateway_id` ** \* ** | Gateway ID – transaction identifier provided by payment gateway|
+| `extra_gateway_id`**\***| Extra Gateway ID – additional transaction identifier provided by payment gateway|
+| `merchant_name`** \* ** | Merchant Name|
+| `mid_name` ** \* ** | MID Name|
+|`issuer_country` ** \* ** | Issuer Country|
+|`issuer_bank` ** \* ** | Issuer Bank|
 | ```hash``` | Special signature, used to validate callback, see Appendix A, Formula 2 |
+
+** \* ** The parameters are included if the appropriate setup is configured in the admin panel (see “Add Extended Data to Callback” block in the Configurations -> Protocol Mappings section).
+
 
 ##### Unsuccessful refund/reversal response
 
@@ -655,7 +744,19 @@ You will get JSON encoded string with transaction result.
 | `order_id`      | Transaction ID in the Client's system  |
 | `trans_id`      | Transaction ID in the Payment Platform |
 | `trans_date`    | Transaction date in the Payment Platform |
+|`connector_name` ** \* ** | Connector's name (Payment Gateway)|
+|`rrn` ** \* ** | Retrieval Reference Number value from the acquirer system|
+|`approval_code` ** \* ** | Approval code value from the acquirer system|
+| `gateway_id` ** \* ** | Gateway ID – transaction identifier provided by payment gateway|
+| `extra_gateway_id`**\***| Extra Gateway ID – additional transaction identifier provided by payment gateway|
+| `merchant_name`** \* ** | Merchant Name|
+| `mid_name` ** \* ** | MID Name|
+|`issuer_country` ** \* ** | Issuer Country|
+|`issuer_bank` ** \* ** | Issuer Bank|
 | `hash`            | Special signature, used to validate callback. See Appendix A, Void signature.|
+
+** \* ** The parameters are included if the appropriate setup is configured in the admin panel (see “Add Extended Data to Callback” block in the Configurations -> Protocol Mappings section).
+
 
 ##### Unsuccessful void response
 
@@ -798,7 +899,18 @@ You will get JSON encoded string with transaction result. If your account suppor
 | ```descriptor``` | Descriptor from the bank, the same as payer will see in the bank statement |
 | ```amount``` | Order amount |
 | ```currency``` | Currency |
+|`connector_name` ** \* ** | Connector's name (Payment Gateway)|
+|`rrn` ** \* ** | Retrieval Reference Number value from the acquirer system|
+|`approval_code` ** \* ** | Approval code value from the acquirer system|
+| `gateway_id` ** \* ** | Gateway ID – transaction identifier provided by payment gateway|
+| `extra_gateway_id`**\***| Extra Gateway ID – additional transaction identifier provided by payment gateway|
+| `merchant_name`** \* ** | Merchant Name|
+| `mid_name` ** \* ** | MID Name|
+|`issuer_country` ** \* ** | Issuer Country|
+|`issuer_bank` ** \* ** | Issuer Bank|
 | ```hash``` | Special signature, used to validate callback, see Appendix A, Formula 2 |
+
+** \* ** The parameters are included if the appropriate setup is configured in the admin panel (see “Add Extended Data to Callback” block in the Configurations -> Protocol Mappings section).
 
 **Unsuccessful response**
 
@@ -1007,7 +1119,18 @@ You will get JSON encoded string with transaction result.
 | ```order_id``` | Transaction ID in the Client's system |
 | ```trans_id``` | Transaction ID in the Payment Platform |
 | ```trans_date``` | Date of CREDIT2CARD action |
+|`connector_name` ** \* ** | Connector's name (Payment Gateway)|
+|`rrn` ** \* ** | Retrieval Reference Number value from the acquirer system|
+|`approval_code` ** \* ** | Approval code value from the acquirer system|
+| `gateway_id` ** \* ** | Gateway ID – transaction identifier provided by payment gateway|
+| `extra_gateway_id`**\***| Extra Gateway ID – additional transaction identifier provided by payment gateway|
+| `merchant_name`** \* ** | Merchant Name|
+| `mid_name` ** \* ** | MID Name|
+|`issuer_country` ** \* ** | Issuer Country|
+|`issuer_bank` ** \* ** | Issuer Bank|
 | ```hash``` | Special signature to validate callback. See Appendix A, Formula 6 |
+
+** \* ** The parameters are included if the appropriate setup is configured in the admin panel (see “Add Extended Data to Callback” block in the Configurations -> Protocol Mappings section).
 
 <details>
 	<summary markdown="span">Callback Example (Successful result)</summary>
@@ -1184,11 +1307,22 @@ You will get JSON encoded string with transaction result. If your account suppor
 | ```status``` | 3DS / SETTLED |
 | ```order_id``` | Transaction ID in the Merchant’s system |
 | ```trans_id``` | Transaction ID in the Payment Platform |
-| ```hash``` | Special signature, used to validate callback, see Appendix A, Formula 2 |
 | ```trans_date``` | Transaction date in the Payment Platform |
 | ```descriptor``` | Descriptor from the bank, the same as payer will see in the bank statement |
 | ```amount``` | Order amount |
 | ```currency``` | Currency |
+|`connector_name` ** \* ** | Connector's name (Payment Gateway)|
+|`rrn` ** \* ** | Retrieval Reference Number value from the acquirer system|
+|`approval_code` ** \* ** | Approval code value from the acquirer system|
+| `gateway_id` ** \* ** | Gateway ID – transaction identifier provided by payment gateway|
+| `extra_gateway_id`**\***| Extra Gateway ID – additional transaction identifier provided by payment gateway|
+| `merchant_name`** \* ** | Merchant Name|
+| `mid_name` ** \* ** | MID Name|
+|`issuer_country` ** \* ** | Issuer Country|
+|`issuer_bank` ** \* ** | Issuer Bank|
+| ```hash``` | Special signature, used to validate callback, see Appendix A, Formula 2 |
+
+** \* ** The parameters are included if the appropriate setup is configured in the admin panel (see “Add Extended Data to Callback” block in the Configurations -> Protocol Mappings section).
 
 **Unsuccessful response**
 
@@ -1244,7 +1378,14 @@ Gets order status from Payment Platform. This request is sent by POST in the bac
 
 >When using cascading (a functionality that allows attempting to process a payment through multiple MIDs until success is achieved), a unique ```order_id``` should be used for each payment, and the final status should primarily rely on the callback.
 
->In the process of cascading within a single payment request with a specific ```order_id```, multiple payments may be initiated. When attempting to check the status by ```order_id``` using the ```GET_TRANS_STATUS_BY_ORDER``` request, different statuses and ```trans_id```s may be returned in the response, as cascading could still be in progress. Using ```GET_TRANS_STATUS``` with ```trans_id``` provides the status of only a specific payment within the cascading sequence. Therefore, to obtain the final status, it is recommended to rely on the callback, as we send callbacks with the final status for the last payment in the cascading process.
+>In the process of cascading within a single payment request with a specific ```order_id```, multiple payments may be initiated. When attempting to check the status by ```order_id``` using the ```GET_TRANS_STATUS_BY_ORDER``` request, different statuses and ```trans_id```s may be returned in the response, as cascading could still be in progress. Using ```GET_TRANS_STATUS``` with ```trans_id``` provides the status of only a specific payment within the cascading sequence.
+
+>Note: The response logic for a status request depends on the Cascading Context for Get Status setting in Cofiguration --> Protocol Mappings section. If enabled, the system returns the status of the most recently created payment within the cascade (i.e., the payment with the latest creation date), rather than the payment specified in the request.
+
+>To obtain the final status, it is recommended to: <br/>
+1) In the protocol mapping section, ensure the option ‘Cascading Context for Get Status’ is enabled. When enabled, a GET_TRANS_STATUS request with trans_id will return the status of the last cascaded payment.<br/>
+2) Rely on the callback, as we send callbacks with the final status for the last payment in the cascading process.
+
 
 >Please note, in 3DS and REDIRECT callbacks, you may receive one ```trans_id```, while in the final status callback, you might see a different ```trans_id```, as the ```trans_id``` reflects the status at a specific stage within the cascading process.
 
@@ -1269,6 +1410,24 @@ Gets order status from Payment Platform. This request is sent by POST in the bac
 | ```decline_reason``` | Reason of transaction decline. It shows for the transactions with the DECLINED status |
 | ```recurring_token``` | Token for recurring. It shows when the next conditions are met for the SALE transaction:<br />- transaction is successful<br />- SALE request contained ```recurring_init``` parameter with the value 'Y' <br /> |
 | ```schedule_id``` | Schedule ID for recurring payments  |
+| ```digital_wallet``` | Walet provider: googlepay, applepay  |
+
+<details>
+	<summary markdown="span">Response Example</summary>
+
+```
+{
+    "action": "GET_TRANS_DETAILS",
+    "result": "SUCCESS",
+    "status": "SETTLED",
+    "order_id": "1646655381neural",
+    "trans_id": "66624eba-9e10-11ec-aa41-0242ac130002",
+    "digital_wallet": "googlepay"
+}
+
+```
+</details>
+
 
 ### GET_TRANS_DETAILS request
 ---
@@ -1300,11 +1459,13 @@ Gets all history of transactions by the order. This request is sent by POST in t
 | ```ip``` | Payer IP |
 | ```amount``` | Order amount |
 | ```currency``` | Currency |
-| ```card``` | Card in the format XXXXXX****XXXX |
+| ```card``` | Card in the format XXXXXX****XXXX. <br/>If a digital wallet was used, the value obtained when decrypting the wallet token will be provided in this parameter |
 | ```decline_reason``` | Reason of transaction decline.It shows for the transactions with the DECLINED status |
 | ```recurring_token``` | Token for recurring. It shows when the next conditions are met for the SALE transaction:<br/> - transaction is successful<br/>- SALE request contained `recurring_init` parameter with the value 'Y'<br/>- SALE request contained card data which was used for the first time|
 | ```schedule_id``` | Schedule ID for recurring payments |
 | ```transactions``` | Array of transactions with the parameters: <br />- date<br /> - type (sale, 3ds, auth, capture, credit, chargeback, reversal, refund)<br />- status (success, waiting, fail)<br />- amount |
+| ```digital_wallet``` | Wallet provider: googlepay, applepay|
+| ```pan_type``` | It refers to digital payments, such as Apple Pay and Google Pay, and the card numbers returned as a result of payment token decryption: DPAN (Digital Primary Account Number) and FPAN (Funding Primary Account Number).|
 
 <details>
 	<summary markdown="span">Response Example</summary>
@@ -1313,7 +1474,7 @@ Gets all history of transactions by the order. This request is sent by POST in t
 {
     "action": "GET_TRANS_DETAILS",
     "result": "SUCCESS",
-    "status": "REFUND",
+    "status": "SETTLED",
     "order_id": "1646655381neural",
     "trans_id": "66624eba-9e10-11ec-aa41-0242ac130002",
     "name": "John Rikher",
@@ -1321,7 +1482,9 @@ Gets all history of transactions by the order. This request is sent by POST in t
     "ip": "192.169.217.106",
     "amount": "0.02",
     "currency": "USD",
+    "digital_wallet": "googlepay",
     "card": "522864******0691",
+    "pan_type": "dpan",
     "transactions": [
         {
             "type": "3DS",
@@ -1334,15 +1497,10 @@ Gets all history of transactions by the order. This request is sent by POST in t
             "status": "success",
             "date": "2022-03-07 12:16:31",
             "amount": "0.02"
-        },
-        {
-            "type": "REFUND",
-            "status": "success",
-            "date": "2022-03-07 12:20:14",
-            "amount": "0.02"
         }
     ]
 }
+
 ```
 </details>
 
@@ -1377,6 +1535,23 @@ This is especially important if cascading is configured. In this case, several i
 | ```decline_reason``` | Reason of transaction decline. It shows for the transactions with the DECLINED status |
 | ```recurring_token``` | Token for recurring. It shows when the next conditions are met for the SALE transaction:<br />- transaction is successful<br />- SALE request contained ```recurring_init``` parameter with the value 'Y' <br />|
 | ```schedule_id``` | Schedule ID for recurring payments |
+| ```digital_wallet``` | Wallet provider: googlepay, applepay |
+
+<details>
+	<summary markdown="span">Response Example</summary>
+
+```
+{
+    "action": "GET_TRANS_STATUS_BY_ORDER",
+    "result": "SUCCESS",
+    "status": "SETTLED",
+    "order_id": "1646655381neural",
+    "trans_id": "66624eba-9e10-11ec-aa41-0242ac130002",
+    "digital_wallet": "googlepay"
+}
+```
+</details>
+
 
 ### RECURRING_SALE request
 ---
@@ -1450,6 +1625,7 @@ This request is sent by POST in the background (e.g. through PHP CURL).
 | `currency` | Currency |
 | `hash` | Special signature, used to validate callback, see Appendix A, Formula 2 |
 
+
 ##### Unsuccessful response
 
 | **Parameter** | **Description** |
@@ -1470,7 +1646,7 @@ This request is sent by POST in the background (e.g. through PHP CURL).
 
 CHARGEBACK transactions are used to dispute already settled payment.
 
-When processing these transactions Payment Platform sends notification to Merchant`s Notification URL.
+When processing these transactions Payment Platform sends notification to Merchant`s Notification URL. 
 
 | **Parameter** | **Description** |
 | --- | --- |
@@ -1483,7 +1659,18 @@ When processing these transactions Payment Platform sends notification to Mercha
 | ```chargeback_date``` | System date of the chargeback |
 | ```bank_date``` | Bank date of the chargeback |
 | ```reason_code``` | Reason code of the chargeback |
+|`connector_name` ** \* ** | Connector's name (Payment Gateway)|
+|`rrn` ** \* ** | Retrieval Reference Number value from the acquirer system|
+|`approval_code` ** \* ** | Approval code value from the acquirer system|
+| `gateway_id` ** \* ** | Gateway ID – transaction identifier provided by payment gateway|
+| `extra_gateway_id`**\***| Extra Gateway ID – additional transaction identifier provided by payment gateway|
+| `merchant_name`** \* ** | Merchant Name|
+| `mid_name` ** \* ** | MID Name|
+|`issuer_country` ** \* ** | Issuer Country|
+|`issuer_bank` ** \* ** | Issuer Bank|
 | ```hash``` | Special signature to validate callback, see Appendix A, Formula 2|
+
+** \* ** The parameters are included if the appropriate setup is configured in the admin panel (see “Add Extended Data to Callback” block in the Configurations -> Protocol Mappings section).
 
 ## RECURRING SCHEDULE OPERATIONS
 ---
@@ -1658,7 +1845,7 @@ The list of the error codes is shown below.
 | 205006 | Card token is expired. |
 | 205007 | Card token is not accessible. |
 | 400 | Duplicate request. |
-| 400 | Previous payment not completed. |
+| 100000 | Previous payment not completed. |
 
 
 <details>
@@ -1759,13 +1946,13 @@ You can make test requests using data below. Please note, that all transactions 
 
 | **Card number** | **Card expiration date (MM/YYYY)** | **Testing / Result** |
 | :---: | :---: | --- |
-| 4111111111111111 | 01/2025 | This card number and card expiration date must be used for testing successful sale. <br />⚠️ Use that card data to create recurring payments and get a recurring token for the initial recurring. Testing recurring payments does not work with other test cards. <br /> Response on successful SALE request:<br /> ```{action: SALE, result: SUCCESS, status: SETTLED}``` <br />Response on successful AUTH request:<br /> ```{action: SALE, result: SUCCESS, status: PENDING}```|
-| 4111111111111111 | 02/2025 | This card number and card expiration date must be used for testing unsuccessful sale<br />Response on unsuccessful SALE request:<br />```{action: SALE, result: DECLINED,  status: DECLINED}```<br />Response on unsuccessful AUTH request:<br /> ```{action: SALE, result: DECLINED, status: DECLINED}```|
-| 4111111111111111 | 03/2025 | This card number and card expiration date must be used for testing unsuccessful CAPTURE after successful AUTH<br />Response on successful AUTH request: <br /> ```{action: SALE, result: SUCCESS, status: PENDING}```<br />Response on unsuccessful CAPTURE request:<br /> ```{action: CAPTURE, result: DECLINED, status: PENDING}```|
-| 4111111111111111 | 05/2025 | This card number and card expiration date must be used for testing successful sale after 3DS verification<br />Response on VERIFY request:<br /> ```{action: SALE, result: REDIRECT, status: 3DS}```<br />After return from ACS:<br /> ```{action: SALE, result: SUCCESS, status: SETTLED}```|
-| 4111111111111111 | 06/2025 | This card number and card expiration date must be used for testing unsuccessful sale after 3DS verification<br />Response on VERIFY request:<br /> ```{action: SALE, result: REDIRECT, status: 3DS}```<br />After return from ACS:<br /> ```{action: SALE, result: DECLINED, status: DECLINED}```|
-| 4111111111111111 | 12/2025 | This card number and card expiration date must be used for testing successful sale after redirect<br />Response on SALE/AUTH request:<br /> ```{action: SALE, result: REDIRECT, status: REDIRECT}```<br />Return to the system:<br /> ```{action: SALE, result: SUCCESS, status: SETTLED}```|
-| 4111111111111111 | 12/2026 | This card number and card expiration date must be used for testing unsuccessful sale after redirect<br />Response on SALE/AUTH request: <br />```{action: SALE, result: REDIRECT, status: REDIRECT}```<br />Return to the system:<br /> ```{action: SALE, result: DECLINED, status: DECLINED}```|
+| 4111111111111111 | 01/2038 | This card number and card expiration date must be used for testing successful sale. <br />⚠️ Use that card data to create recurring payments and get a recurring token for the initial recurring. Testing recurring payments does not work with other test cards. <br /> Response on successful SALE request:<br /> ```{action: SALE, result: SUCCESS, status: SETTLED}``` <br />Response on successful AUTH request:<br /> ```{action: SALE, result: SUCCESS, status: PENDING}```|
+| 4111111111111111 | 02/2038 | This card number and card expiration date must be used for testing unsuccessful sale<br />Response on unsuccessful SALE request:<br />```{action: SALE, result: DECLINED,  status: DECLINED}```<br />Response on unsuccessful AUTH request:<br /> ```{action: SALE, result: DECLINED, status: DECLINED}```|
+| 4111111111111111 | 03/2038 | This card number and card expiration date must be used for testing unsuccessful CAPTURE after successful AUTH<br />Response on successful AUTH request: <br /> ```{action: SALE, result: SUCCESS, status: PENDING}```<br />Response on unsuccessful CAPTURE request:<br /> ```{action: CAPTURE, result: DECLINED, status: PENDING}```|
+| 4111111111111111 | 05/2038 | This card number and card expiration date must be used for testing successful sale after 3DS verification<br />Response on VERIFY request:<br /> ```{action: SALE, result: REDIRECT, status: 3DS}```<br />After return from ACS:<br /> ```{action: SALE, result: SUCCESS, status: SETTLED}```|
+| 4111111111111111 | 06/2038 | This card number and card expiration date must be used for testing unsuccessful sale after 3DS verification<br />Response on VERIFY request:<br /> ```{action: SALE, result: REDIRECT, status: 3DS}```<br />After return from ACS:<br /> ```{action: SALE, result: DECLINED, status: DECLINED}```|
+| 4111111111111111 | 12/2038 | This card number and card expiration date must be used for testing successful sale after redirect<br />Response on SALE/AUTH request:<br /> ```{action: SALE, result: REDIRECT, status: REDIRECT}```<br />Return to the system:<br /> ```{action: SALE, result: SUCCESS, status: SETTLED}```|
+| 4111111111111111 | 12/2039 | This card number and card expiration date must be used for testing unsuccessful sale after redirect<br />Response on SALE/AUTH request: <br />```{action: SALE, result: REDIRECT, status: REDIRECT}```<br />Return to the system:<br /> ```{action: SALE, result: DECLINED, status: DECLINED}```|
 | 4601541833776519 | not applicable | This card number must be used for testing successful credit. <br /> Response on successful CREDIT2CARD request: <br />```{action: CREDIT2CARD, result: SUCCESS, status: SETTLED}```|
 
 ## Appendix A (Hash)
@@ -1827,6 +2014,12 @@ if ```card_token``` is specified hash is calculated by the formula:
 ```hash``` is calculated by the formula:
 
 **md5(strtoupper(strrev(email).PASSWORD.order_id.strrev(substr(card_number,0,6).substr(card_number,-4))))**
+
+**Formula 8:**
+
+```hash``` is calculated by the formula:
+
+**md5(strtoupper(strrev(email) . PASSWORD))**
 
 ## Appendix B (Examples)
 
@@ -2063,6 +2256,220 @@ https://test.apiurl.com -k
 
 When using some connector services, it is necessary to send additional parameters in the specific request. You can add specific parameters in the ```parameters``` object.
 For more information, contact your manager.
+
+
+### Apple Pay
+
+To use the ```applepay``` payment method, configure the Wallets setting in the admin dashboard. Ensure that the payment provider has confirmed the Apple Pay certificates and verified your domain in the Apple Pay account.
+
+To enable payers to make Apple Pay payments, you can either connect to the Checkout page or work directly via the S2S protocol:
+
+**Checkout Page**: No additional development is required on your side.
+
+**S2S Protocol**: You must be able to obtain the Apple Pay payment token and include it in the SALE request.
+
+Regardless of the protocol you have to make settings in the admin panel and set the following configurations:
+
+  * Merchant Identifier, Country and Shop Name – according to the merchant’s data from [<font color=''><ins>Apple Pay Developer account</ins></font>](https://idmsa.apple.com/IDMSWebAuth/signin?appIdKey=891bd3417a7776362562d2197f89480a8547b108fd934911bcbea0110d07f757&path=%2Faccount%2Fresources%2Fidentifiers%2Flist%2Fmerchant&rv=1)<br/>
+  * Certificate and Private Key – generated Apple Pay certificate and private key<br/>
+  * Merchant Capabilities and Supported Networks – configurations for Apple Pay payments<br/>
+  * Processing Private Key – private key that uses for payment token decryption (requires if payment provider supports).<br/>
+
+ > ⚠️ Pay attention <br/>
+_Before using Apple Pay via S2S CARD protocol, you should review next section carefully. There is a description on how you can obtain Apple Pay payment token (it refers to the official Apple Pay documentation)_
+
+1.	Each payment must be checked for Apple Pay accessibility
+2.	Show Apple Pay button to your payers
+3.	Validate the merchant identity
+4.	Provide a payment request and create a session
+5.	Receive Apple Pay payment token (paymentData object)
+
+Once you have implemented Apple Pay payment token generation on your site, you need to include the following in the SALE request:
+* ```digital_wallet``` = applepay 
+* ```payment_token``` - Apple Pay payment token <br/>
+
+When providing a digital wallet token, you must omit card data (```card_number```, ```card_exp_month```, ```card_exp_year```, ```card_cvv2```).
+
+<details>
+  <summary markdown="span">Request example</summary>
+
+```
+curl -d "action=SALE
+&client_key=c2b8fb04-110f-11ea-bcd3-0242c0a85004
+&order_id=ORDER12345&
+&order_amount=1.99
+&order_currency=USD
+&order_description=Product
+&payer_first_name=John
+&payer_last_name=Doe
+&payer_address=BigStreet
+&payer_country=US
+&payer_state=CA
+&payer_city=City
+&payer_zip=123456
+&payer_email=doe@example.com
+&payer_phone=199999999
+&payer_ip=123.123.123.123
+&term_url_3ds=http://client.site.com/return.php
+&digital_wallet=applepay
+&payment_token={"paymentData":{"data":"YOUR_ENCRYPTED_DATA","signature":"YOUR_SIGNATURE","header":{"publicKeyHash":"YOUR_PUBLIC_KEY_HASH","ephemeralPublicKey":"YOUR_EPHEMERAL_PUBLIC_KEY","transactionId":"YOUR_TRANSACTION_ID"},"version":"EC_v1"},"paymentMethod":{"displayName":"Visa 6244","network":"Visa","type":"credit"},"transactionIdentifier":"YOUR_TRANSACTION_IDENTIFIER"},{"transactionId":"TRANSACTION_ID_2","version":"EC_v1"},{"paymentMethod":{"displayName":"Visa 0224","network":"Visa","type":"debit"},"transactionIdentifier":"TRANSACTION_IDENTIFIER_2"}
+&parameters[param1]=value1
+&parameters[param2]=value2
+&parameters[param3]=value3
+&hash=2702ae0c4f99506dc29b5615ba9ee3c0" https://test.apiurl.com -k
+```
+</details>
+
+We also recommend checking out the demo provided by Apple for Apple Pay: https://applepaydemo.apple.com/
+
+---
+
+
+**Set up Apple Pay**
+
+If you are using the S2S protocol for Apple Pay payments, you will need to configure your Apple Developer account. Follow these steps to set up Apple Pay in your Apple Developer account:
+
+**1.** **Create a Merchant ID** in the "Certificates, Identifiers & Profiles" section.
+
+**2.** **Register and verify the domains** involved in the interaction with Apple Pay (e.g., the checkout page URL where the Apple Pay button is placed) in the "Merchant Domains" section. 
+
+**3.** **Create a Merchant Identity Certificate** in the "Merchant Identity Certificate" section:
+   * Generate a pair of certificates (\*.csr and \*.key) and upload the *.csr file in the "Merchant Identity Certificate" section.
+   * Create a Merchant Identity Certificate based on the generated CSR file.
+   * Download the *.pem file from the portal.
+
+⚠️ **Note**<br/>
+> The \*.csr file can be obtained from the payment provider that processes Apple Pay, and the \*.pem file should be uploaded to your payment provider's dashboard, following their instructions.
+
+**4.** **Create a Processing Private Key** in the "Apple Pay Payment Processing Certificate" section:
+  * Generate a pair of certificates (\*.csr and \*.key) and upload the *.csr file.
+  * Create a Payment Processing Certificate based on the generated CSR file.
+
+For more detailed instructions on setting up Apple Pay, refer to the following resource: [<font color=''><ins>Learn more about setting up Apple Pay</ins></font>](https://developer.apple.com/documentation/passkit_apple_pay_and_wallet/apple_pay/setting_up_apple_pay)<br/>
+
+Next, enter the data from your Apple Pay developer account into the platform's admin panel:
+Go to the "Merchants" section, initiate editing, open the "Wallets" tab, navigate to the Apple Pay settings, and fill in the following fields:
+  * **Merchant Identifier:** Enter the Merchant ID.
+  * **Certificate:** Upload the *.pem file downloaded from the "Merchant Identity Certificate" section.
+  * **Private Key:** Upload the *.key file from the certificate pair generated for the Merchant Identity Certificate.
+  * **Processing Private Key (required for token decryption)**: Paste the text from the Processing Private Key file. Ensure it is a single line of text (without spaces or breaks) placed between "BEGIN" and "END."
+
+
+**Apple Pay Payment Flow**
+
+Processing payments via the S2S CARD protocol is supported by select providers. Contact support to check if your provider supports card flow.
+
+By default, all Apple Pay payments on the platform are classified as virtual. As a result: <br/>
+* Card details are not stored for these transactions.
+*	Functionality is limited for DMS payments and the creation of recurring transactions. <br/>
+
+To access the card flow for Apple Pay payments, you need to:
+*	Set up the Processing Private Key in the admin panel settings ("Merchants" section → "Wallets" tab) to enable token decryption.
+*	Verify that your payment provider supports card flow processing (ask your support if available).
+
+How It Works:
+*	If both requirements are met, the system will always decrypt the Apple Pay token during payment and store the decrypted card data for future transactions.
+*	You can view decrypted card details in the Transaction Details section of the admin panel.
+*	If any requirement is not met, the SALE request returns error.
+*	If your provider supports card flow but does not accept decrypted data, platform can still store the card details for processing. However, some features (e.g., smart routing and cascading) will not be available.
+
+
+### Google Pay
+
+To provide the payers with the possibility of Google Pay™ payment you can connect to the Checkout or work directly via S2S CARD protocol.<br/>
+If you are using Checkout integration to work with googlepay payment method, it requires no additional code implementation.<br/>
+If you are using S2S integration to work with googlepay payment method, you must be able to obtain the Google Pay payment token and include it in the SALE request.<br/>
+Before using googlepay brand in S2S CARD solution, you need to review this section carefully to meet all the Google Pay™ requirements:<br/> 
+
+1. Overview the documentation on Google Pay Integration first:<br/>
+    • for sites - [<font color=''><ins>Google Pay Web developer documentation</ins></font>](https://developers.google.com/pay/api/web)<br/>
+    • for Android app - [<font color=''><ins>Google Pay Android developer documentation</ins></font>](https://developers.google.com/pay/api/android)<br/>
+2. Make sure you complete all the items on the integration checklist:<br/> 
+    • for sites - [<font color=''><ins>Google Pay Web integration checklist</ins></font>](https://developers.google.com/pay/api/web/guides/test-and-deploy/integration-checklist)<br/>
+    • for Android app - [<font color=''><ins>Google Pay Android integration checklist</ins></font>](https://developers.google.com/pay/api/android/guides/test-and-deploy/integration-checklist)<br/>
+3. To brand your site with Google Pay elements, you must meet the requirements: <br/>
+    • for sites - [<font color=''><ins>Google Pay Web Brand Guidelines</ins></font>](https://developers.google.com/pay/api/web/guides/brand-guidelines)<br/>
+    • for Android app - [<font color=''><ins>Google Pay Android brand guidelines</ins></font>](https://developers.google.com/pay/api/android/guides/brand-guidelines)<br/>
+4. The merchants must adhere to the Google Pay APIs [<font color=''><ins>Acceptable Use Policy</ins></font>](https://payments.developers.google.com/terms/aup) and accept the terms that the [<font color=''><ins>Google Pay API Terms of Service</ins></font>](https://payments.developers.google.com/terms/sellertos) defines.<br/>  
+
+To obtain Google Pay payment token you have to get the PaymentData according to the Google Pay API Integration documentation (see the links above).
+Pass the following parameters to receive PaymentData:
+* ```allowPaymentMethods```: CARD 
+* ```tokenizationSpecification``` = { "type": "PAYMENT_GATEWAY"} 
+* ```allowedCardNetworks``` = ['MASTERCARD', 'VISA', 'AMEX', 'DISCOVER', 'JCB']; 
+* ```allowedCardAuthMethods``` = ['PAN_ONLY', 'CRYPTOGRAM_3DS']; 
+* ```gateway``` = value provided by your support manager
+* ```gatewayMerchantId``` = CLIENT_KEY (API key)
+
+Once you have implemented Google Pay payment token generation on your site, you need to include the following in the SALE request:
+* ```digital_wallet``` = applepay 
+* ```payment_token``` - Google Pay payment token<br/>
+
+When providing a digital wallet token, you must omit card data (```card_number```, ```card_exp_month```, ```card_exp_year```, ```card_cvv2```). 
+
+
+<details>
+  <summary markdown="span">Request example</summary>
+
+```
+curl -d "action=SALE
+&client_key=c2b8fb04-110f-11ea-bcd3-0242c0a85004
+&order_id=ORDER12345&
+&order_amount=1.99
+&order_currency=USD
+&order_description=Product
+&payer_first_name=John
+&payer_last_name=Doe
+&payer_address=BigStreet
+&payer_country=US
+&payer_state=CA
+&payer_city=City
+&payer_zip=123456
+&payer_email=doe@example.com
+&payer_phone=199999999
+&payer_ip=123.123.123.123
+&term_url_3ds=http://client.site.com/return.php
+&digital_wallet=googlepay
+&payment_token={\"apiVersionMinor\": 0, \"apiVersion\": 2, \"paymentMethodData\": {\"description\": \"Mastercard •••• 5179\", \"tokenizationData\": {\"type\": \"PAYMENT_GATEWAY\", \"token\": {\"signature\": \"YOUR_SIGNATURE\", \"intermediateSigningKey\": {\"signedKey\": \"YOUR_SIGNED_KEY\", \"signatures\": [\"YOUR_SIGNATURE_2\"]}, \"protocolVersion\": \"ECv2\", \"signedMessage\": {\"encryptedMessage\": \"ENCRYPTED_MESSAGE\", \"ephemeralPublicKey\": \"EPHEMERAL_PUBLIC_KEY\", \"tag\": \"TAG\"}}}, \"type\": \"CARD\", \"info\": {\"cardNetwork\": \"MASTERCARD\", \"cardDetails\": \"5179\"}}}
+&parameters[param1]=value1
+&parameters[param2]=value2
+&parameters[param3]=value3
+&hash=2702ae0c4f99506dc29b5615ba9ee3c0" https://test.apiurl.com -k
+```
+</details>
+
+
+---
+
+** Set up Google Pay**
+
+The admin panel settings apply to merchants integrated with the platform via the Checkout protocol.<br/><br/>
+For merchants using the S2S protocol and obtaining the Google Pay payment token independently, these settings will not apply.<br/><br/>
+Exceptions are "Environment" and “Private Key” configurations.<br/><br/>
+The "Environment" configuration remains relevant, as it defines the environment where the token was generated and from which the platform expects to receive payment data. Ensure that the environment used to generate the payment token matches the corresponding setting in the admin panel to avoid processing issues.<br/><br/>
+The “Private Key” is required for Google token decryption. If it is absent, the card flow cannot be applied to the payment.<br/><br/>
+Additionally, to work with Google Pay payments, you must verify the website domains from which Google Pay is processed in the Google Business Console.
+
+---
+
+**Google Pay Payment Flow**
+
+Processing payments via the S2S CARD protocol is supported by select providers. Contact support to check if your provider supports card flow.<br/>
+By default, all Google Pay payments on the platform are classified as virtual. As a result:
+* Card details are not stored for these transactions.
+* Functionality is limited for DMS payments and the creation of recurring transactions.<br/>
+
+To access the card flow for Google Pay payments, you need to:
+* Set up the Private Key in the admin panel settings ("Merchants" section → "Wallets" tab) to enable token decryption.
+* Verify that your payment provider supports card flow processing (ask your support if available).
+<br/>
+
+How It Works:
+* If both requirements are met, the system will always decrypt the Google Pay token during payment and store the decrypted card data for future transactions.
+* You can view decrypted card details in the Transaction Details section of the admin panel.
+* If any requirement is not met, the SALE request returns error.
+* If your provider supports card flow but does not accept decrypted data, platform can still store the card details for processing. However, some features (e.g., smart routing and cascading) will not be available.
+
 
 ### SALE request
 
