@@ -50,7 +50,7 @@ api:
                               {
                                 "type": "string",
                                 "description": "Names of the desired payment method to be available in the checkout page",
-                                "example": "[stcpay ,visa]",
+                                "example": "[card ,applepay]",
                               },
                             "description": "An array of payment methods. Limits the available methods on the Checkout page (the list of the possible values in the Payment Methods section). In the case of parameter absence, the pre-routing rules are applied. If pre-routing rules are not configured, all available payment methods are displayed",
                           },
@@ -251,7 +251,7 @@ api:
                           {
                             "merchant_key": "1c568e26-c997-11e9-8be4-0242ac12000f",
                             "operation": "purchase",
-                            "methods": ["card", "stcpay"],
+                            "methods": ["card", "applepay"],
                             "order":
                               {
                                 "number": "{{order_number}}",
@@ -420,7 +420,7 @@ api:
       {
         "merchant_key": " xxxxx-xxxxx-xxxxx",
         "operation": "purchase",
-        "methods": ["[stcpay ,visa]"],
+        "methods": ["[card ,applepay]"],
         "sucess_url": "string",
         "cancel_url": "string",
         "url_target": "string",
