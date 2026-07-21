@@ -37,6 +37,81 @@ Note that the screen size can be adjusted to meet your requirements.
 Important: cross-domain requests are prohibited by the security policies of our service.
 :::
 
+---
+
+## Apple Pay in iframe
+
+Apple Pay is supported when using the Dinero Pay checkout page within an iframe.
+
+To ensure Apple Pay functions correctly, you must complete the following steps on the parent page where the iframe is embedded.
+
+### 1. Register and verify the merchant domain
+
+The domain hosting the page that contains the iframe must be registered and verified for Apple Pay.
+
+You must provide this domain to Dinero Pay so it can be associated with your Apple Pay configuration.
+
+For example, if your checkout page is:
+
+```text
+https://www.example.com/checkout
+```
+
+Then the domain to register is:
+
+```text
+www.example.com
+```
+
+---
+
+### 2. Allow payments inside the iframe
+
+The iframe must include the `allow="payment"` attribute to enable Apple Pay functionality.
+
+```html
+<iframe src="..." allow="payment"></iframe>
+```
+
+Example using the `redirect_url`:
+
+```html
+<iframe
+  src="redirect_url"
+  height="600"
+  width="300"
+  allow="payment"
+></iframe>
+```
+
+---
+
+### 3. Add the parent domain communication script
+
+Add the following script to the parent page that contains the iframe:
+
+```html
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    window.addEventListener("message", (e) => {
+      if (e.data?.type === "iframeReady") {
+        e.source.postMessage(
+          {
+            type: "parentHostname",
+            host: window.location.hostname,
+          },
+          "*"
+        );
+      }
+    });
+  });
+</script>
+```
+
+This script allows the iframe to retrieve the parent domain and correctly initialize the Apple Pay session.
+
+---
+
 ### 3D authentication
 
 > - Your customer might get redirected for authentication against the 3D Secure system of his card issuer's bank.
